@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   StyleModal,
   StyleAniamtionModal, // (left as-is; not used but kept to avoid breaking imports)
-  StyledTable,          // "
-  StyleDetailRow,       // "
+  StyledTable, // "
+  StyleDetailRow, // "
   StyleOption,
   StyleModalFilter,
   StyleMainDiv,
@@ -256,7 +256,9 @@ export default function AnimatedTable() {
 
   const filteredResponseData = useMemo(() => {
     const q = searchTerm.toLowerCase();
-    return responseData.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
+    return responseData.filter((row) =>
+      (row?.Tick ?? "").toLowerCase().includes(q)
+    );
   }, [responseData, searchTerm]);
 
   const [expandedRowId, setExpandedRowId] = useState(null);
@@ -327,10 +329,16 @@ export default function AnimatedTable() {
     ]);
 
     if (putBarResponseData?.ok) {
-      setChartData((prev) => ({ ...prev, putBar: putBarResponseData.data || [] }));
+      setChartData((prev) => ({
+        ...prev,
+        putBar: putBarResponseData.data || [],
+      }));
     }
     if (callBarResponseData?.ok) {
-      setChartData((prev) => ({ ...prev, callBar: callBarResponseData.data || [] }));
+      setChartData((prev) => ({
+        ...prev,
+        callBar: callBarResponseData.data || [],
+      }));
     }
   }, []);
 
@@ -341,26 +349,54 @@ export default function AnimatedTable() {
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = getFormatedDateStrForUSA(yesterday);
 
-      const execDate = formattedDateStr || getFormatedDateStrForUSA(date || new Date());
-      const selectedOrPreviousDateStr = execDate === todayStr ? yesterdayStr : execDate;
+      const execDate =
+        formattedDateStr || getFormatedDateStrForUSA(date || new Date());
+      const selectedOrPreviousDateStr =
+        execDate === todayStr ? yesterdayStr : execDate;
 
       const [putToday, callToday, putPrev, callPrev] = await Promise.all([
-        getChartBarData({ optionSymbol, optionType: "P", intervalMin: 60, executionDate: todayStr }),
-        getChartBarData({ optionSymbol, optionType: "C", intervalMin: 60, executionDate: todayStr }),
-        getChartBarData({ optionSymbol, optionType: "P", intervalMin: 60, executionDate: selectedOrPreviousDateStr }),
-        getChartBarData({ optionSymbol, optionType: "C", intervalMin: 60, executionDate: selectedOrPreviousDateStr }),
+        getChartBarData({
+          optionSymbol,
+          optionType: "P",
+          intervalMin: 60,
+          executionDate: todayStr,
+        }),
+        getChartBarData({
+          optionSymbol,
+          optionType: "C",
+          intervalMin: 60,
+          executionDate: todayStr,
+        }),
+        getChartBarData({
+          optionSymbol,
+          optionType: "P",
+          intervalMin: 60,
+          executionDate: selectedOrPreviousDateStr,
+        }),
+        getChartBarData({
+          optionSymbol,
+          optionType: "C",
+          intervalMin: 60,
+          executionDate: selectedOrPreviousDateStr,
+        }),
       ]);
 
       if (putToday?.ok) {
         setChartData((prev) => ({
           ...prev,
-          currentDayPutBarPlotData: (putToday.data || []).map((d) => ({ ...d, date: todayStr })),
+          currentDayPutBarPlotData: (putToday.data || []).map((d) => ({
+            ...d,
+            date: todayStr,
+          })),
         }));
       }
       if (callToday?.ok) {
         setChartData((prev) => ({
           ...prev,
-          currentDayCallBarPlotData: (callToday.data || []).map((d) => ({ ...d, date: todayStr })),
+          currentDayCallBarPlotData: (callToday.data || []).map((d) => ({
+            ...d,
+            date: todayStr,
+          })),
         }));
       }
       if (putPrev?.ok) {
@@ -392,16 +428,23 @@ export default function AnimatedTable() {
     ]);
 
     if (callResponse?.ok) {
-      setChartData((prev) => ({ ...prev, callBubbleExpiry: callResponse.data || [] }));
+      setChartData((prev) => ({
+        ...prev,
+        callBubbleExpiry: callResponse.data || [],
+      }));
     }
     if (putResponse?.ok) {
-      setChartData((prev) => ({ ...prev, putBubbleExpiry: putResponse.data || [] }));
+      setChartData((prev) => ({
+        ...prev,
+        putBubbleExpiry: putResponse.data || [],
+      }));
     }
   }, []);
 
   const getAllChartsData = useCallback(
     async (symbol) => {
-      const execDate = formattedDateStr || getFormatedDateStrForUSA(date || new Date());
+      const execDate =
+        formattedDateStr || getFormatedDateStrForUSA(date || new Date());
       const basePayload = { optionSymbol: symbol, executionDate: execDate };
 
       try {
@@ -446,7 +489,10 @@ export default function AnimatedTable() {
   const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
 
   const combinedBubbleExpiry = useMemo(
-    () => [...(chartData.callBubbleExpiry || []), ...(chartData.putBubbleExpiry || [])],
+    () => [
+      ...(chartData.callBubbleExpiry || []),
+      ...(chartData.putBubbleExpiry || []),
+    ],
     [chartData.callBubbleExpiry, chartData.putBubbleExpiry]
   );
 
@@ -495,7 +541,7 @@ export default function AnimatedTable() {
     fontFamily: "Barlow",
     fontWeight: 700,
     border: "none",
-    width: '101%'
+    width: "101%",
   };
 
   const baseParentCols = useMemo(
@@ -704,7 +750,8 @@ export default function AnimatedTable() {
           if (originalField) return p?.data?.[originalField];
           return null;
         };
-        c.colSpan = (p) => (p?.data?.__kind !== "detail" ? 1 : safeGetDefsCount(p?.api));
+        c.colSpan = (p) =>
+          p?.data?.__kind !== "detail" ? 1 : safeGetDefsCount(p?.api);
         c.cellRenderer = (p) => {
           if (p?.data?.__kind !== "detail") return p?.value;
 
@@ -720,13 +767,21 @@ export default function AnimatedTable() {
 
           const baseRows = (summaryData || [])
             .filter((d) => d?.Tick === symbol)
-            .map((d) => ({ ...d, __kind: "subParent", __id: `${d.Tick}-${d.Time}` }));
+            .map((d) => ({
+              ...d,
+              __kind: "subParent",
+              __id: `${d.Tick}-${d.Time}`,
+            }));
 
           const expandedId = subExpandedByParent[parentDetailId] || null;
           const setExpandedId = (nextId) =>
-            setSubExpandedByParent((prev) => ({ ...prev, [parentDetailId]: nextId }));
+            setSubExpandedByParent((prev) => ({
+              ...prev,
+              [parentDetailId]: nextId,
+            }));
 
-          const targetHeight = detailHeights[parentDetailId] ?? DETAIL_DEFAULT_H;
+          const targetHeight =
+            detailHeights[parentDetailId] ?? DETAIL_DEFAULT_H;
 
           return (
             <div onClick={(e) => e.stopPropagation()}>
@@ -742,7 +797,9 @@ export default function AnimatedTable() {
                     parentWidthMap={widthMap}
                     onHeightChange={(h) => {
                       setDetailHeights((prev) =>
-                        prev[parentDetailId] === h ? prev : { ...prev, [parentDetailId]: h }
+                        prev[parentDetailId] === h
+                          ? prev
+                          : { ...prev, [parentDetailId]: h }
                       );
                       p.api?.resetRowHeights?.();
                     }}
@@ -763,7 +820,14 @@ export default function AnimatedTable() {
       };
       return c;
     });
-  }, [baseParentCols, summaryData, formattedDateStr, optionTradeData, subExpandedByParent, detailHeights]);
+  }, [
+    baseParentCols,
+    summaryData,
+    formattedDateStr,
+    optionTradeData,
+    subExpandedByParent,
+    detailHeights,
+  ]);
 
   /* ===========================
      Row styles (Parent)
@@ -772,7 +836,8 @@ export default function AnimatedTable() {
   const getRowStyle = useCallback(
     (params) => {
       const row = params?.data || {};
-      if (row.__kind === "detail") return { background: COLORS.dark0, color: COLORS.dark0 };
+      if (row.__kind === "detail")
+        return { background: COLORS.dark0, color: COLORS.dark0 };
 
       const prob = Number(String(row?.Probability ?? "").replace("%", "") || 0);
       const isDimmed =
@@ -787,8 +852,8 @@ export default function AnimatedTable() {
         prob >= 90
           ? "linear-gradient(rgba(178, 74, 242, 0) 0%, rgba(178, 74, 242, 0.5) 198.75%)"
           : prob >= 80
-            ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
-            : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
+          ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
+          : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
 
       return {
         background: `${gradient},${rowOverlay}`,
@@ -835,7 +900,9 @@ export default function AnimatedTable() {
                     value={date}
                     onChange={(newDate) => setDate(newDate)}
                     disableFuture
-                    slotProps={{ textField: { size: "small", variant: "outlined" } }}
+                    slotProps={{
+                      textField: { size: "small", variant: "outlined" },
+                    }}
                   />
                 </LocalizationProvider>
               </div>
@@ -856,9 +923,7 @@ export default function AnimatedTable() {
                   className="btn btn-primary Filtericon"
                   onClick={handleFilerOption}
                 >
-                  <TuneIcon />
-                  {" "}
-                  Filter{" "}
+                  <TuneIcon /> Filter{" "}
                   <span
                     className="badge bg-warning text-dark"
                     style={{ position: "relative", top: 0 }}
@@ -871,7 +936,14 @@ export default function AnimatedTable() {
           </StyleOption>
 
           <div style={{ overflowX: "auto", width: "100%" }}>
-            <div style={{ position: "relative", height: "100vh", width: "100%", padding: 5 }}>
+            <div
+              style={{
+                position: "relative",
+                height: "100vh",
+                width: "100%",
+                padding: 5,
+              }}
+            >
               {loadingMain && (
                 <div className="grid-loading">
                   <div className="spinner" />
@@ -897,7 +969,8 @@ export default function AnimatedTable() {
                 }}
                 suppressCellFocus
                 getRowId={(p) =>
-                  p?.data?.__id ?? getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
+                  p?.data?.__id ??
+                  getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
                 }
                 onRowClicked={onTopRowClicked}
                 rowHeight={ROW_H_L1}
@@ -928,7 +1001,13 @@ export default function AnimatedTable() {
       >
         <div
           style={{
-            width: isSmallScreen ? "90%" : isSmallScreen2 ? "auto" : animationState ? "100%" : "0",
+            width: isSmallScreen
+              ? "90%"
+              : isSmallScreen2
+              ? "auto"
+              : animationState
+              ? "100%"
+              : "0",
             display: "flex",
           }}
           className="SetupBack"
@@ -956,11 +1035,17 @@ export default function AnimatedTable() {
             </StyleTopEvents>
 
             <div className="row m-0">
-              <div className="col-lg-12 SmallPaddRight" style={{ paddingRight: 10, paddingLeft: 0 }}>
+              <div
+                className="col-lg-12 SmallPaddRight"
+                style={{ paddingRight: 10, paddingLeft: 0 }}
+              >
                 <QuadrantBubbleChart
                   bubbleData={chartData.bubble}
                   height={640}
-                  style={{ background: COLORS.dark2, height: "-webkit-fill-available" }}
+                  style={{
+                    background: COLORS.dark2,
+                    height: "-webkit-fill-available",
+                  }}
                 />
               </div>
             </div>
@@ -995,11 +1080,25 @@ export default function AnimatedTable() {
             </div>
             <div className="BorderBottom"></div>
 
-            <div className="row" style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}>
-              <div className="col-lg-8 Firstchart BorderRight Ca1Top" style={{ paddingRight: 10, paddingLeft: 0 }}>
-                <BubbleWithCategoryChart rawData={chartData.callBubbleExpiry} type="CALL" height={520} />
+            <div
+              className="row"
+              style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
+            >
+              <div
+                className="col-lg-8 Firstchart BorderRight Ca1Top"
+                style={{ paddingRight: 10, paddingLeft: 0 }}
+              >
+                <BubbleWithCategoryChart
+                  rawData={chartData.callBubbleExpiry}
+                  type="CALL"
+                  height={520}
+                />
                 <div className="BorderBottom1"></div>
-                <BubbleWithCategoryChart rawData={chartData.putBubbleExpiry} type="PUT" height={520} />
+                <BubbleWithCategoryChart
+                  rawData={chartData.putBubbleExpiry}
+                  type="PUT"
+                  height={520}
+                />
               </div>
 
               <div className="col-lg-4 Piechartsec" style={{ paddingRight: 0 }}>
@@ -1036,11 +1135,16 @@ export default function AnimatedTable() {
 
             <div className="BorderBottom1" style={{ marginTop: 60 }}></div>
 
-            <div className="row BottomGraphs" style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+            <div
+              className="row BottomGraphs"
+              style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
+            >
               {Object.entries(groupedByDate).map(([d, data], index) => (
                 <div
                   key={d}
-                  className={`col-lg-4 ${index === 0 ? "BorderTopSet" : ""} BorderRight BorderLastBottom `}
+                  className={`col-lg-4 ${
+                    index === 0 ? "BorderTopSet" : ""
+                  } BorderRight BorderLastBottom `}
                 >
                   <BubblePlot rawData={data} width={510} />
                 </div>
@@ -1052,13 +1156,31 @@ export default function AnimatedTable() {
 
       {filterState ? (
         <StyleModalFilter>
-          <div className="modal RightsideModal" style={{ width: filterState ? 520 : 0, display: "flex" }}>
+          <div
+            className="modal RightsideModal"
+            style={{ width: filterState ? 520 : 0, display: "flex" }}
+          >
             <div style={{ width: "100%" }}>
               <div className="DivCollection" style={{ display: "flex" }}>
-                <div><h4>Filter</h4></div>
+                <div>
+                  <h4>Filter</h4>
+                </div>
                 <div className="RightIcon">
-                  <img src={resetSettings} alt="Reset Settings" className="resetSettings" />
-                  <span style={{ margin: "0 15px", position: "relative", top: -2, color: "#959595" }}>|</span>
+                  <img
+                    src={resetSettings}
+                    alt="Reset Settings"
+                    className="resetSettings"
+                  />
+                  <span
+                    style={{
+                      margin: "0 15px",
+                      position: "relative",
+                      top: -2,
+                      color: "#959595",
+                    }}
+                  >
+                    |
+                  </span>
                   <button
                     type="button"
                     className="btn btn-link p-0"
@@ -1096,7 +1218,11 @@ function NestedGrid({
     (rows || []).forEach((r) => {
       out.push(r);
       if (expandedId === r.__id) {
-        out.push({ __kind: "subDetail", __parent: r, __id: `subDetail-${r.__id}` });
+        out.push({
+          __kind: "subDetail",
+          __parent: r,
+          __id: `subDetail-${r.__id}`,
+        });
       }
     });
     return out;
@@ -1133,7 +1259,8 @@ function NestedGrid({
 
   const nestedHeight = useMemo(() => {
     return (flatRows || []).reduce((sum, r) => {
-      if (r?.__kind === "subDetail") return sum + getThirdLevelHeightFor(r.__parent);
+      if (r?.__kind === "subDetail")
+        return sum + getThirdLevelHeightFor(r.__parent);
       return sum + ROW_H_L2;
     }, HEADER_H_L2);
   }, [flatRows, getThirdLevelHeightFor]);
@@ -1313,17 +1440,25 @@ function NestedGrid({
   }, [formattedDateStr, optionTradeData, setOptionTradeData]);
 
   const getChildRowHeight = useCallback(
-    (p) => (p?.data?.__kind === "subDetail" ? getThirdLevelHeightFor(p?.data?.__parent) : ROW_H_L2),
+    (p) =>
+      p?.data?.__kind === "subDetail"
+        ? getThirdLevelHeightFor(p?.data?.__parent)
+        : ROW_H_L2,
     [getThirdLevelHeightFor]
   );
 
   const getLevelTwoRowStyle = useCallback(
     (params) => {
       const row = params?.data || {};
-      const baseEven = params.node.rowIndex % 2 === 0 ? COLORS.dark0 : COLORS.dark3;
-      if (row.__kind === "subDetail") return { background: COLORS.dark1, color: COLORS.white };
+      const baseEven =
+        params.node.rowIndex % 2 === 0 ? COLORS.dark0 : COLORS.dark3;
+      if (row.__kind === "subDetail")
+        return { background: COLORS.dark1, color: COLORS.white };
 
-      const isDim = typeof expandedId === "string" && row.__kind === "subParent" && row.__id !== expandedId;
+      const isDim =
+        typeof expandedId === "string" &&
+        row.__kind === "subParent" &&
+        row.__id !== expandedId;
       return {
         background: isDim ? COLORS.dark3 : baseEven,
         color: COLORS.white,
@@ -1369,7 +1504,8 @@ function SellTradesCell({
 }) {
   if (!parentRow) return <div style={{ width: "100%" }} />;
 
-  const rowKey = parentRow.__id ?? `${parentRow.Tick ?? "tick"}-${parentRow.Time ?? "time"}`;
+  const rowKey =
+    parentRow.__id ?? `${parentRow.Tick ?? "tick"}-${parentRow.Time ?? "time"}`;
   const tick = parentRow.Tick ?? "";
   const data = optionTradeData[rowKey];
   const isLoading = !(rowKey in optionTradeData);
@@ -1407,7 +1543,12 @@ function SellTradesCell({
         const startIso = toLocalISOString(startTime);
         const endIso = toLocalISOString(endTime);
 
-        const query = { startTime: startIso, endTime: endIso, optionSymbol: tick, buyOrSell: "BUY" };
+        const query = {
+          startTime: startIso,
+          endTime: endIso,
+          optionSymbol: tick,
+          buyOrSell: "BUY",
+        };
         const res = await getOptionTradeDetails(query);
 
         let rows = [];
@@ -1427,7 +1568,8 @@ function SellTradesCell({
             ...x,
           }));
 
-        if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: rows }));
+        if (!ignore)
+          setOptionTradeData((prev) => ({ ...prev, [rowKey]: rows }));
       } catch {
         if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: [] }));
       } finally {
@@ -1465,7 +1607,13 @@ function SellTradesCell({
 
   const tradeCols = useMemo(
     () => [
-      { headerName: "Time", field: "Time", flex: 1, headerStyle, cellStyle: centerWhite },
+      {
+        headerName: "Time",
+        field: "Time",
+        flex: 1,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
       {
         headerName: "Expiry",
         field: "Expiry",
@@ -1474,18 +1622,46 @@ function SellTradesCell({
         cellStyle: centerWhite,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
       },
-      { headerName: "Tick", field: "Tick", flex: 0.9, headerStyle, cellStyle: { ...centerWhite, color: COLORS.lime } },
-      { headerName: "Type", field: "Type", flex: 1, headerStyle, cellStyle: centerWhite },
+      {
+        headerName: "Tick",
+        field: "Tick",
+        flex: 0.9,
+        headerStyle,
+        cellStyle: { ...centerWhite, color: COLORS.lime },
+      },
+      {
+        headerName: "Type",
+        field: "Type",
+        flex: 1,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
       {
         headerName: "Side",
         field: "BuyOrSell",
         flex: 0.7,
         headerStyle,
-        valueGetter: (pp) => pp?.data?.BuyOrSell || pp?.data?.side || pp?.data?.orderSide || "SELL",
+        valueGetter: (pp) =>
+          pp?.data?.BuyOrSell ||
+          pp?.data?.side ||
+          pp?.data?.orderSide ||
+          "SELL",
         cellStyle: { ...centerWhite, color: COLORS.cyan },
       },
-      { headerName: "Strike", field: "Strike", flex: 0.7, headerStyle, cellStyle: centerWhite },
-      { headerName: "Spot", field: "Spot", flex: 1, headerStyle, cellStyle: centerWhite },
+      {
+        headerName: "Strike",
+        field: "Strike",
+        flex: 0.7,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "Spot",
+        field: "Spot",
+        flex: 1,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
       {
         headerName: "TotalCost",
         field: "TotalCost",
@@ -1494,12 +1670,48 @@ function SellTradesCell({
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
       },
-      { headerName: "SpotStrikeDiff", field: "SpotStrikeDiff", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      { headerName: "Price", field: "Price", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      { headerName: "TimeDiff", field: "TimeDiff", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
+      {
+        headerName: "SpotStrikeDiff",
+        field: "SpotStrikeDiff",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "Price",
+        field: "Price",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "TimeDiff",
+        field: "TimeDiff",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "",
+        field: "",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "",
+        field: "",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
+      {
+        headerName: "",
+        field: "",
+        flex: 1.0,
+        headerStyle,
+        cellStyle: centerWhite,
+      },
     ],
     []
   );
@@ -1524,7 +1736,11 @@ function SellTradesCell({
         columnDefs={tradeCols}
         headerHeight={HEADER_H_L3}
         rowHeight={ROW_H_L3}
-        defaultColDef={{ resizable: true, wrapHeaderText: true, autoHeaderHeight: true }}
+        defaultColDef={{
+          resizable: true,
+          wrapHeaderText: true,
+          autoHeaderHeight: true,
+        }}
         suppressCellFocus
         overlayNoRowsTemplate={
           isLoading
