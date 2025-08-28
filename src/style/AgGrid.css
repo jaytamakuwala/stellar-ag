@@ -1,0 +1,492 @@
+/* =========== Clean, borderless main grid =========== */
+.ag-theme-quartz.main-grid {
+  /* Kill all theme borders via CSS vars */
+  --ag-borders: none;
+  --ag-border-color: transparent;
+  --ag-header-underline-color: transparent;
+  --ag-header-border-color: transparent;
+  --ag-row-border-color: transparent;
+  --ag-header-background-color: transparent;
+  /* keep if you want header same bg as body */
+}
+
+/* Outer wrapper & body borders/shadows */
+.main-grid .ag-root-wrapper,
+.main-grid .ag-root,
+.main-grid .ag-root-wrapper-body,
+.main-grid .ag-body-viewport,
+.main-grid .ag-center-cols-viewport,
+.main-grid .ag-center-cols-clipper,
+.main-grid .ag-center-cols-container {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Header: remove borders + the underline separator */
+.main-grid .ag-header,
+.main-grid .ag-header-viewport,
+.main-grid .ag-header-container {
+  border: none !important;
+}
+
+.main-grid .ag-header {
+  border-bottom: 0 !important;
+  /* separator under header */
+}
+
+.main-grid .ag-header::after {
+  /* some themes draw a line with a pseudo-element */
+  display: none !important;
+}
+
+/* Remove vertical cell dividers (header + body) */
+.main-grid .ag-header-cell,
+.main-grid .ag-cell {
+  border-right: 0 !important;
+}
+
+/* Remove horizontal row lines */
+.main-grid .ag-row {
+  border-bottom: 0 !important;
+}
+
+/* Optional: make background seamless (tweak to your colors) */
+.main-grid .ag-root-wrapper,
+.main-grid .ag-header,
+.main-grid .ag-body-viewport {
+  background: transparent !important;
+}
+
+/* ====== Rounded Spinner + Overlays ====== */
+
+.grid-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  /* backdrop-filter: blur(2px); */
+  z-index: 3;
+  border-radius: 8px;
+  /* rounded overlay */
+}
+
+.overlay-center {
+  display: grid;
+  place-items: center;
+  padding: 18px 0;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #8892ce;
+  /* accent */
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-msg {
+  margin-top: 8px;
+  color: #cfcfcf;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+/* Make AG Grid overlays transparent so our spinner shows nicely */
+.ag-overlay-loading-center,
+.ag-overlay-no-rows-center {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Optional: remove extra padding on nested & third grids if you use these classes */
+.no-padding-grid .ag-root-wrapper,
+.no-padding-grid .ag-root-wrapper-body,
+.no-padding-grid .ag-center-cols-viewport,
+.no-padding-grid .ag-body-viewport {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.third-detail-wrapper {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  /* kick GPU compositing for smoother max-height */
+}
+
+.ag-root,
+.ag-body-viewport {
+  will-change: transform;
+}
+
+/* Make the detail host cell have no inner padding so left edges can align perfectly */
+.ag-theme-quartz .no-pad-cell {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure proper grid alignment */
+.ag-theme-quartz {
+  box-sizing: border-box;
+}
+
+.main-grid .ag-root-wrapper {
+  border: none;
+  position: relative;
+  left: 0;
+}
+
+.nested-grid .ag-root-wrapper {
+  border: none;
+  margin-left: 0;
+  padding-left: 0;
+  position: relative;
+  left: 0;
+}
+
+/* Remove any default padding/margin that might cause misalignment */
+.ag-cell,
+.ag-header-cell {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Ensure detail cells align properly */
+.detail-wrapper {
+  margin-left: 0;
+  padding-left: 0;
+  position: relative;
+  left: 0;
+}
+
+/* Remove any potential spacing issues */
+.no-padding-grid .ag-root-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+/* Force alignment for all nested grids */
+.ag-theme-quartz .ag-row-detail {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Specific fix for the first column alignment */
+.ag-cell[col-id="Time"] {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Center all header text in the third (SellTradesCell) grid */
+.third-grid .hdr-center .ag-header-cell-label {
+  justify-content: center;
+  /* center the flex container */
+  align-items: center;
+}
+
+.third-grid .hdr-center .ag-header-cell-text {
+  text-align: center;
+  /* center the text itself */
+  width: 100%;
+}
+
+/* Center all header text in the main grid */
+.main-grid .hdr-center .ag-header-cell-label {
+  justify-content: center;
+  /* centers label + sort icons */
+  align-items: center;
+}
+
+.main-grid .hdr-center .ag-header-cell-text {
+  text-align: center;
+  width: 100%;
+}
+
+/* ===== Remove header border-radius on MAIN grid ===== */
+.main-grid {
+  --ag-border-radius: 0;
+  /* AG Grid theme var (Quartz) */
+  --ag-wrapper-border-radius: 0;
+  /* extra safety if present */
+}
+
+.main-grid .ag-header,
+.main-grid .ag-header-viewport,
+.main-grid .ag-header-container,
+.main-grid .ag-header-row,
+.main-grid .ag-header-cell,
+.main-grid .ag-header-group-cell {
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* ===== Remove header border-radius on THIRD (SellTradesCell) grid ===== */
+.third-grid {
+  --ag-border-radius: 0;
+  --ag-wrapper-border-radius: 0;
+}
+
+.third-grid .ag-header,
+.third-grid .ag-header-viewport,
+.third-grid .ag-header-container,
+.third-grid .ag-header-row,
+.third-grid .ag-header-cell,
+.third-grid .ag-header-group-cell {
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* If your theme puts radius on the outer wrappers, flatten those too */
+.main-grid .ag-root-wrapper,
+.main-grid .ag-root,
+.third-grid .ag-root-wrapper,
+.third-grid .ag-root {
+  border-radius: 0 !important;
+}
+
+/* ===== Center header text (main, nested, third) ===== */
+.main-grid .hdr-center .ag-header-cell-label,
+.nested-grid .hdr-center .ag-header-cell-label,
+.third-grid .hdr-center .ag-header-cell-label {
+  justify-content: center;
+  align-items: center;
+}
+
+.main-grid .hdr-center .ag-header-cell-text,
+.nested-grid .hdr-center .ag-header-cell-text,
+.third-grid .hdr-center .ag-header-cell-text {
+  text-align: center;
+  width: 100%;
+}
+
+/* ===== Remove header radius (main & third; second inherits .main-grid) ===== */
+.main-grid,
+.third-grid {
+  --ag-border-radius: 0;
+  --ag-wrapper-border-radius: 0;
+}
+
+.main-grid .ag-header,
+.main-grid .ag-header-viewport,
+.main-grid .ag-header-container,
+.main-grid .ag-header-row,
+.main-grid .ag-header-cell,
+.main-grid .ag-header-group-cell,
+.third-grid .ag-header,
+.third-grid .ag-header-viewport,
+.third-grid .ag-header-container,
+.third-grid .ag-header-row,
+.third-grid .ag-header-cell,
+.third-grid .ag-header-group-cell {
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.main-grid .ag-root-wrapper,
+.main-grid .ag-root,
+.third-grid .ag-root-wrapper,
+.third-grid .ag-root {
+  border-radius: 0 !important;
+}
+
+/* ===== Remove ALL hover effects across grids ===== */
+.ag-theme-quartz .ag-row-hover,
+.ag-theme-quartz .ag-row-hover .ag-cell {
+  background: inherit !important;
+  background-color: transparent !important;
+}
+
+.ag-theme-quartz .ag-cell:hover,
+.ag-theme-quartz .ag-header-cell:hover,
+.ag-theme-quartz .ag-header-cell.ag-header-active,
+.ag-theme-quartz .ag-column-hover,
+.ag-theme-quartz .ag-header-cell.ag-column-hover {
+  background: none !important;
+}
+
+.ag-theme-quartz .ag-row-hover .ag-cell,
+.ag-theme-quartz .ag-cell-hover,
+.ag-theme-quartz .ag-cell.ag-cell-focus {
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+}
+
+/* ===== Borderless MAIN grid (you already had most of this) ===== */
+.ag-theme-quartz.main-grid {
+  --ag-borders: none;
+  --ag-border-color: transparent;
+  --ag-header-underline-color: transparent;
+  --ag-header-border-color: transparent;
+  --ag-row-border-color: transparent;
+  --ag-header-background-color: transparent;
+}
+
+.main-grid .ag-root-wrapper,
+.main-grid .ag-root,
+.main-grid .ag-root-wrapper-body,
+.main-grid .ag-body-viewport,
+.main-grid .ag-center-cols-viewport,
+.main-grid .ag-center-cols-clipper,
+.main-grid .ag-center-cols-container {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.main-grid .ag-header,
+.main-grid .ag-header-viewport,
+.main-grid .ag-header-container {
+  border: none !important;
+}
+
+.main-grid .ag-header {
+  border-bottom: 0 !important;
+}
+
+.main-grid .ag-header::after {
+  display: none !important;
+}
+
+.main-grid .ag-header-cell,
+.main-grid .ag-cell {
+  border-right: 0 !important;
+}
+
+.main-grid .ag-row {
+  border-bottom: 0 !important;
+}
+
+.main-grid .ag-root-wrapper,
+.main-grid .ag-header,
+.main-grid .ag-body-viewport {
+  background: transparent !important;
+}
+
+/* ===== Spinner / overlay ===== */
+.grid-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 3;
+  border-radius: 8px;
+}
+
+.overlay-center {
+  display: grid;
+  place-items: center;
+  padding: 18px 0;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #8892ce;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-msg {
+  margin-top: 8px;
+  color: #cfcfcf;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+.ag-overlay-loading-center,
+.ag-overlay-no-rows-center {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== Make nested & third grids borderless + aligned ===== */
+.no-padding-grid .ag-root-wrapper,
+.no-padding-grid .ag-root-wrapper-body,
+.no-padding-grid .ag-center-cols-viewport,
+.no-padding-grid .ag-body-viewport {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.detail-wrapper,
+.nested-grid .ag-root-wrapper,
+.third-grid .ag-root-wrapper {
+  margin-left: 0;
+  padding-left: 0;
+  position: relative;
+  left: 0;
+  border: none !important;
+}
+
+.third-grid .ag-root-wrapper,
+.third-grid .ag-root,
+.third-grid .ag-root-wrapper-body,
+.third-grid .ag-body-viewport,
+.third-grid .ag-center-cols-viewport,
+.third-grid .ag-center-cols-clipper,
+.third-grid .ag-center-cols-container {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.third-grid {
+  --ag-borders: none;
+  --ag-border-color: transparent;
+  --ag-header-underline-color: transparent;
+  --ag-header-border-color: transparent;
+  --ag-row-border-color: transparent;
+  --ag-header-background-color: transparent;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Remove padding on the detail host cell so left edges align perfectly */
+.detail-row .ag-cell,
+.no-pad-cell {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.ag-header-cell-label,
+.ag-header-group-cell-label {
+  flex: 0.40 1 auto;
+}
+
+.ag-theme-quartz .ag-row-hover {
+  background-color: transparent !important;
+}
+
+.ag-header-cell-resize {
+  &:after {
+    background-color: #515151;
+  }
+}
+
+.ag-theme-quartz .ag-row-hover.ag-row-even {
+  background-color: transparent !important;
+}
+
+.ag-theme-quartz .ag-row-hover.ag-row-odd {
+  background-color: transparent !important;
+}
