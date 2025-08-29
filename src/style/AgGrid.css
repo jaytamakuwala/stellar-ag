@@ -490,3 +490,72 @@
 .ag-theme-quartz .ag-row-hover.ag-row-odd {
   background-color: transparent !important;
 }
+
+.ag-header-cell.no-resize .ag-header-cell-resize::after {
+  display: none !important;
+}
+
+.cm-header {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: var(--dim-text, rgb(95, 95, 95)) !important;
+  /* or COLORS.dimText */
+  font-family: Barlow, system-ui, sans-serif !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  background: rgb(51, 51, 51) !important;
+  font-weight: 700;
+}
+
+/* Make sure nothing is covering the header label */
+.ag-theme-quartz-dark .ag-header-cell-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Keep the resize handle as a thin line only */
+.ag-theme-quartz-dark .ag-header-cell-resize::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 100%;
+  background-color: #515151;
+}
+
+/* If you previously had a rule that expanded the resizer, undo it */
+.ag-theme-quartz-dark .ag-header-cell-resize {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  /* small hit area */
+  background: transparent !important;
+  /* don’t cover the label */
+}
+
+/* Optional: hide resizer for last column or empty header */
+.ag-header-cell.no-resize .ag-header-cell-resize {
+  display: none !important;
+}
+
+.ag-header-cell:has(.ag-header-cell-text:empty) .ag-header-cell-resize {
+  display: none !important;
+  background: transparent !important;
+}
+
+.ag-theme-quartz.main-grid {
+  --ag-border-radius: 7px;
+  /* AG Grid Quartz variable */
+  --ag-wrapper-border-radius: 7px;
+  /* ensure wrapper corners */
+}
+
+.main-grid .ag-root-wrapper,
+.main-grid .ag-root {
+  border-radius: 7px !important;
+  /* enforce 7px on main wrapper */
+  overflow: hidden;
+  /* keep rounded clipping */
+}

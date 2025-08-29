@@ -74,6 +74,7 @@ const COLORS = {
   dark1: "#111",
   dark2: "#282828",
   dark3: "#333",
+  dark4: "#282828",
 };
 
 const headerStyleBase = {
@@ -100,7 +101,7 @@ const getParentRowId = (d, idx) =>
 const stripMoney = (v) => Number(String(v ?? "").replace(/[$,]/g, ""));
 
 function currencyColorStyle(num) {
-  if (num > 1_000_000) return { color: COLORS.lime };
+  if (num > 1_000_000) return { color: COLORS.lime, fontWeight: 400 };
   if (num > 500_000) return { color: COLORS.yellow };
   return { color: COLORS.white };
 }
@@ -541,7 +542,7 @@ export default function AnimatedTable() {
     fontFamily: "Barlow",
     fontWeight: 700,
     border: "none",
-    width: "101%",
+    width: '100%',
   };
 
   const baseParentCols = useMemo(
@@ -550,13 +551,13 @@ export default function AnimatedTable() {
         colId: "Time",
         field: "Time",
         headerName: "Time",
-        flex: 1.2,
+        flex: 1,
         cellStyle: {
           color: "rgb(98, 95, 95)",
           fontWeight: "700",
           textAlign: "center",
         },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "Tick",
@@ -564,24 +565,24 @@ export default function AnimatedTable() {
         headerName: "Tick",
         flex: 1,
         cellStyle: { color: "#00ff59", textAlign: "center" },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "Probability",
         field: "Probability",
         headerName: "Probability",
-        flex: 1.2,
+        flex: 1,
         cellStyle: { color: "#00ff59", textAlign: "center" },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallCount",
         field: "CallCount",
         headerName: "Count",
-        flex: 1,
+        flex: 0.6,
         cellStyle: { textAlign: "center", color: "#fff" },
         cellClass: ["whiteTdContent"],
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "cbTotalCost",
@@ -590,11 +591,11 @@ export default function AnimatedTable() {
         flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000) return { color: "#00ff59", textAlign: "center" };
-          if (v > 500000) return { color: "#d6d454", textAlign: "center" };
+          if (v > 1000000) return { color: "#00ff59", textAlign: "center", fontWeight: 400 };
+          if (v > 500000) return { color: "#d6d454", textAlign: "center", fontWeight: 400 };
           return { color: "white", textAlign: "center" };
         },
-        headerStyle,
+        headerClass: ['cm-header'],
         valueFormatter: (p) => formatNumberToCurrency(p.value),
       },
       {
@@ -609,7 +610,7 @@ export default function AnimatedTable() {
           return { color: "white", textAlign: "center" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "pbTotalCost",
@@ -623,7 +624,7 @@ export default function AnimatedTable() {
           return { color: "white", textAlign: "center" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "psTotalCost",
@@ -638,13 +639,13 @@ export default function AnimatedTable() {
           return { textAlign: "center", color };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallBx",
         field: "CallBx",
         headerName: "Call By Avg",
-        flex: 1.1,
+        flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
           const base = {
@@ -656,29 +657,29 @@ export default function AnimatedTable() {
           if (v > 10) return { ...base, color: "rgb(14, 165, 233)" };
           return { ...base, color: "white" };
         },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallPutBX",
         field: "CallPutBX",
         headerName: "Call vs Put Avg",
-        flex: 1.4,
+        flex: 1,
         cellStyle: { textAlign: "center", color: "#fff" },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallBSX",
         field: "CallBSX",
         headerName: "Call Buy/Sell Avg",
-        flex: 1.4,
+        flex: 1.2,
         cellStyle: { textAlign: "center", color: "#fff" },
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "Last5Min",
         field: "Last5Min",
         headerName: "Prior Vol",
-        flex: 1.1,
+        flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
           let color = "white";
@@ -688,13 +689,13 @@ export default function AnimatedTable() {
         },
         valueFormatter: (p) =>
           p.value ? formatNumberToCurrency(p.value).replace("$", "") : "",
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "Last5DayAvg",
         field: "Last5DayAvg",
         headerName: "History Avg",
-        flex: 1.2,
+        flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
           let color = "white";
@@ -704,13 +705,13 @@ export default function AnimatedTable() {
         },
         valueFormatter: (p) =>
           p.value ? formatNumberToCurrency(p.value).replace("$", "") : "",
-        headerStyle,
+        headerClass: ['cm-header'],
       },
       {
         colId: "Actions",
         headerName: "Analysis",
-        flex: 0.7,
-        headerStyle,
+        flex: 1,
+        headerClass: ['cm-header', 'no-resize'],
         cellRenderer: (params) => {
           const symbol =
             params?.data?.Tick ?? params?.data?.__parent?.Tick ?? "";
@@ -785,7 +786,7 @@ export default function AnimatedTable() {
 
           return (
             <div onClick={(e) => e.stopPropagation()}>
-              <div className="ag-theme-quartz" style={{ width: "100%" }}>
+              <div className="ag-theme-quartz">
                 <DetailCell targetHeight={targetHeight}>
                   <NestedGrid
                     rows={baseRows}
@@ -837,7 +838,7 @@ export default function AnimatedTable() {
     (params) => {
       const row = params?.data || {};
       if (row.__kind === "detail")
-        return { background: COLORS.dark0, color: COLORS.dark0 };
+        return { background: COLORS.dark4, color: COLORS.dark0 };
 
       const prob = Number(String(row?.Probability ?? "").replace("%", "") || 0);
       const isDimmed =
@@ -846,14 +847,14 @@ export default function AnimatedTable() {
         expandedRowId !== row.__id;
 
       const isEvenRow = params.node.rowIndex % 2 === 0;
-      const rowOverlay = isEvenRow ? COLORS.dark0 : COLORS.dark3;
+      const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
 
       const gradient =
         prob >= 90
           ? "linear-gradient(rgba(178, 74, 242, 0) 0%, rgba(178, 74, 242, 0.5) 198.75%)"
           : prob >= 80
-          ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
-          : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
+            ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
+            : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
 
       return {
         background: `${gradient},${rowOverlay}`,
@@ -955,6 +956,7 @@ export default function AnimatedTable() {
                 className="ag-theme-quartz header-center main-grid"
                 rowData={displayRows}
                 columnDefs={parentColsOnly}
+                suppressRowHoverHighlight={true}
                 defaultColDef={{
                   flex: 1,
                   sortable: false,
@@ -962,6 +964,7 @@ export default function AnimatedTable() {
                   filter: false,
                   wrapHeaderText: true,
                   autoHeaderHeight: true,
+                  headerClass: 'cm-header',
                 }}
                 rowClassRules={{
                   "ag-row-even": (params) => params.node.rowIndex % 2 === 0,
@@ -1004,10 +1007,10 @@ export default function AnimatedTable() {
             width: isSmallScreen
               ? "90%"
               : isSmallScreen2
-              ? "auto"
-              : animationState
-              ? "100%"
-              : "0",
+                ? "auto"
+                : animationState
+                  ? "100%"
+                  : "0",
             display: "flex",
           }}
           className="SetupBack"
@@ -1142,9 +1145,8 @@ export default function AnimatedTable() {
               {Object.entries(groupedByDate).map(([d, data], index) => (
                 <div
                   key={d}
-                  className={`col-lg-4 ${
-                    index === 0 ? "BorderTopSet" : ""
-                  } BorderRight BorderLastBottom `}
+                  className={`col-lg-4 ${index === 0 ? "BorderTopSet" : ""
+                    } BorderRight BorderLastBottom `}
                 >
                   <BubblePlot rawData={data} width={510} />
                 </div>
@@ -1275,7 +1277,7 @@ function NestedGrid({
         colId: "Time",
         headerName: "Time",
         field: "Time",
-        flex: 1.2,
+        flex: 1,
         valueGetter: (p) =>
           p?.data?.__kind === "subParent" ? p?.data?.Time : null,
         colSpan: (p) => {
@@ -1287,7 +1289,7 @@ function NestedGrid({
           const r = p?.data?.__parent;
           if (!r) return null;
           return (
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()} style={{ width: "101%" }}>
               <SellTradesCell
                 parentRow={r}
                 formattedDateStr={formattedDateStr}
@@ -1297,6 +1299,12 @@ function NestedGrid({
             </div>
           );
         },
+        cellStyle: {
+          color: "rgb(98, 95, 95)",
+          fontWeight: "700",
+          textAlign: "center",
+        },
+        headerClass: ['cm-header'],
       },
       {
         colId: "Tick",
@@ -1304,38 +1312,42 @@ function NestedGrid({
         headerName: "Tick",
         flex: 1,
         cellClass: ["BlackTdContent"],
+        headerClass: ['cm-header'],
       },
       {
         colId: "Probability",
         field: "Probability",
         headerName: "Probability",
-        flex: 1.2,
+        flex: 1,
         cellClass: ["BlackTdContent"],
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallCount",
         field: "CallCount",
         headerName: "Count",
-        flex: 1.1,
+        flex: 0.7,
         cellClass: ["BlackTdContent"],
+        headerClass: ['cm-header'],
       },
       {
         colId: "cbTotalCost",
         field: "cbTotalCost",
-        headerName: "CB Total",
+        headerName: "Call Buy",
         flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000) return { color: "#00ff59" };
-          if (v > 500000) return { color: "#d6d454" };
+          if (v > 1000000) return { color: "#00ff59", fontWeight: 400 };
+          if (v > 500000) return { color: "#d6d454", fontWeight: 400 };
           return { color: "white" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
+        headerClass: ['cm-header'],
       },
       {
         colId: "csTotalCost",
         field: "csTotalCost",
-        headerName: "CS Total",
+        headerName: "Call Sell",
         flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
@@ -1344,11 +1356,12 @@ function NestedGrid({
           return { color: "white" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
+        headerClass: ['cm-header'],
       },
       {
         colId: "pbTotalCost",
         field: "pbTotalCost",
-        headerName: "PB Total",
+        headerName: "Put Buy",
         flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
@@ -1357,6 +1370,7 @@ function NestedGrid({
           return { color: "white" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
+        headerClass: ['cm-header'],
       },
       {
         colId: "psTotalCost",
@@ -1370,37 +1384,41 @@ function NestedGrid({
           return { color: "white" };
         },
         valueFormatter: (p) => formatNumberToCurrency(p.value),
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallBx",
         field: "CallBx",
-        headerName: "CallBx",
-        flex: 1.2,
+        headerName: "Call By Avg",
+        flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 10) return { color: "rgb(14, 165, 233)" };
+          if (v > 10) return { color: "rgb(14, 165, 233)", fontWeight: 500 };
           return { color: "white" };
         },
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallPutBX",
         field: "CallPutBX",
-        headerName: "CallPutBX",
-        flex: 1.4,
+        headerName: "Call vs Put Avg",
+        flex: 1,
         cellClass: ["BlackTdContent"],
+        headerClass: ['cm-header'],
       },
       {
         colId: "CallBSX",
         field: "CallBSX",
-        headerName: "CallBSX",
-        flex: 1.6,
+        headerName: "Call Buy/Sell Avg",
+        flex: 1.1,
         cellClass: ["BlackTdContent"],
+        headerClass: ['cm-header'],
       },
       {
         colId: "Last5Min",
         field: "Last5Min",
-        headerName: "Last 5 Min",
-        flex: 1,
+        headerName: "Prior Vol",
+        flex: 1.2,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
           if (v > 1000000) return { color: "#00ff59" };
@@ -1409,12 +1427,13 @@ function NestedGrid({
         },
         valueFormatter: (p) =>
           p.value ? formatNumberToCurrency(p.value).replace("$", "") : "",
+        headerClass: ['cm-header'],
       },
       {
         colId: "Last5DayAvg",
         field: "Last5DayAvg",
-        headerName: "Last 5 Day Avg",
-        flex: 1.3,
+        headerName: "History Avg",
+        flex: 0.8,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
           if (v > 1000000) return { color: "#00ff59" };
@@ -1423,10 +1442,11 @@ function NestedGrid({
         },
         valueFormatter: (p) =>
           p.value ? formatNumberToCurrency(p.value).replace("$", "") : "",
+        headerClass: ['cm-header'],
       },
       {
         colId: "__actionsSpacer",
-        headerName: "",
+        headerName: "Analysis",
         field: "__actionsSpacer",
         flex: 1,
         resizable: false,
@@ -1434,6 +1454,7 @@ function NestedGrid({
         filter: false,
         cellClass: ["BlackTdContent"],
         valueGetter: () => "",
+        headerClass: ['cm-header'],
       },
     ];
     return cols;
@@ -1451,9 +1472,9 @@ function NestedGrid({
     (params) => {
       const row = params?.data || {};
       const baseEven =
-        params.node.rowIndex % 2 === 0 ? COLORS.dark0 : COLORS.dark3;
+        params.node.rowIndex % 2 === 0 ? COLORS.dark4 : COLORS.dark3;
       if (row.__kind === "subDetail")
-        return { background: COLORS.dark1, color: COLORS.white };
+        return { background: COLORS.dark4, color: COLORS.white };
 
       const isDim =
         typeof expandedId === "string" &&
@@ -1477,6 +1498,7 @@ function NestedGrid({
       className="nested-grid ag-theme-quartz no-padding-grid"
       rowData={flatRows}
       columnDefs={childCols}
+      suppressRowHoverHighlight={true}
       headerHeight={HEADER_H_L2}
       rowHeight={ROW_H_L2}
       defaultColDef={{ resizable: true, sortable: false, filter: false }}
@@ -1488,6 +1510,7 @@ function NestedGrid({
       domLayout="autoHeight"
       suppressHorizontalScroll
       suppressVerticalScroll
+      style={{ width: "100%", background: "#282828" }}
     />
   );
 }
@@ -1597,6 +1620,7 @@ function SellTradesCell({
     fontFamily: "Barlow",
     fontSize: 12,
     fontWeight: 100,
+    width: "100%",
   };
 
   const currencyCellStyle = (p) => {
@@ -1613,6 +1637,7 @@ function SellTradesCell({
         flex: 1,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "Expiry",
@@ -1621,13 +1646,15 @@ function SellTradesCell({
         headerStyle,
         cellStyle: centerWhite,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
+        headerClass: ['cm-header']
       },
       {
         headerName: "Tick",
         field: "Tick",
         flex: 0.9,
         headerStyle,
-        cellStyle: { ...centerWhite, color: COLORS.lime },
+        cellStyle: { ...centerWhite, color: COLORS.lime, fontWeight: 400 },
+        headerClass: ['cm-header']
       },
       {
         headerName: "Type",
@@ -1635,6 +1662,7 @@ function SellTradesCell({
         flex: 1,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "Side",
@@ -1646,7 +1674,8 @@ function SellTradesCell({
           pp?.data?.side ||
           pp?.data?.orderSide ||
           "SELL",
-        cellStyle: { ...centerWhite, color: COLORS.cyan },
+        cellStyle: { ...centerWhite, color: COLORS.cyan, fontWeight: 500 },
+        headerClass: ['cm-header']
       },
       {
         headerName: "Strike",
@@ -1654,6 +1683,7 @@ function SellTradesCell({
         flex: 0.7,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "Spot",
@@ -1661,6 +1691,7 @@ function SellTradesCell({
         flex: 1,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "TotalCost",
@@ -1669,6 +1700,7 @@ function SellTradesCell({
         headerStyle,
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
+        headerClass: ['cm-header']
       },
       {
         headerName: "SpotStrikeDiff",
@@ -1676,6 +1708,7 @@ function SellTradesCell({
         flex: 1.0,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "Price",
@@ -1683,6 +1716,7 @@ function SellTradesCell({
         flex: 1.0,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header']
       },
       {
         headerName: "TimeDiff",
@@ -1690,6 +1724,7 @@ function SellTradesCell({
         flex: 1.0,
         headerStyle,
         cellStyle: centerWhite,
+        headerClass: ['cm-header', 'no-resize'],
       },
       {
         headerName: "",
@@ -1719,7 +1754,7 @@ function SellTradesCell({
   const getLevelThirdRowStyle = useCallback((params) => {
     const isEvenRow = params.node.rowIndex % 2 === 0;
     return {
-      background: isEvenRow ? COLORS.dark0 : COLORS.dark3,
+      background: isEvenRow ? COLORS.dark4 : COLORS.dark3,
       color: COLORS.white,
       fontWeight: 100,
       fontSize: 12,
@@ -1735,6 +1770,7 @@ function SellTradesCell({
         rowData={Array.isArray(data) ? data : []}
         columnDefs={tradeCols}
         headerHeight={HEADER_H_L3}
+        suppressRowHoverHighlight={true}
         rowHeight={ROW_H_L3}
         defaultColDef={{
           resizable: true,
@@ -1755,6 +1791,7 @@ function SellTradesCell({
         domLayout="autoHeight"
         suppressHorizontalScroll
         suppressVerticalScroll
+        style={{ width: "100%" }}
       />
     </div>
   );
