@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   StyleModal,
-  StyleAniamtionModal, // (left as-is; not used but kept to avoid breaking imports)
-  StyledTable, // "
-  StyleDetailRow, // "
+  StyleAniamtionModal, // kept for import parity
+  StyledTable, // kept for import parity
+  StyleDetailRow, // kept for import parity
   StyleOption,
   StyleModalFilter,
   StyleMainDiv,
@@ -11,7 +11,7 @@ import {
 } from "../style/containers/AnimatedTable";
 import BubblePlot from "../charts/BubblePlot";
 import { useSelector } from "react-redux";
-import DetailsData from "./DetailsData"; // kept import parity
+import DetailsData from "./DetailsData"; // kept for parity
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import CloseIcon from "@mui/icons-material/Close";
@@ -50,8 +50,9 @@ import "../style/AgGrid.css";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-
-
+/* ===========================
+   Constants
+   =========================== */
 const ROW_H_L1 = 28;
 const HEADER_H_L1 = 40;
 const DETAIL_DEFAULT_H = 56;
@@ -84,10 +85,6 @@ const headerStyleBase = {
   border: "none",
 };
 
-const centerText = {
-  textAlign: "center",
-};
-
 const safeGetDefsCount = (api) => {
   const defs = api?.getColumnDefs?.();
   return Array.isArray(defs) ? defs.length : 1;
@@ -114,10 +111,18 @@ function toDDMMYYYY(input) {
   return `${dd}-${mm}-${yyyy}`;
 }
 
+function toLocalISOString(date) {
+  const pad = (num) => String(num).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}`;
+}
+
 /* ===========================
    Tiny UI helpers
    =========================== */
-
 function DetailCell({ children, targetHeight }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -146,23 +151,19 @@ function isSameDay(a, b) {
     a.getDate() === b.getDate()
   );
 }
-/* ===========================
-   Main Component
-   =========================== */
 
-export default function AnimatedTable() {
+/* ===========================
+   Main component
+   =========================== */
+export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
 
-  // Theme is read but not used; kept to avoid behavior changes.
   const theamColor = useSelector((state) => state.theme.mode);
-
-  const [searchTerm, setSearchTerm] = useState("");
   const [animationState, setAnimationState] = useState(false);
   const [filterState, setFilterState] = useState(false);
   const [detailsofRow, setDetailsofRow] = useState();
   const [animationStateindex, setAnimationStateIndex] = useState(-1);
-  const [date, setDate] = useState(null);
   const [formattedDateStr, setFormattedDateStr] = useState("");
   const isSmallScreen = useMediaQuery("(max-width:550px)");
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
@@ -192,17 +193,16 @@ export default function AnimatedTable() {
   /* ===========================
      Data fetching: Summary rows
      =========================== */
-
   const fetchdata = useCallback(async () => {
     setLoadingMain(true);
     try {
-      const todayStr = getFormatedDateStrForUSA(date || new Date());
-      setFormattedDateStr(todayStr);
+      const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
+      setFormattedDateStr(dayStr);
 
       const queryObj = {
-        executionDate: `${todayStr}T00:00:00`,
-        intervalStart: `${todayStr}T09:00:00`,
-        intervalEnd: `${todayStr}T16:45:00`,
+        executionDate: `${dayStr}T00:00:00`,
+        intervalStart: `${dayStr}T09:00:00`,
+        intervalEnd: `${dayStr}T16:45:00`,
         minsWindows: 5,
       };
 
@@ -230,57 +230,30 @@ export default function AnimatedTable() {
     } finally {
       setLoadingMain(false);
     }
-  }, [date]);
+  }, [selectedDate]);
 
-  // useEffect(() => {
-  //   fetchdata();
+  useEffect(() => {
+    let intervalId;
+    const run = async () => {
+      await fetchdata();
+    };
 
-  //   // Refresh within US market hours every 10s
-  //   const intervalId = setInterval(() => {
-  //     const now = new Date();
-  //     const timeInNewYork = USATimeFormatter.formatToParts(now);
-  //     const hour = parseInt(
-  //       timeInNewYork.find((p) => p.type === "hour")?.value || "0",
-  //       10
-  //     );
-  //     const minute = parseInt(
-  //       timeInNewYork.find((p) => p.type === "minute")?.value || "0",
-  //       10
-  //     );
-
-  //     const totalMinutes = hour * 60 + minute; // 9:00 = 540; 16:45 = 1005
-  //     if (totalMinutes >= 540 && totalMinutes <= 1005) {
-  //       fetchdata();
-  //     }
-  //   }, 10000);
-
-  //   return () => clearInterval(intervalId);
-  // }, [fetchdata]);
-useEffect(() => {
-  let intervalId;
-
-  const run = async () => {
-    await fetchdata();
-  };
-
-  if (isSameDay(date, new Date())) {
-    run(); 
-    intervalId = setInterval(run, 5000);
-  } else {
-    run();
-  }
-
-  return () => {
-    if (intervalId) clearInterval(intervalId);
-  };
-}, [date, fetchdata]);
+    if (isSameDay(selectedDate, new Date())) {
+      run();
+      intervalId = setInterval(run, 5000);
+    } else {
+      run();
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [selectedDate, fetchdata]);
 
   /* ===========================
      Row filtering and expansion
      =========================== */
-
   const filteredResponseData = useMemo(() => {
-    const q = searchTerm.toLowerCase();
+    const q = (searchTerm || "").toLowerCase();
     return responseData.filter((row) =>
       (row?.Tick ?? "").toLowerCase().includes(q)
     );
@@ -334,7 +307,6 @@ useEffect(() => {
   /* ===========================
      Charts data
      =========================== */
-
   const getBubbleChartData = useCallback(async (basePayload) => {
     const response = await getChartBubbleData(basePayload);
     if (response?.ok)
@@ -375,7 +347,7 @@ useEffect(() => {
       const yesterdayStr = getFormatedDateStrForUSA(yesterday);
 
       const execDate =
-        formattedDateStr || getFormatedDateStrForUSA(date || new Date());
+        formattedDateStr || getFormatedDateStrForUSA(selectedDate || new Date());
       const selectedOrPreviousDateStr =
         execDate === todayStr ? yesterdayStr : execDate;
 
@@ -436,14 +408,16 @@ useEffect(() => {
       if (callPrev?.ok) {
         setChartData((prev) => ({
           ...prev,
-          selectedOrPreviousCallBarPlotData: (callPrev.data || []).map((d) => ({
-            ...d,
-            date: selectedOrPreviousDateStr,
-          })),
+          selectedOrPreviousCallBarPlotData: (callPrev.data || []).map(
+            (d) => ({
+              ...d,
+              date: selectedOrPreviousDateStr,
+            })
+          ),
         }));
       }
     },
-    [formattedDateStr, date]
+    [formattedDateStr, selectedDate]
   );
 
   const getChartBubbleExpiry = useCallback(async (basePayload) => {
@@ -469,7 +443,7 @@ useEffect(() => {
   const getAllChartsData = useCallback(
     async (symbol) => {
       const execDate =
-        formattedDateStr || getFormatedDateStrForUSA(date || new Date());
+        formattedDateStr || getFormatedDateStrForUSA(selectedDate || new Date());
       const basePayload = { optionSymbol: symbol, executionDate: execDate };
 
       try {
@@ -487,7 +461,7 @@ useEffect(() => {
     },
     [
       formattedDateStr,
-      date,
+      selectedDate,
       getBubbleChartData,
       getPieChartData,
       getBarChartData,
@@ -500,6 +474,22 @@ useEffect(() => {
     (index, symbol) => {
       setAnimationState(true);
       setAnimationStateIndex(index);
+      setDetailsofRow({ Tick: symbol });
+
+      // Reset data so you don't see stale series while loading
+      setChartData({
+        putBar: [],
+        callBar: [],
+        pie: [],
+        bubble: [],
+        callBubbleExpiry: [],
+        putBubbleExpiry: [],
+        currentDayPutBarPlotData: [],
+        currentDayCallBarPlotData: [],
+        selectedOrPreviousPutBarPlotData: [],
+        selectedOrPreviousCallBarPlotData: [],
+      });
+
       getAllChartsData(symbol);
     },
     [getAllChartsData]
@@ -535,30 +525,6 @@ useEffect(() => {
   /* ===========================
      Column defs (Parent)
      =========================== */
-
-  const parentHeaderStyle = headerStyleBase;
-
-  const analysisCellRenderer = useCallback(
-    (params) => {
-      const symbol = params?.data?.Tick ?? params?.data?.__parent?.Tick ?? "";
-      const onClick = (e) => {
-        e.stopPropagation();
-        if (!symbol) return;
-        handleModalEvent(params.rowIndex, symbol);
-        setDetailsofRow(params.data);
-      };
-      return (
-        <img
-          src="analysis.svg"
-          alt="action"
-          style={{ cursor: "pointer" }}
-          onClick={onClick}
-        />
-      );
-    },
-    [handleModalEvent]
-  );
-
   const headerStyle = {
     color: "rgb(95,95,95)",
     background: "#333",
@@ -638,7 +604,6 @@ useEffect(() => {
         valueFormatter: (p) => formatNumberToCurrency(p.value),
         headerClass: ["cm-header"],
       },
-
       {
         colId: "CallBx",
         field: "CallBx",
@@ -665,7 +630,6 @@ useEffect(() => {
         cellStyle: { textAlign: "center", color: "#fff" },
         headerClass: ["cm-header"],
       },
-
       {
         colId: "Actions",
         headerName: "Analysis",
@@ -792,7 +756,6 @@ useEffect(() => {
   /* ===========================
      Row styles (Parent)
      =========================== */
-
   const getRowStyle = useCallback(
     (params) => {
       const row = params?.data || {};
@@ -812,8 +775,8 @@ useEffect(() => {
         prob >= 90
           ? "linear-gradient(rgba(178, 74, 242, 0) 0%, rgba(178, 74, 242, 0.5) 198.75%)"
           : prob >= 80
-          ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
-          : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
+            ? "linear-gradient(rgba(60, 175, 200, 0) 0%, rgba(60, 175, 200, 0.5) 198.75%)"
+            : "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)";
 
       return {
         background: `${gradient},${rowOverlay}`,
@@ -829,123 +792,79 @@ useEffect(() => {
   );
 
   /* ===========================
+     Resize nudge when modal opens
+     =========================== */
+  useEffect(() => {
+    if (!animationState) return;
+    const r1 = requestAnimationFrame(() =>
+      window.dispatchEvent(new Event("resize"))
+    );
+    const t1 = setTimeout(
+      () => window.dispatchEvent(new Event("resize")),
+      60
+    );
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1);
+    };
+  }, [animationState]);
+
+  /* ===========================
      Render
      =========================== */
-
   return (
     <StyleMainDiv>
-      <RightNavigation />
-
       {!animationState ? (
-        <>
-          <StyleOption>
-            <h4 className="TitleAction m-0">Hot Stocks in Action</h4>
-
-            <div className="rightNavigation">
-              <div
-                className="SmallScreen"
-                style={{
-                  background: "#959595",
-                  width: " max-content",
-                  marginLeft: 15,
-                  borderRadius: 5,
-                  margin: 5,
-                  height: 35,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    value={date}
-                    onChange={(newDate) => setDate(newDate)}
-                    disableFuture
-                    slotProps={{
-                      textField: { size: "small", variant: "outlined" },
-                    }}
-                  />
-                </LocalizationProvider>
-              </div>
-
-              <div className="SearchInputs">
-                <input
-                  type="text"
-                  placeholder="Search  Tick "
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <SearchIcon className="SearchIcon" />
-              </div>
-
-              <div className="ShowInLine">
-                <Header />
-                <button
-                  type="button"
-                  className="btn btn-primary Filtericon"
-                  onClick={handleFilerOption}
-                >
-                  <TuneIcon /> Filter{" "}
-                  <span
-                    className="badge bg-warning text-dark"
-                    style={{ position: "relative", top: 0 }}
-                  >
-                    0
-                  </span>
-                </button>
-              </div>
-            </div>
-          </StyleOption>
-
-          <div style={{ overflowX: "auto", width: "100%" }}>
-            <div
-              style={{
-                position: "relative",
-                height: "100vh",
-                width: "100%",
-                padding: 5,
+        <div style={{ overflowX: "auto", width: "100%" }}>
+          <div
+            style={{
+              position: "relative",
+              height: "100vh",
+              width: "100%",
+              padding: 5,
+            }}
+          >
+            <AgGridReact
+              className="ag-theme-quartz header-center main-grid"
+              rowData={displayRows}
+              columnDefs={parentColsOnly}
+              suppressRowHoverHighlight={true}
+              defaultColDef={{
+                flex: 1,
+                sortable: false,
+                resizable: true,
+                filter: false,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+                headerClass: "cm-header",
               }}
-            >
-              <AgGridReact
-                className="ag-theme-quartz header-center main-grid"
-                rowData={displayRows}
-                columnDefs={parentColsOnly}
-                suppressRowHoverHighlight={true}
-                defaultColDef={{
-                  flex: 1,
-                  sortable: false,
-                  resizable: true,
-                  filter: false,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                  headerClass: "cm-header",
-                }}
-                rowClassRules={{
-                  "ag-row-even": (params) => params.node.rowIndex % 2 === 0,
-                  "ag-row-odd": (params) => params.node.rowIndex % 2 !== 0,
-                }}
-                suppressCellFocus
-                getRowId={(p) =>
-                  p?.data?.__id ??
-                  getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
+              rowClassRules={{
+                "ag-row-even": (params) => params.node.rowIndex % 2 === 0,
+                "ag-row-odd": (params) => params.node.rowIndex % 2 !== 0,
+              }}
+              suppressCellFocus
+              getRowId={(p) =>
+                p?.data?.__id ??
+                getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
+              }
+              onRowClicked={onTopRowClicked}
+              rowHeight={ROW_H_L1}
+              headerHeight={HEADER_H_L1}
+              getRowStyle={getRowStyle}
+              getRowHeight={(p) => {
+                if (p?.data?.__kind === "detail") {
+                  const id = p?.data?.__id;
+                  return detailHeights[id] ?? DETAIL_DEFAULT_H;
                 }
-                onRowClicked={onTopRowClicked}
-                rowHeight={ROW_H_L1}
-                headerHeight={HEADER_H_L1}
-                getRowStyle={getRowStyle}
-                getRowHeight={(p) => {
-                  if (p?.data?.__kind === "detail") {
-                    const id = p?.data?.__id;
-                    return detailHeights[id] ?? DETAIL_DEFAULT_H;
-                  }
-                  return ROW_H_L1;
-                }}
-                onGridReady={(params) => setGridApi(params.api)}
-              />
-            </div>
+                return ROW_H_L1;
+              }}
+              onGridReady={(params) => setGridApi(params.api)}
+            />
           </div>
-        </>
+        </div>
       ) : null}
 
-      {/* Modal with charts */}
+      {/* Charts modal */}
       <StyleModal
         className={animationState ? "open" : ""}
         style={{
@@ -959,23 +878,40 @@ useEffect(() => {
             width: isSmallScreen
               ? "90%"
               : isSmallScreen2
-              ? "auto"
-              : animationState
-              ? "100%"
-              : "0",
+                ? "auto"
+                : animationState
+                  ? "100%"
+                  : "0",
             display: "flex",
           }}
           className="SetupBack"
         >
+          {/* Modal content wrapper fills viewport and enables internal scroll */}
           <div
             style={{
               marginTop: 10,
-              width: "100vw",
+              width: "100%",
+              height: "100vh",
               padding: "5px 12px 10px",
               boxSizing: "border-box",
+              display: "flex",
+              flexDirection: "column",
+              background: COLORS.dark2,
+              minWidth: 0,
             }}
           >
-            <StyleTopEvents>
+            {/* Sticky top bar */}
+            <StyleTopEvents
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 3,
+                background: COLORS.dark2,
+                paddingTop: 6,
+                paddingBottom: 6,
+                borderBottom: "1px solid #3b3b3b",
+              }}
+            >
               <div>
                 <h5 className="m-0">{detailsofRow?.Tick || "—"}</h5>
               </div>
@@ -989,122 +925,142 @@ useEffect(() => {
               />
             </StyleTopEvents>
 
-            <div className="row m-0">
-              <div
-                className="col-lg-12 SmallPaddRight"
-                style={{ paddingRight: 10, paddingLeft: 0 }}
-              >
-                <QuadrantBubbleChart
-                  bubbleData={chartData.bubble}
-                  height={640}
-                  style={{
-                    background: COLORS.dark2,
-                    height: "-webkit-fill-available",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="BorderBottom"></div>
-
-            <div className="row m-0 BuySellTime">
-              <h5 className="Heading">Buy and Sell on Time</h5>
-
-              <div className="col-lg-6 BorderRight" style={{ paddingRight: 0 }}>
-                <GroupedHorizontalChart
-                  height={500}
-                  rawData={chartData.callBar}
-                  buyLabel="Call Buy"
-                  sellLabel="Call Sell"
-                  buyColor="#00FF59"
-                  sellColor="#FF605D"
-                  filterOptionType="C"
-                />
-              </div>
-
-              <div className="col-lg-6" style={{ paddingRight: 0 }}>
-                <GroupedHorizontalChart
-                  height={500}
-                  rawData={chartData.putBar}
-                  buyLabel="Put Buy"
-                  sellLabel="Put Sell"
-                  buyColor="#00FF59"
-                  sellColor="#FF605D"
-                  filterOptionType="P"
-                />
-              </div>
-            </div>
-            <div className="BorderBottom"></div>
-
+            {/* SCROLLABLE CHARTS AREA */}
             <div
-              className="row"
-              style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
+              className="charts-scroll"
+              style={{
+                flex: "1 1 auto",
+                overflowY: "auto",
+                overflowX: "hidden",
+                minWidth: 0,
+                paddingRight: 8,
+                WebkitOverflowScrolling: "touch",
+                scrollbarGutter: "stable",
+              }}
             >
-              <div
-                className="col-lg-8 Firstchart BorderRight Ca1Top"
-                style={{ paddingRight: 10, paddingLeft: 0 }}
-              >
-                <BubbleWithCategoryChart
-                  rawData={chartData.callBubbleExpiry}
-                  type="CALL"
-                  height={520}
-                />
-                <div className="BorderBottom1"></div>
-                <BubbleWithCategoryChart
-                  rawData={chartData.putBubbleExpiry}
-                  type="PUT"
-                  height={520}
-                />
-              </div>
-
-              <div className="col-lg-4 Piechartsec" style={{ paddingRight: 0 }}>
-                <BarChart
-                  height={400}
-                  data={[
-                    ...chartData.currentDayCallBarPlotData,
-                    ...chartData.currentDayPutBarPlotData,
-                    ...chartData.selectedOrPreviousCallBarPlotData,
-                    ...chartData.selectedOrPreviousPutBarPlotData,
-                  ]}
-                />
-                <div className="BorderBottom1"></div>
-
-                <PiePlot
-                  rawData={chartData.pie}
-                  fields={["TotalCallBuyCost", "TotalCallSellCost"]}
-                  labels={["Call Buy", "Call Sell"]}
-                  title="Total Call Buy and Sell"
-                  height={320}
-                />
-                <div className="BorderBottom1"></div>
-
-                <PiePlot
-                  rawData={chartData.pie}
-                  fields={["TotalPutBuyCost", "TotalPutSellCost"]}
-                  labels={["Put Buy", "Put Sell"]}
-                  title="Total Put Buy and Sell"
-                  height={250}
-                  style={{ marginTop: 0 }}
-                />
-              </div>
-            </div>
-
-            <div className="BorderBottom1" style={{ marginTop: 60 }}></div>
-
-            <div
-              className="row BottomGraphs"
-              style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
-            >
-              {Object.entries(groupedByDate).map(([d, data], index) => (
+              <div className="row m-0">
                 <div
-                  key={d}
-                  className={`col-lg-4 ${
-                    index === 0 ? "BorderTopSet" : ""
-                  } BorderRight BorderLastBottom `}
+                  className="col-lg-12 SmallPaddRight"
+                  style={{ paddingRight: 10, paddingLeft: 0, minWidth: 0 }}
                 >
-                  <BubblePlot rawData={data} width={510} />
+                  <QuadrantBubbleChart
+                    bubbleData={chartData.bubble}
+                    height={640}
+                    style={{
+                      background: COLORS.dark2,
+                      height: "-webkit-fill-available",
+                    }}
+                  />
                 </div>
-              ))}
+              </div>
+
+              <div className="BorderBottom"></div>
+
+              <div className="row m-0 BuySellTime">
+                <h5 className="Heading">Buy and Sell on Time</h5>
+
+                <div
+                  className="col-lg-6 BorderRight"
+                  style={{ paddingRight: 0, minWidth: 0 }}
+                >
+                  <GroupedHorizontalChart
+                    height={500}
+                    rawData={chartData.callBar}
+                    buyLabel="Call Buy"
+                    sellLabel="Call Sell"
+                    buyColor="#00FF59"
+                    sellColor="#FF605D"
+                    filterOptionType="C"
+                  />
+                </div>
+
+                <div className="col-lg-6" style={{ paddingRight: 0, minWidth: 0 }}>
+                  <GroupedHorizontalChart
+                    height={500}
+                    rawData={chartData.putBar}
+                    buyLabel="Put Buy"
+                    sellLabel="Put Sell"
+                    buyColor="#00FF59"
+                    sellColor="#FF605D"
+                    filterOptionType="P"
+                  />
+                </div>
+              </div>
+
+              <div className="BorderBottom"></div>
+
+              <div
+                className="row"
+                style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
+              >
+                <div
+                  className="col-lg-8 Firstchart BorderRight Ca1Top"
+                  style={{ paddingRight: 10, paddingLeft: 0, minWidth: 0 }}
+                >
+                  <BubbleWithCategoryChart
+                    rawData={chartData.callBubbleExpiry}
+                    type="CALL"
+                    height={520}
+                  />
+                  <div className="BorderBottom1"></div>
+                  <BubbleWithCategoryChart
+                    rawData={chartData.putBubbleExpiry}
+                    type="PUT"
+                    height={520}
+                  />
+                </div>
+
+                <div className="col-lg-4 Piechartsec" style={{ paddingRight: 0, minWidth: 0 }}>
+                  <BarChart
+                    height={400}
+                    data={[
+                      ...chartData.currentDayCallBarPlotData,
+                      ...chartData.currentDayPutBarPlotData,
+                      ...chartData.selectedOrPreviousCallBarPlotData,
+                      ...chartData.selectedOrPreviousPutBarPlotData,
+                    ]}
+                  />
+                  <div className="BorderBottom1"></div>
+
+                  <PiePlot
+                    rawData={chartData.pie}
+                    fields={["TotalCallBuyCost", "TotalCallSellCost"]}
+                    labels={["Call Buy", "Call Sell"]}
+                    title="Total Call Buy and Sell"
+                    height={320}
+                  />
+                  <div className="BorderBottom1"></div>
+
+                  <PiePlot
+                    rawData={chartData.pie}
+                    fields={["TotalPutBuyCost", "TotalPutSellCost"]}
+                    labels={["Put Buy", "Put Sell"]}
+                    title="Total Put Buy and Sell"
+                    height={250}
+                    style={{ marginTop: 0 }}
+                  />
+                </div>
+              </div>
+
+              <div className="BorderBottom1" style={{ marginTop: 60 }}></div>
+
+              <div
+                className="row BottomGraphs"
+                style={{ marginLeft: 0, marginRight: 0, marginTop: 10 }}
+              >
+                {Object.entries(groupedByDate).map(([d, data], index) => (
+                  <div
+                    key={d}
+                    className={`col-lg-4 ${index === 0 ? "BorderTopSet" : ""
+                      } BorderRight BorderLastBottom `}
+                    style={{ minWidth: 0 }}
+                  >
+                    <BubblePlot rawData={data} width={510} />
+                  </div>
+                ))}
+              </div>
             </div>
+            {/* end scroll area */}
           </div>
         </div>
       </StyleModal>
@@ -1157,7 +1113,6 @@ useEffect(() => {
 /* ===========================
    Nested Grid (level 2)
    =========================== */
-
 function NestedGrid({
   rows,
   formattedDateStr,
@@ -1311,15 +1266,12 @@ function NestedGrid({
         valueFormatter: (p) => formatNumberToCurrency(p.value),
         headerClass: ["cm-header"],
       },
-
       {
         colId: "CallBx",
         field: "CallBx",
         headerName: "Call By Avg",
         flex: 1,
-        cellStyle: (p) => {
-          return { color: "white" };
-        },
+        cellStyle: () => ({ color: "white" }),
         headerClass: ["cm-header"],
       },
       {
@@ -1330,7 +1282,6 @@ function NestedGrid({
         cellClass: ["BlackTdContent"],
         headerClass: ["cm-header"],
       },
-
       {
         colId: "__actionsSpacer",
         headerName: "Analysis",
@@ -1405,7 +1356,6 @@ function NestedGrid({
 /* ===========================
    Third Grid (SellTradesCell)
    =========================== */
-
 function SellTradesCell({
   parentRow,
   formattedDateStr,
@@ -1420,6 +1370,7 @@ function SellTradesCell({
   const data = optionTradeData[rowKey];
   const isLoading = !(rowKey in optionTradeData);
   const inFlightRef = React.useRef(new Set());
+
   useEffect(() => {
     let ignore = false;
 
@@ -1429,8 +1380,6 @@ function SellTradesCell({
       if (optionTradeData[rowKey]) return;
 
       try {
-        // const startTime = `${execDate}T15:30:00`;
-        // const endTime = `${execDate}T15:35:00`;
         inFlightRef.current.add(rowKey);
         const [time, period] = parentRow.Time.trim()
           .toUpperCase()
@@ -1439,16 +1388,12 @@ function SellTradesCell({
         const [hoursStr, minutesStr] = time.split(":");
         let hours = parseInt(hoursStr, 10);
         const minutes = parseInt(minutesStr, 10);
-        if (period === "PM" && hours !== 12) {
-          hours += 12;
-        }
-        if (period === "AM" && hours === 12) {
-          hours = 0;
-        }
-        const [year, month, day] = formattedDateStr.split("-").map(Number);
+        if (period === "PM" && hours !== 12) hours += 12;
+        if (period === "AM" && hours === 12) hours = 0;
+
+        const [year, month, day] = execDate.split("-").map(Number);
         const startTime = new Date(year, month - 1, day, hours, minutes);
         const endTime = new Date(startTime.getTime() + 5 * 60 * 1000);
-        endTime.setMinutes(endTime.getMinutes());
 
         const startIso = toLocalISOString(startTime);
         const endIso = toLocalISOString(endTime);
@@ -1491,6 +1436,7 @@ function SellTradesCell({
     return () => {
       ignore = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowKey, tick, formattedDateStr, setOptionTradeData]);
 
   const headerStyle = {
@@ -1529,20 +1475,20 @@ function SellTradesCell({
       {
         headerName: "Expiry",
         field: "Expiry",
-        flex: 1.1,
+        flex: 1.8,
         headerStyle,
         cellStyle: centerWhite,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
         headerClass: ["cm-header"],
       },
-      {
-        headerName: "Tick",
-        field: "Tick",
-        flex: 0.9,
-        headerStyle,
-        cellStyle: { ...centerWhite, color: COLORS.lime, fontWeight: 400 },
-        headerClass: ["cm-header"],
-      },
+      // {
+      //   headerName: "Tick",
+      //   field: "Tick",
+      //   flex: 1,
+      //   headerStyle,
+      //   cellStyle: { ...centerWhite, color: COLORS.lime, fontWeight: 400 },
+      //   headerClass: ["cm-header"],
+      // },
       {
         headerName: "Type",
         field: "Type",
@@ -1554,15 +1500,14 @@ function SellTradesCell({
       {
         headerName: "Side",
         field: "BuyOrSell",
-        flex: 0.7,
+        flex: 1,
         headerStyle,
-
         headerClass: ["cm-header"],
       },
       {
         headerName: "Strike",
         field: "Strike",
-        flex: 0.7,
+        flex: 1.1,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
@@ -1570,7 +1515,7 @@ function SellTradesCell({
       {
         headerName: "Spot",
         field: "Spot",
-        flex: 1,
+        flex: 1.4,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
@@ -1578,7 +1523,7 @@ function SellTradesCell({
       {
         headerName: "TotalCost",
         field: "TotalCost",
-        flex: 1,
+        flex: 1.2,
         headerStyle,
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
@@ -1587,7 +1532,7 @@ function SellTradesCell({
       {
         headerName: "SpotStrikeDiff",
         field: "SpotStrikeDiff",
-        flex: 1.0,
+        flex: 1.2,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
@@ -1608,27 +1553,9 @@ function SellTradesCell({
         cellStyle: centerWhite,
         headerClass: ["cm-header", "no-resize"],
       },
-      {
-        headerName: "",
-        field: "",
-        flex: 1.0,
-        headerStyle,
-        cellStyle: centerWhite,
-      },
-      {
-        headerName: "",
-        field: "",
-        flex: 1.0,
-        headerStyle,
-        cellStyle: centerWhite,
-      },
-      {
-        headerName: "",
-        field: "",
-        flex: 1.0,
-        headerStyle,
-        cellStyle: centerWhite,
-      },
+      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
+      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
+      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
     ],
     []
   );
@@ -1678,18 +1605,3 @@ function SellTradesCell({
     </div>
   );
 }
-
-function toLocalISOString(date) {
-  const pad = (num) => String(num).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`;
-}
-
-
-
- 
-
- 
