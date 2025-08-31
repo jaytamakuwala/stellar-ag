@@ -85,7 +85,7 @@ export const USATimeFormatter = new Intl.DateTimeFormat("en-US", {
   hour12: false,
 });
 
-export const getFormatedDateStrForUSA = (date: Date) => {
+export const getFormatedDateStrForUSA = (date) => {
   const parts = USADateFormatter.formatToParts(date);
   const yyyy = parts.find((p) => p.type === "year")?.value;
   const mm = parts.find((p) => p.type === "month")?.value;
@@ -95,7 +95,7 @@ export const getFormatedDateStrForUSA = (date: Date) => {
 
 export const isAuthenticated = () => !!sessionStorage.getItem("token");
 
-export const formatNumberToCurrencyWithComma = (price: number | string) => {
+export const formatNumberToCurrencyWithComma = (price) => {
   const num = Number(price);
   if (isNaN(num)) return "-"; 
   return num.toLocaleString("en-US", {
@@ -104,3 +104,49 @@ export const formatNumberToCurrencyWithComma = (price: number | string) => {
     minimumFractionDigits: 0, 
   });
 };
+
+export const stripMoney = (v) => Number(String(v ?? "").replace(/[$,]/g, ""));
+export const percentToNumber = (v) => Number(String(v ?? "").replace("%", "")) || 0;
+
+export function currencyColorStyle(num, { hi = 1_000_000, mid = 500_000 } = {}) {
+  if (num > hi) return { color: "#00ff59", fontWeight: 400 };
+  if (num > mid) return { color: "#d6d454" };
+  return { color: "#fff" };
+}
+
+export const safeGetDefsCount = (api) => {
+  const defs = api?.getColumnDefs?.();
+  return Array.isArray(defs) ? defs.length : 1;
+};
+
+export const getParentRowId = (d, idx) =>
+  d?.Tick && d?.Time ? `${d.Tick}-${d.Time}` : d?.Tick ?? `row-${idx ?? 0}`;
+
+export function toDDMMYYYY(input) {
+  if (!input) return "";
+  const d = new Date(input);
+  if (isNaN(d)) return String(input);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+
+export function toLocalISOString(date) {
+  const pad = (num) => String(num).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}`;
+}
+
+export function isSameDay(a, b) {
+  if (!a) return true; // if no date selected, treat as today
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}

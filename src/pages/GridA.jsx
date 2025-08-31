@@ -1,19 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   StyleModal,
-  StyleAniamtionModal, // kept for import parity
-  StyledTable, // kept for import parity
-  StyleDetailRow, // kept for import parity
-  StyleOption,
   StyleModalFilter,
   StyleMainDiv,
   StyleTopEvents,
 } from "../style/containers/AnimatedTable";
 import BubblePlot from "../charts/BubblePlot";
-import { useSelector } from "react-redux";
-import DetailsData from "./DetailsData"; // kept for parity
-import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   getChartBarData,
@@ -22,18 +14,15 @@ import {
   getChartPieData,
   getSummaryData,
   getSummaryDataMain,
-  getOptionTradeDetails,
 } from "../service/stellarApi";
 import toast from "react-hot-toast";
-import Header from "./Header";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {
-  USATimeFormatter,
   formatNumberToCurrency,
   getFormatedDateStrForUSA,
+  getParentRowId,
+  isSameDay,
+  safeGetDefsCount,
 } from "../utils/common";
 import PiePlot from "../charts/PiePlot";
 import BarChart from "../charts/BarChart";
@@ -41,140 +30,25 @@ import GroupedHorizontalChart from "../charts/GroupedHorizontalChart";
 import QuadrantBubbleChart from "../charts/QuadrantBubbleChart";
 import BubbleWithCategoryChart from "../charts/BubbleWithCategories";
 import resetSettings from "../assets/Images/reset_settings.png";
-import { useNavigate } from "react-router-dom";
-import RightNavigation from "../pages/RightNavigation";
-
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import "../style/AgGrid.css";
+import { AG_GRID_HEIGHTS, COLORS } from "../utils/constants";
+import { DetailCell } from "../components/DetailCell";
+import { SellTradesCell } from "../components/grids/SellTradeCell";
 
-ModuleRegistry.registerModules([AllCommunityModule]);
 
-/* ===========================
-   Constants
-   =========================== */
-const ROW_H_L1 = 28;
-const HEADER_H_L1 = 40;
-const DETAIL_DEFAULT_H = 56;
-
-const ROW_H_L2 = 28;
-const HEADER_H_L2 = 0;
-
-const ROW_H_L3 = 26;
-const HEADER_H_L3 = 28;
-
-const COLORS = {
-  white: "#fff",
-  lime: "#00ff59",
-  yellow: "#d6d454",
-  cyan: "rgb(14, 165, 233)",
-  dimText: "rgb(149, 149, 149)",
-  dark0: "#000",
-  dark1: "#111",
-  dark2: "#282828",
-  dark3: "#333",
-  dark4: "#282828",
-};
-
-const headerStyleBase = {
-  color: "rgb(95,95,95)",
-  background: COLORS.dark3,
-  fontSize: 12,
-  fontFamily: "Barlow",
-  fontWeight: 700,
-  border: "none",
-};
-
-const safeGetDefsCount = (api) => {
-  const defs = api?.getColumnDefs?.();
-  return Array.isArray(defs) ? defs.length : 1;
-};
-
-const getParentRowId = (d, idx) =>
-  d?.Tick && d?.Time ? `${d.Tick}-${d.Time}` : d?.Tick ?? `row-${idx ?? 0}`;
-
-const stripMoney = (v) => Number(String(v ?? "").replace(/[$,]/g, ""));
-
-function currencyColorStyle(num) {
-  if (num > 1_000_000) return { color: COLORS.lime, fontWeight: 400 };
-  if (num > 500_000) return { color: COLORS.yellow };
-  return { color: COLORS.white };
-}
-
-function toDDMMYYYY(input) {
-  if (!input) return "";
-  const d = new Date(input);
-  if (isNaN(d)) return String(input);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}-${mm}-${yyyy}`;
-}
-
-function toLocalISOString(date) {
-  const pad = (num) => String(num).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`;
-}
-
-/* ===========================
-   Tiny UI helpers
-   =========================== */
-function DetailCell({ children, targetHeight }) {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setOpen(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-  return (
-    <div
-      className="detail-wrapper"
-      style={{
-        maxHeight: open ? targetHeight : 0,
-        overflow: "hidden",
-        transition: "max-height 260ms ease",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function isSameDay(a, b) {
-  if (!a) return true; // if no date selected, treat as today
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
-/* ===========================
-   Main component
-   =========================== */
 export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
-
-  const theamColor = useSelector((state) => state.theme.mode);
   const [animationState, setAnimationState] = useState(false);
   const [filterState, setFilterState] = useState(false);
   const [detailsofRow, setDetailsofRow] = useState();
-  const [animationStateindex, setAnimationStateIndex] = useState(-1);
   const [formattedDateStr, setFormattedDateStr] = useState("");
   const isSmallScreen = useMediaQuery("(max-width:550px)");
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
-  const [gridApi, setGridApi] = useState(null);
-
   const [optionTradeData, setOptionTradeData] = useState({});
   const [subExpandedByParent, setSubExpandedByParent] = useState({});
   const [detailHeights, setDetailHeights] = useState({});
-
-  const [loadingMain, setLoadingMain] = useState(false);
-
   const [chartData, setChartData] = useState({
     putBar: [],
     callBar: [],
@@ -187,14 +61,8 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
     selectedOrPreviousPutBarPlotData: [],
     selectedOrPreviousCallBarPlotData: [],
   });
-
-  const navigate = useNavigate();
-
-  /* ===========================
-     Data fetching: Summary rows
-     =========================== */
+  
   const fetchdata = useCallback(async () => {
-    setLoadingMain(true);
     try {
       const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
       setFormattedDateStr(dayStr);
@@ -227,8 +95,6 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
-    } finally {
-      setLoadingMain(false);
     }
   }, [selectedDate]);
 
@@ -311,13 +177,13 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
     const response = await getChartBubbleData(basePayload);
     if (response?.ok)
       setChartData((prev) => ({ ...prev, bubble: response.data || [] }));
-  }, []);
+  }, [selectedDate]);
 
   const getPieChartData = useCallback(async (basePayload) => {
     const response = await getChartPieData(basePayload);
     if (response?.ok)
       setChartData((prev) => ({ ...prev, pie: response.data || [] }));
-  }, []);
+  }, [selectedDate]);
 
   const getBarChartData = useCallback(async (basePayload) => {
     const [putBarResponseData, callBarResponseData] = await Promise.all([
@@ -337,7 +203,7 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
         callBar: callBarResponseData.data || [],
       }));
     }
-  }, []);
+  }, [selectedDate]);
 
   const getBarChartDataForBarPlot = useCallback(
     async (optionSymbol) => {
@@ -438,7 +304,7 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
         putBubbleExpiry: putResponse.data || [],
       }));
     }
-  }, []);
+  }, [selectedDate]);
 
   const getAllChartsData = useCallback(
     async (symbol) => {
@@ -473,7 +339,6 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
   const handleModalEvent = useCallback(
     (index, symbol) => {
       setAnimationState(true);
-      setAnimationStateIndex(index);
       setDetailsofRow({ Tick: symbol });
 
       // Reset data so you don't see stale series while loading
@@ -492,15 +357,13 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
 
       getAllChartsData(symbol);
     },
-    [getAllChartsData]
+    [getAllChartsData,selectedDate]
   );
 
   const handleModalEventClose = useCallback(() => {
     setAnimationState(false);
-    setAnimationStateIndex(-1);
   }, []);
 
-  const handleFilerOption = useCallback(() => setFilterState(true), []);
   const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
 
   const combinedBubbleExpiry = useMemo(
@@ -705,7 +568,7 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
             }));
 
           const targetHeight =
-            detailHeights[parentDetailId] ?? DETAIL_DEFAULT_H;
+            detailHeights[parentDetailId] ?? AG_GRID_HEIGHTS.DETAIL_DEFAULT_H;
 
           return (
             <div onClick={(e) => e.stopPropagation()}>
@@ -848,17 +711,16 @@ export default function FirstAnimatedTable({ selectedDate, searchTerm = "" }) {
                 getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
               }
               onRowClicked={onTopRowClicked}
-              rowHeight={ROW_H_L1}
-              headerHeight={HEADER_H_L1}
+              rowHeight={AG_GRID_HEIGHTS.ROW_H_L1}
+              headerHeight={AG_GRID_HEIGHTS.HEADER_H_L1}
               getRowStyle={getRowStyle}
               getRowHeight={(p) => {
                 if (p?.data?.__kind === "detail") {
                   const id = p?.data?.__id;
-                  return detailHeights[id] ?? DETAIL_DEFAULT_H;
+                  return detailHeights[id] ?? AG_GRID_HEIGHTS.DETAIL_DEFAULT_H;
                 }
-                return ROW_H_L1;
+                return AG_GRID_HEIGHTS.ROW_H_L1;
               }}
-              onGridReady={(params) => setGridApi(params.api)}
             />
           </div>
         </div>
@@ -1162,7 +1024,7 @@ function NestedGrid({
       const key = getRowKeyFor(parentRow);
       const arr = optionTradeData?.[key];
       const len = Array.isArray(arr) ? arr.length + 1 : 5;
-      return HEADER_H_L3 + ROW_H_L3 * len;
+      return AG_GRID_HEIGHTS.HEADER_H_L3 + AG_GRID_HEIGHTS.ROW_H_L3 * len;
     },
     [optionTradeData, getRowKeyFor]
   );
@@ -1171,8 +1033,8 @@ function NestedGrid({
     return (flatRows || []).reduce((sum, r) => {
       if (r?.__kind === "subDetail")
         return sum + getThirdLevelHeightFor(r.__parent);
-      return sum + ROW_H_L2;
-    }, HEADER_H_L2);
+      return sum + AG_GRID_HEIGHTS.ROW_H_L2;
+    }, AG_GRID_HEIGHTS.HEADER_H_L2);
   }, [flatRows, getThirdLevelHeightFor]);
 
   useEffect(() => {
@@ -1302,7 +1164,7 @@ function NestedGrid({
     (p) =>
       p?.data?.__kind === "subDetail"
         ? getThirdLevelHeightFor(p?.data?.__parent)
-        : ROW_H_L2,
+        : AG_GRID_HEIGHTS.ROW_H_L2,
     [getThirdLevelHeightFor]
   );
 
@@ -1337,8 +1199,8 @@ function NestedGrid({
       rowData={flatRows}
       columnDefs={childCols}
       suppressRowHoverHighlight={true}
-      headerHeight={HEADER_H_L2}
-      rowHeight={ROW_H_L2}
+      headerHeight={AG_GRID_HEIGHTS.HEADER_H_L2}
+      rowHeight={AG_GRID_HEIGHTS.ROW_H_L2}
       defaultColDef={{ resizable: true, sortable: false, filter: false }}
       suppressCellFocus
       onRowClicked={onRowClick}
@@ -1350,258 +1212,5 @@ function NestedGrid({
       suppressVerticalScroll
       style={{ width: "100%", background: "#282828" }}
     />
-  );
-}
-
-/* ===========================
-   Third Grid (SellTradesCell)
-   =========================== */
-function SellTradesCell({
-  parentRow,
-  formattedDateStr,
-  optionTradeData,
-  setOptionTradeData,
-}) {
-  if (!parentRow) return <div style={{ width: "100%" }} />;
-
-  const rowKey =
-    parentRow.__id ?? `${parentRow.Tick ?? "tick"}-${parentRow.Time ?? "time"}`;
-  const tick = parentRow.Tick ?? "";
-  const data = optionTradeData[rowKey];
-  const isLoading = !(rowKey in optionTradeData);
-  const inFlightRef = React.useRef(new Set());
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function run() {
-      const execDate = formattedDateStr || getFormatedDateStrForUSA(new Date());
-      if (!execDate || !tick) return;
-      if (optionTradeData[rowKey]) return;
-
-      try {
-        inFlightRef.current.add(rowKey);
-        const [time, period] = parentRow.Time.trim()
-          .toUpperCase()
-          .match(/(\d{1,2}:\d{2})(AM|PM)/)
-          .slice(1);
-        const [hoursStr, minutesStr] = time.split(":");
-        let hours = parseInt(hoursStr, 10);
-        const minutes = parseInt(minutesStr, 10);
-        if (period === "PM" && hours !== 12) hours += 12;
-        if (period === "AM" && hours === 12) hours = 0;
-
-        const [year, month, day] = execDate.split("-").map(Number);
-        const startTime = new Date(year, month - 1, day, hours, minutes);
-        const endTime = new Date(startTime.getTime() + 5 * 60 * 1000);
-
-        const startIso = toLocalISOString(startTime);
-        const endIso = toLocalISOString(endTime);
-
-        const query = {
-          startTime: startIso,
-          endTime: endIso,
-          optionSymbol: tick,
-          buyOrSell: "BUY",
-        };
-        const res = await getOptionTradeDetails(query);
-
-        let rows = [];
-        if (Array.isArray(res)) rows = res;
-        else if (Array.isArray(res?.data)) rows = res.data;
-        else if (Array.isArray(res?.rows)) rows = res.rows;
-        else if (Array.isArray(res?.data?.rows)) rows = res.data.rows;
-
-        rows = (rows || [])
-          .filter((x) =>
-            String(x?.BuyOrSell ?? x?.side ?? x?.orderSide ?? "")
-              .toUpperCase()
-              .includes("BUY")
-          )
-          .map((x, i) => ({
-            id: x.id ?? `${tick}-${x.Time ?? i}`,
-            ...x,
-          }));
-
-        if (!ignore)
-          setOptionTradeData((prev) => ({ ...prev, [rowKey]: rows }));
-      } catch {
-        if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: [] }));
-      } finally {
-        inFlightRef.current.delete(rowKey);
-      }
-    }
-
-    run();
-    return () => {
-      ignore = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowKey, tick, formattedDateStr, setOptionTradeData]);
-
-  const headerStyle = {
-    backgroundColor: COLORS.dark3,
-    color: COLORS.dimText,
-    fontSize: 12,
-    fontFamily: "Barlow",
-    textAlign: "center",
-  };
-
-  const centerWhite = {
-    color: COLORS.white,
-    textAlign: "center",
-    fontFamily: "Barlow",
-    fontSize: 12,
-    fontWeight: 100,
-    width: "100%",
-  };
-
-  const currencyCellStyle = (p) => {
-    const v = stripMoney(p.value);
-    const colorStyle = currencyColorStyle(v).color;
-    return { ...centerWhite, color: colorStyle };
-  };
-
-  const tradeCols = useMemo(
-    () => [
-      {
-        headerName: "Time",
-        field: "Time",
-        flex: 1,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "Expiry",
-        field: "Expiry",
-        flex: 1.8,
-        headerStyle,
-        cellStyle: centerWhite,
-        valueFormatter: (pp) => toDDMMYYYY(pp.value),
-        headerClass: ["cm-header"],
-      },
-      // {
-      //   headerName: "Tick",
-      //   field: "Tick",
-      //   flex: 1,
-      //   headerStyle,
-      //   cellStyle: { ...centerWhite, color: COLORS.lime, fontWeight: 400 },
-      //   headerClass: ["cm-header"],
-      // },
-      {
-        headerName: "Type",
-        field: "Type",
-        flex: 1,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "Side",
-        field: "BuyOrSell",
-        flex: 1,
-        headerStyle,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "Strike",
-        field: "Strike",
-        flex: 1.1,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "Spot",
-        field: "Spot",
-        flex: 1.4,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "TotalCost",
-        field: "TotalCost",
-        flex: 1.2,
-        headerStyle,
-        cellStyle: currencyCellStyle,
-        valueFormatter: (pp) => formatNumberToCurrency(pp.value),
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "SpotStrikeDiff",
-        field: "SpotStrikeDiff",
-        flex: 1.2,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "Price",
-        field: "Price",
-        flex: 1.0,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header"],
-      },
-      {
-        headerName: "TimeDiff",
-        field: "TimeDiff",
-        flex: 1.0,
-        headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header", "no-resize"],
-      },
-      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
-      // { headerName: "", field: "", flex: 1.0, headerStyle, cellStyle: centerWhite },
-    ],
-    []
-  );
-
-  const getLevelThirdRowStyle = useCallback((params) => {
-    const isEvenRow = params.node.rowIndex % 2 === 0;
-    return {
-      background: isEvenRow ? COLORS.dark4 : COLORS.dark3,
-      color: COLORS.white,
-      fontWeight: 100,
-      fontSize: 12,
-      fontFamily: "Barlow",
-      transition: "opacity 0.3s ease-in-out",
-    };
-  }, []);
-
-  return (
-    <div className="ag-theme-quartz no-padding-grid" style={{ width: "100%" }}>
-      <AgGridReact
-        className="third-grid no-padding-grid"
-        rowData={Array.isArray(data) ? data : []}
-        columnDefs={tradeCols}
-        headerHeight={HEADER_H_L3}
-        suppressRowHoverHighlight={true}
-        rowHeight={ROW_H_L3}
-        defaultColDef={{
-          resizable: true,
-          wrapHeaderText: true,
-          autoHeaderHeight: true,
-        }}
-        suppressCellFocus
-        overlayNoRowsTemplate={
-          isLoading
-            ? '<div class="overlay-center"><div class="spinner"></div><div class="loader-msg">Fetching trades…</div></div>'
-            : "No trades"
-        }
-        getRowId={(pp) =>
-          pp?.data?.id ||
-          `${pp?.data?.Tick ?? ""}-${pp?.data?.Time ?? ""}-${pp?.rowIndex ?? 0}`
-        }
-        getRowStyle={getLevelThirdRowStyle}
-        domLayout="autoHeight"
-        suppressHorizontalScroll
-        suppressVerticalScroll
-        style={{ width: "100%" }}
-      />
-    </div>
   );
 }

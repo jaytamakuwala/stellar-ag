@@ -1,105 +1,54 @@
-import React, { useState } from "react";
-import Header from "./Header";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
-import RightNavigation from "./RightNavigation";
+import { useCallback, useState } from "react";
+import {
+  StyleMainDiv,
+  StyleModalFilter,
+} from "../style/containers/AnimatedTable";
+import RightNavigation from "../components/RightNavigation";
 import FirstAnimatedTable from "./GridA";
 import SecondAnimatedTable from "./GridB";
-import { StyleOption, StyleMainDiv } from "../style/containers/AnimatedTable";
+import FilterModal from "../components/FilterModal";
+import DualGridHeader from "../components/DualGridHeader";
 
 export default function AnimatedTable() {
   const [date, setDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterState, setFilterState] = useState(false);
+  const [filterModalState, setFilterModalState] = useState({
+    score: 0,
+    totalCallBuyCost: 0,
+    totalPutBuyCost: 0,
+    totalCallSellCost: 0,
+    totalPutSellCost: 0,
+    totalPutCallCost: 0,
+    call2PutBuyRatio: 0,
+    callBuy2CallSellRatio: 0,
+    callBuy2PreviousCallBuy: 0,
+  });
+
+  const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
 
   return (
-    <StyleMainDiv style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <RightNavigation />
+    <StyleMainDiv
+      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+    >
+      {/* Right Navigation */}
+        <RightNavigation />
 
-      {/* Top controls */}
-      <StyleOption>
-        <h4 className="TitleAction m-0">Aggregated Options Data</h4>
-
-        <div className="rightNavigation">
-          <div
-            className="SmallScreen"
-            style={{
-              background: "#959595",
-              width: "max-content",
-              marginLeft: 15,
-              borderRadius: 5,
-              margin: 5,
-              height: 35,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                value={date}
-                onChange={(newDate) => setDate(newDate)}
-                disableFuture
-                slotProps={{
-                  textField: { size: "small", variant: "outlined" },
-                }}
-              />
-            </LocalizationProvider>
-          </div>
-
-          <div className="SearchInputs">
-            <input
-              type="text"
-              placeholder="Search Tick"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon className="SearchIcon" />
-          </div>
-
-          <div className="ShowInLine">
-            <Header />
-            <button
-              type="button"
-              className="btn btn-primary Filtericon"
-              onClick={() => setFilterOpen(true)}
-            >
-              <TuneIcon /> Filter{" "}
-              <span
-                className="badge bg-warning text-dark"
-                style={{ position: "relative", top: 0 }}
-              >
-                0
-              </span>
-            </button>
-          </div>
-        </div>
-      </StyleOption>
-
-      {/* Two side-by-side tables */}
+      {/* Dual Chart Header */}
+      <DualGridHeader 
+        date = {date}
+        setDate = {(date) => setDate(date)}
+        setSearchTerm = {(data) => setSearchTerm(data)}
+        filterState={filterState}
+        setFilterState={(data) => setFilterState(data) }
+      />
       <div
         style={{
           display: "flex",
-          flex: 1, // take all remaining height
+          flex: 1,
         }}
       >
-        {/* LEFT TABLE */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0, // important so flex children shrink properly
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px"}}>
-            <FirstAnimatedTable selectedDate={date} searchTerm={searchTerm} />
-          </div>
-        </div>
-
-        {/* RIGHT TABLE */}
+        {/* First Grid */}
         <div
           style={{
             flex: 1,
@@ -109,11 +58,41 @@ export default function AnimatedTable() {
             overflow: "hidden",
           }}
         >
-          <div style={{ flex: 1, overflow: "auto", marginLeft:"-60px" }}>
-            <SecondAnimatedTable selectedDate={date} searchTerm={searchTerm} />
+          <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
+              <FirstAnimatedTable selectedDate={date} searchTerm={searchTerm} />
+          </div>
+        </div>
+
+        {/* Second Grid */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
+              <SecondAnimatedTable selectedDate={date} searchTerm={searchTerm} />
           </div>
         </div>
       </div>
+
+      {/* Filter Modal */}
+      {filterState ? (
+        <StyleModalFilter>
+            <FilterModal
+              filterState={filterState}
+              filterModalState={filterModalState}
+              handleFilerOptionClose={handleFilerOptionClose}
+              setFilterModalState={(event) => {
+                const { name, value } = event.target;
+                setFilterModalState({ ...filterModalState, [name]: value });
+              }}
+            />
+        </StyleModalFilter>
+      ) : null}
     </StyleMainDiv>
   );
 }

@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import StockTableGrid from "./pages/DualAgGrid";
-import Header from "./pages/Header";
 import "./index.css";
 import { UserProvider } from "./context/UserContext";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -11,6 +10,9 @@ import ResetPassword from "./pages/ResetPassword";
 import EmailVerified from "./pages/EmailVerified";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function App() {
   return (
