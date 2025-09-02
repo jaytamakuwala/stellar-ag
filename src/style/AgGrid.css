@@ -559,3 +559,8 @@
   overflow: hidden;
   /* keep rounded clipping */
 }
+.ag-theme-quartz .ag-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SearchIcon from "@mui/icons-material/Search";
@@ -11,11 +11,16 @@ export default function DualGridHeader({
   setSearchTerm,
   filterState,
   setFilterState,
+  hader
 }) {
+  const [draftDate, setDraftDate] = useState(date);
+  useEffect(() => {
+    setDraftDate(date ?? null);
+  }, [date]);
   return (
     <StyleOption>
       <h4 className="TitleAction m-0" style={{ color: "#fff" }}>
-        Aggregated Options Data
+       {hader}
       </h4>
 
       <div className="rightNavigation">
@@ -34,8 +39,11 @@ export default function DualGridHeader({
         >
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              value={date}
-              onChange={(newDate) => setDate(newDate)}
+              value={draftDate}
+              onChange={(val) => setDraftDate(val)}
+              onAccept={(val) => {
+                setDate(val ?? null);
+              }}
               disableFuture
               slotProps={{
                 textField: { size: "small", variant: "outlined" },

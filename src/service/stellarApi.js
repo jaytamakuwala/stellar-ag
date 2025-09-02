@@ -85,3 +85,9 @@ export const signout = async () => {
     const url = `${STELLAR_BASE_URL}${signOutPostFix}`
     return await postRequest(url)
 }
+
+export const getAipowerAlerts = async(AipowerAlertspayload) =>{
+    const getAipowerAlertsPostFix = import.meta.env.VITE_GET_AI_POWER_ALERTS;
+    const getAipowerAlertsUrl = `${STELLAR_BASE_URL}${getAipowerAlertsPostFix}`;
+    return await getRequest(getAipowerAlertsUrl,AipowerAlertspayload);
+}
