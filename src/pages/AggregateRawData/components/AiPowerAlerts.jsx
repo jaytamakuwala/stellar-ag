@@ -74,10 +74,10 @@ export default function MiddleGrid({
       return isNaN(d)
         ? String(val)
         : d.toLocaleTimeString("en-IN", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          });
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
     }
     const parts = val.split(":").map(Number);
     if (Number.isNaN(parts[0])) return val;
