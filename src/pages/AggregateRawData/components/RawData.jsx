@@ -23,6 +23,71 @@ import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
 import { DetailCell } from "../../../components/DetailCell";
 import { SellTradesCell } from "../../../components/grids/SellTradeCell";
 
+const NY_TZ = "America/New_York";
+
+function formatUS(d) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(d);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const dd = parts.find((p) => p.type === "day").value;
+  return `${y}/${m}/${dd}`;
+}
+
+function nyWeekday(d) {
+  const name = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    weekday: "short",
+  }).format(d);
+  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return map[name] ?? 0;
+}
+
+function nyMinutesNow() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const H = Number(parts.find((p) => p.type === "hour").value);
+  const M = Number(parts.find((p) => p.type === "minute").value);
+  return H * 60 + M;
+}
+
+function prevTradingDate(fromDate = new Date()) {
+  const dt = new Date(fromDate);
+  for (let i = 0; i < 7; i++) {
+    dt.setUTCDate(dt.getUTCDate() - 1);
+    const wd = nyWeekday(dt);
+    if (wd >= 1 && wd <= 5) return dt;
+  }
+  return fromDate;
+}
+
+function getSessionDate() {
+  const now = new Date();
+  const wd = nyWeekday(now);
+  const OPEN = 9 * 60 + 30;
+
+  if (wd === 0 || wd === 6) return prevTradingDate(now);
+  if (nyMinutesNow() < OPEN) return prevTradingDate(now);
+  return now;
+}
+function buildPayloadUS(d, type = "Bear") {
+  const us = formatUS(d);
+  return {
+    executionDate: `${us}T00:00:00`,
+    intervalStart: `${us}T09:00:00`,
+    intervalEnd: `${us}T16:45:00`,
+    minsWindows: 5,
+    type,
+  };
+}
 export default function SecondAnimatedTable({
   selectedDate,
   searchTerm = "",
@@ -39,58 +104,132 @@ export default function SecondAnimatedTable({
   const [subExpandedByParent, setSubExpandedByParent] = useState({});
   const [detailHeights, setDetailHeights] = useState({});
 
+  // const fetchdata = useCallback(async () => {
+  //   try {
+  //     const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
+  //     setFormattedDateStr(dayStr);
+
+  //     const queryObj = {
+  //       executionDate: `${dayStr}T00:00:00`,
+  //       intervalStart: `${dayStr}T09:00:00`,
+  //       intervalEnd: `${dayStr}T16:45:00`,
+  //       minsWindows: 5,
+  //       type: "Bear",
+  //     };
+
+  //     const [summaryMainRes, summaryRes] = await Promise.all([
+  //       getSummaryDataMain(queryObj),
+  //       getSummaryData(queryObj),
+  //     ]);
+
+  //     if (!summaryMainRes?.ok) {
+  //       throw new Error(
+  //         summaryMainRes?.error?.error || "Failed to fetch summary main data"
+  //       );
+  //     }
+  //     if (!summaryRes?.ok) {
+  //       throw new Error(
+  //         summaryRes?.error?.error || "Failed to fetch summary data"
+  //       );
+  //     }
+
+  //     setResponseData(summaryMainRes.data || []);
+  //     setSummaryData(summaryRes.data || []);
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error(error.message || "Something went wrong");
+  //   }
+  // }, [selectedDate]);
   const fetchdata = useCallback(async () => {
     try {
-      const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
-      setFormattedDateStr(dayStr);
+      // If user picked a date, respect it; else use session logic
+      const primaryDate = selectedDate
+        ? new Date(selectedDate)
+        : getSessionDate();
+      const fallbackDate = prevTradingDate(primaryDate);
 
-      const queryObj = {
-        executionDate: `${dayStr}T00:00:00`,
-        intervalStart: `${dayStr}T09:00:00`,
-        intervalEnd: `${dayStr}T16:45:00`,
-        minsWindows: 5,
-        type: "Bear",
+      // choose payload format here:
+      const primaryPayload = buildPayloadUS(primaryDate, "Bear");
+      const fallbackPayload = buildPayloadUS(fallbackDate, "Bear");
+
+      // reflect date used in UI (US string)
+      setFormattedDateStr(formatUS(primaryDate));
+
+      const callBoth = async (payload) => {
+        const [main, sub] = await Promise.all([
+          getSummaryDataMain(payload),
+          getSummaryData(payload),
+        ]);
+        if (!main?.ok)
+          throw new Error(main?.error?.error || "Main fetch failed");
+        if (!sub?.ok)
+          throw new Error(sub?.error?.error || "Summary fetch failed");
+        return { main: main.data || [], sub: sub.data || [] };
       };
 
-      const [summaryMainRes, summaryRes] = await Promise.all([
-        getSummaryDataMain(queryObj),
-        getSummaryData(queryObj),
-      ]);
-
-      if (!summaryMainRes?.ok) {
-        throw new Error(
-          summaryMainRes?.error?.error || "Failed to fetch summary main data"
-        );
-      }
-      if (!summaryRes?.ok) {
-        throw new Error(
-          summaryRes?.error?.error || "Failed to fetch summary data"
-        );
+      // try primary
+      let usedDate = primaryDate;
+      let data;
+      try {
+        data = await callBoth(primaryPayload);
+        if (!data.main.length && !data.sub.length)
+          throw new Error("No data for primary date");
+      } catch (e) {
+        // fallback to previous trading day
+        data = await callBoth(fallbackPayload);
+        usedDate = fallbackDate;
+        setFormattedDateStr(formatUS(usedDate));
       }
 
-      setResponseData(summaryMainRes.data || []);
-      setSummaryData(summaryRes.data || []);
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Something went wrong");
+      setResponseData(data.main);
+      setSummaryData(data.sub);
+    } catch (err) {
+      console.error("[fetchdata] error:", err);
+      toast.error(err?.message || "Something went wrong");
     }
-  }, [selectedDate]);
+  }, [selectedDate, setFormattedDateStr]);
+  // useEffect(() => {
+  //   let intervalId;
+  //   const run = async () => {
+  //     await fetchdata();
+  //   };
 
+  //   if (isSameDay(selectedDate, new Date())) {
+  //     run();
+  //     intervalId = setInterval(run, 5000);
+  //   } else {
+  //     run();
+  //   }
+  //   return () => {
+  //     if (intervalId) clearInterval(intervalId);
+  //   };
+  // }, [selectedDate, fetchdata]);
   useEffect(() => {
     let intervalId;
-    const run = async () => {
-      await fetchdata();
-    };
+    const run = () => fetchdata();
 
-    if (isSameDay(selectedDate, new Date())) {
+    const wd = nyWeekday(new Date()); // weekday in NY
+    const nowMin = nyMinutesNow(); // minutes in NY
+    const OPEN = 9 * 60 + 30; // 09:30
+
+    if (selectedDate) {
+      // If user picked a date manually -> just fetch once
       run();
-      intervalId = setInterval(run, 5000);
     } else {
-      run();
+      if (wd < 1 || wd > 5) {
+        // Weekend: fetch once (prev Friday), no interval
+        run();
+      } else if (nowMin < OPEN) {
+        // Weekday but market not open yet: fetch once (prev day), no interval
+        run();
+      } else {
+        // Market is open: fetch and poll every 5s
+        run();
+        intervalId = setInterval(run, 5000);
+      }
     }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
+
+    return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
   /* ===========================
@@ -195,10 +334,14 @@ export default function SecondAnimatedTable({
         field: "Time",
         headerName: "Time",
         flex: 1,
+        minWidth: 60,
         cellStyle: {
           color: "rgb(98, 95, 95)",
           fontWeight: "700",
           textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         },
         headerStyle,
       },
@@ -207,7 +350,15 @@ export default function SecondAnimatedTable({
         field: "Tick",
         headerName: "Tick",
         flex: 1,
-        cellStyle: { color: "hsl(0, 100%, 40%)", textAlign: "center" },
+        minWidth: 60,
+        cellStyle: {
+          color: "#ff605d",
+          textAlign: "center",
+          fontWeight: "500Px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        },
         headerStyle,
       },
       {
@@ -215,21 +366,15 @@ export default function SecondAnimatedTable({
         field: "Probability",
         headerName: "Probability",
         flex: 1,
-        cellStyle: { color: "hsl(0, 100%, 40%)", textAlign: "center" },
-        headerStyle,
-      },
-      {
-        colId: "Premium",
-        field: "Premium",
-        headerName: "Premium",
-        flex: 1,
-        cellStyle: (p) => {
-          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000) return { color: "#ff0000", textAlign: "center" };
-          if (v > 500000) return { color: "#d6d454", textAlign: "center" };
-          return { color: "white", textAlign: "center" };
+        minWidth: 40,
+        cellStyle: {
+          color: "#ff605d",
+          textAlign: "center",
+          fontWeight: "500px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         },
-        valueFormatter: (p) => formatNumberToCurrency(p.value),
         headerStyle,
       },
       {
@@ -237,25 +382,70 @@ export default function SecondAnimatedTable({
         field: "Orders",
         headerName: "Orders",
         flex: 0.8,
-        cellStyle: { textAlign: "center", color: "#fff" },
+        minWidth: 70,
+        cellStyle: {
+          textAlign: "center",
+          color: "#fff",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        },
         cellClass: ["whiteTdContent"],
         headerStyle,
       },
-
+      {
+        colId: "Premium",
+        field: "Premium",
+        headerName: "Premium",
+        flex: 1,
+        minWidth: 60,
+        cellStyle: (p) => {
+          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
+          if (v > 1000000)
+            return {
+              color: "#ff605d",
+              textAlign: "center",
+              fontWeight: "500px",
+            };
+          if (v > 500000)
+            return {
+              color: "#d6d454",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            };
+          return {
+            color: "white",
+            textAlign: "center",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          };
+        },
+        valueFormatter: (p) => formatNumberToCurrency(p.value),
+        headerStyle,
+      },
       {
         colId: "Score",
         field: "Score",
         headerName: "Score",
         flex: 1,
+        minWidth: 60,
         cellStyle: (p) => {
-          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
+          const raw = String(p.value ?? "").replace(/[$,x]/gi, "");
+          const v = Number(raw);
+
           const base = {
             textAlign: "center",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           };
-          if (v > 10) return { ...base, color: "rgb(14, 165, 233)" };
+
+          if (v > 10) {
+            return { ...base, color: "#0000ff" };
+          }
           return { ...base, color: "white" };
         },
         headerStyle,
@@ -265,6 +455,7 @@ export default function SecondAnimatedTable({
         colId: "Actions",
         headerName: "Analysis",
         flex: 1,
+        minWidth: 60,
         headerStyle,
         cellRenderer: (params) => {
           const symbol =
@@ -458,9 +649,9 @@ export default function SecondAnimatedTable({
               suppressRowHoverHighlight={true}
               defaultColDef={{
                 flex: 1,
-                sortable: false,
+                // sortable: false,
                 resizable: true,
-                filter: false,
+                // filter: false,
                 // wrapHeaderText: true,
                 // autoHeaderHeight: true,
                 headerClass: "cm-header",

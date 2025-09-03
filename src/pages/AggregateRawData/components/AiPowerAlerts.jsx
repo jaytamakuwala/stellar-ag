@@ -74,10 +74,10 @@ export default function MiddleGrid({
       return isNaN(d)
         ? String(val)
         : d.toLocaleTimeString("en-IN", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
     }
     const parts = val.split(":").map(Number);
     if (Number.isNaN(parts[0])) return val;
@@ -98,6 +98,9 @@ export default function MiddleGrid({
         field: "Time",
         headerName: "Time",
         flex: 1,
+        width: 50,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: {
           color: "rgb(98,95,95)",
           fontWeight: 700,
@@ -112,6 +115,9 @@ export default function MiddleGrid({
         field: "Tick",
         headerName: "Tick",
         flex: 1,
+        width: 20,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: { textAlign: "center", color: "#00ff59" },
         headerStyle,
       },
@@ -120,6 +126,9 @@ export default function MiddleGrid({
         field: "Trade",
         headerName: "Trade",
         flex: 1,
+        width: 50,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "LONG";
           return {
@@ -136,6 +145,9 @@ export default function MiddleGrid({
         field: "Spot",
         headerName: "Spot",
         flex: 0.8,
+        width: 80,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: { textAlign: "center", color: "#fff" },
         cellClass: ["whiteTdContent"],
         headerStyle,
@@ -145,6 +157,9 @@ export default function MiddleGrid({
         field: "Target",
         headerName: "Target",
         flex: 1,
+        width: 50,
+        minWidth: 50,
+        maxWidth: 80,
         headerStyle,
       },
     ],

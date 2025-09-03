@@ -25,6 +25,14 @@ export default function RightNavigation() {
               navigate("/optionMain");
             }}
           />
+          <img
+            src={Dashboard}
+            alt="Icon"
+            className="Dashboard"
+            onClick={() => {
+              navigate("/magicOptionMain");
+            }}
+          />
         </div>
         <div className="IconAction">
           <img src={Account} alt="Icon" className="Account" />

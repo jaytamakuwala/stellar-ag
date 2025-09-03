@@ -91,3 +91,8 @@ export const getAipowerAlerts = async(AipowerAlertspayload) =>{
     const getAipowerAlertsUrl = `${STELLAR_BASE_URL}${getAipowerAlertsPostFix}`;
     return await getRequest(getAipowerAlertsUrl,AipowerAlertspayload);
 }
+export const getMagicOptionData = async(magicOptionDataPayload) =>{
+    const getMagicOptionDataPostFIx = import.meta.env.VITE_GET_MAGIC_OPTION_DATA;
+    const getMagicOptionDataUrl = `${STELLAR_BASE_URL}${getMagicOptionDataPostFIx}`;
+    return await getRequest(getMagicOptionDataUrl,magicOptionDataPayload);
+}

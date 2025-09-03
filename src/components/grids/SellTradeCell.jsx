@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AG_GRID_HEIGHTS, COLORS } from "../../utils/constants";
 import { AgGridReact } from "ag-grid-react";
 import { getOptionTradeDetails } from "../../service/stellarApi";
+import { faIR } from "date-fns/locale";
 
 function parseExecDateYMD(execDateStr) {
   if (!execDateStr) return null;
@@ -129,124 +130,212 @@ export function SellTradesCell({
     };
   }, [rowKey, tick, formattedDateStr, parentRow?.Time, setOptionTradeData]);
 
+
   const headerStyle = {
     backgroundColor: COLORS.dark3,
     color: COLORS.dimText,
     fontSize: 12,
     fontFamily: "Barlow",
     textAlign: "center",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
 
-  const centerWhite = {
+  const centerWhiteBase = {
     color: COLORS.white,
     textAlign: "center",
     fontFamily: "Barlow",
     fontSize: 12,
     fontWeight: 100,
-    width: "100%",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
+  function to12hUpper(val) {
+    if (val == null || val === "") return "";
 
+    let d;
+
+    if (val instanceof Date) {
+      d = val;
+    } else if (typeof val === "number") {
+      // epoch seconds vs ms
+      d = new Date(val < 1e12 ? val * 1000 : val);
+    } else if (typeof val === "string") {
+      const s = val.trim();
+
+      // already has AM/PM → normalize
+      const ap = /^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)$/i.exec(s);
+      if (ap) {
+        const h = +ap[1] % 12 || 12;
+        const m = String(ap[2] ?? "00").padStart(2, "0");
+        const ampm = ap[4].toUpperCase();
+        return `${h}:${m} ${ampm}`;
+      }
+
+      // 24h "HH:mm[:ss]"
+      const hm = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+      if (hm) {
+        const H = +hm[1],
+          M = +hm[2],
+          S = +(hm[3] || 0);
+        d = new Date();
+        d.setHours(H, M, S, 0);
+      } else {
+        // ISO or other parsable date-time string
+        const tryDate = new Date(s);
+        if (!isNaN(tryDate)) d = tryDate;
+        else return String(val);
+      }
+    }
+
+    if (!d || isNaN(d)) return String(val);
+
+    const H = d.getHours();
+    const m = String(d.getMinutes()).padStart(2, "0");
+    const ampm = H >= 12 ? "PM" : "AM";
+    const h12 = H % 12 || 12;
+
+    return `${h12}:${m} ${ampm}`;
+  }
   const currencyCellStyle = (p) => {
     const v = stripMoney(p.value);
     const colorStyle = currencyColorStyle(v).color;
-    return { ...centerWhite, color: colorStyle };
+    return { ...centerWhiteBase, color: colorStyle };
   };
-
+  const parsePct = (x) => {
+    if (x == null) return NaN;
+    if (typeof x === "number") return x;
+    const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
+    return m ? parseFloat(m[0]) : NaN;
+  };
   const tradeCols = useMemo(
     () => [
       {
         headerName: "Time",
         field: "Time",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: centerWhiteBase,
+        width: 65,
+        minWidth: 50,
+        maxWidth: 70,
+        resizable: false,
+        valueFormatter: (pp) => to12hUpper(pp.value),
         headerClass: ["cm-header"],
       },
       {
         headerName: "Expiry",
         field: "Expiry",
-        flex: 1.8,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: centerWhiteBase,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
+        width: 95,
+        minWidth: 80,
+        maxWidth: 100,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "Trade",
         field: "Trade",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
-            color: isCall ? "green" : "red",
-            textAlign: "center",
-            fontFamily: "Barlow",
-            fontSize: 12,
+            ...centerWhiteBase,
+            color: isCall ? "#00ff59" : "#FF605D",
           };
         },
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
-        headerName: "Side",
+        headerName: "Type",
         field: "Type",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
-
+        cellStyle: centerWhiteBase,
+        width: 55,
+        minWidth: 50,
+        maxWidth: 60,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "Strike",
         field: "Strike",
-        flex: 1.1,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: centerWhiteBase,
+        width: 55,
+        minWidth: 50,
+        maxWidth: 60,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "Spot",
         field: "Spot",
-        flex: 1.4,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: centerWhiteBase,
+        width: 65,
+        minWidth: 50,
+        maxWidth: 80,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
-        flex: 1.2,
         headerStyle,
         cellStyle: currencyCellStyle,
+        width: 80,
+        minWidth: 70,
+        maxWidth: 100,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "SSD",
         field: "SSD",
-        flex: 1.2,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: (p) => {
+          const base = { ...centerWhiteBase };
+          const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
+          return v > 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+        },
+        width: 70,
+        minWidth: 40,
+        maxWidth: 80,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "Price",
         field: "Price",
-        flex: 1.0,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: centerWhiteBase,
+        width: 60,
+        minWidth: 40,
+        maxWidth: 80,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "DTE",
         field: "DTE",
-        flex: 1.0,
         headerStyle,
-        cellStyle: centerWhite,
-        headerClass: ["cm-header", "no-resize"],
+        cellStyle: centerWhiteBase,
+        width: 80,
+        minWidth: 70,
+        maxWidth: 100,
+        resizable: false,
+        headerClass: ["cm-header"],
       },
     ],
-    []
+    [COLORS]
   );
 
   const getLevelThirdRowStyle = useCallback((params) => {
@@ -262,7 +351,7 @@ export function SellTradesCell({
   }, []);
 
   return (
-    <div className="ag-theme-quartz no-padding-grid" style={{ width: "100%" }}>
+    <div className="ag-theme-quartz no-padding-grid" style={{ width: "%" }}>
       <AgGridReact
         className="third-grid no-padding-grid"
         rowData={Array.isArray(data) ? data : []}

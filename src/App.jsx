@@ -12,6 +12,7 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import optionMain from "./pages/rowOptionData/optionMain"
+import magicOptionMain from "./pages/MagicOptionData/magicOptionMain"
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,6 +30,8 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" Component={StockTableGrid} />
             <Route path="/optionMain" Component={optionMain} />
+            <Route path="/magicOptionMain" Component={magicOptionMain} />
+
           </Route>
           <Route path="*" element={<SignIn />} />
         </Routes>

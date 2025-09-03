@@ -17,7 +17,7 @@ import {
 } from "../../service/stellarApi";
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-import MiddleGrid from "./components/AiPowerAlerts";
+import MiddleGrid from "./components/MiddleGrid";
 
 export default function AnimatedTable() {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -325,19 +325,20 @@ export default function AnimatedTable() {
                 />
               </div>
             </div>
-            <div style={{
-              flex: 0.8,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              height: "100vh"
-            }}>
+            <div
+              style={{
+                flex: 0.8,
+                minWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                height: "100vh",
+              }}
+            >
               <div>
                 <MiddleGrid
                   selectedDate={selectedDate}
                   searchTerm={searchTerm}
-
                   animationState={animationState}
                   formattedDateStr={formattedDateStr}
                   setFormattedDateStr={(data) => setFormattedDateStr(data)}

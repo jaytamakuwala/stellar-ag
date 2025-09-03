@@ -14,6 +14,7 @@ export default function DualGridHeader({
   hader
 }) {
   const [draftDate, setDraftDate] = useState(date);
+
   useEffect(() => {
     setDraftDate(date ?? null);
   }, [date]);
