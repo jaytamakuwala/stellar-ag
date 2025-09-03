@@ -188,13 +188,13 @@ export default function LeftRawOption({
         headerName: "DTE",
         field: "DTE",
         headerStyle,
-        cellStyle: centerWhite,
         width: 50,
         minWidth: 40,
         maxWidth: 60,
         cellStyle: (params) => {
           const isCall = Number(params.value) <= 3;
           return {
+            ...centerWhite,
             color: isCall ? "orange" : "",
             textAlign: "center",
             fontFamily: "Barlow",
@@ -221,10 +221,10 @@ export default function LeftRawOption({
         width: 50,
         minWidth: 40,
         maxWidth: 60,
-        cellStyle: centerWhite,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
+            ...centerWhite,
             color: isCall ? "#00ff59" : "#ff605d",
             textAlign: "center",
             fontFamily: "Barlow",

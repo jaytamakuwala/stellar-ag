@@ -148,13 +148,12 @@ export default function RightRawOption({
 
     return `${h12}:${m} ${ampm}`;
   }
-     const parsePct = (x) => {
+  const parsePct = (x) => {
     if (x == null) return NaN;
     if (typeof x === "number") return x;
     const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
     return m ? parseFloat(m[0]) : NaN;
   };
-
 
   const tradeCols = useMemo(
     () => [
@@ -174,7 +173,7 @@ export default function RightRawOption({
         headerName: "Expiry",
         field: "Expiry",
         headerStyle,
-           width: 90,
+        width: 90,
         minWidth: 80,
         maxWidth: 100,
         cellStyle: centerWhite,
@@ -185,43 +184,43 @@ export default function RightRawOption({
         headerName: "DTE",
         field: "DTE",
         headerStyle,
-        cellStyle: centerWhite,
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
         cellStyle: (params) => {
           const isCall = Number(params.value) <= 3;
           return {
+            ...centerWhite,
             color: isCall ? "orange" : "",
             textAlign: "center",
             fontFamily: "Barlow",
             fontSize: 12,
           };
         },
-        headerClass: ["cm-header",],
+        headerClass: ["cm-header"],
       },
       {
         headerName: "Tick",
         field: "Tick",
         headerStyle,
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
-        cellStyle: {...centerWhite, color: "#ff605d", fontWeight: "500px"},
-        
+        cellStyle: { ...centerWhite, color: "#ff605d", fontWeight: "500px" },
+
         headerClass: ["cm-header"],
       },
       {
         headerName: "Trade",
         field: "Trade",
         headerStyle,
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
-        cellStyle: centerWhite,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
+            ...centerWhite,
             color: isCall ? "#00ff59" : "#ff605d",
             textAlign: "center",
             fontFamily: "Barlow",
@@ -234,7 +233,7 @@ export default function RightRawOption({
         headerName: "Type",
         field: "Type",
         headerStyle,
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
         cellStyle: centerWhite,
@@ -247,7 +246,7 @@ export default function RightRawOption({
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
       },
@@ -257,19 +256,18 @@ export default function RightRawOption({
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
       },
-        {
+      {
         headerName: "SSD",
         field: "SSD",
         headerStyle,
         cellStyle: (p) => {
           const base = { ...centerWhite };
           const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
-          return v 
-          < 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+          return v < 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
         },
         width: 50,
         minWidth: 40,
@@ -284,7 +282,7 @@ export default function RightRawOption({
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         headerClass: ["cm-header"],
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
       },
@@ -295,7 +293,7 @@ export default function RightRawOption({
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
-         width: 50,
+        width: 50,
         minWidth: 40,
         maxWidth: 60,
       },
@@ -317,14 +315,13 @@ export default function RightRawOption({
   }, []);
 
   return (
-    <div style={{ overflowX: "auto",  marginBottom: "20px" }}>
+    <div style={{ overflowX: "auto", marginBottom: "20px" }}>
       <div
         style={{
           position: "relative",
           width: "100%",
           padding: 5,
           height: "100vh",
-          width: "100%",
         }}
       >
         <AgGridReact
