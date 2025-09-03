@@ -4,7 +4,7 @@ import {
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import LeftMagicOption from "./components/LeftMagicoption.jsx";
+import LeftMagicOption from "./components/LeftMagicOption.jsx";
 import RightMagicOption from "./components/RightMagicOption.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
