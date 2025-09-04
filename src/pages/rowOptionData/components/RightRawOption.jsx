@@ -148,24 +148,34 @@ export default function RightRawOption({
 
     return `${h12}:${m} ${ampm}`;
   }
+  const parsePct = (x) => {
+    if (x == null) return NaN;
+    if (typeof x === "number") return x;
+    const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
+    return m ? parseFloat(m[0]) : NaN;
+  };
 
   const tradeCols = useMemo(
     () => [
       {
         headerName: "Time",
         field: "Time",
-        flex: 1,
         headerStyle,
+        width: 70,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: centerWhite,
-        headerClass: ["cm-header"],
         valueFormatter: (p) => to12hUpper(p.value),
         tooltipValueGetter: (p) => to12hUpper(p.value),
+        headerClass: ["cm-header"],
       },
       {
         headerName: "Expiry",
         field: "Expiry",
-        flex: 1.8,
         headerStyle,
+        width: 90,
+        minWidth: 80,
+        maxWidth: 100,
         cellStyle: centerWhite,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
         headerClass: ["cm-header"],
@@ -173,38 +183,45 @@ export default function RightRawOption({
       {
         headerName: "DTE",
         field: "DTE",
-        flex: 1.0,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: (params) => {
           const isCall = Number(params.value) <= 3;
           return {
+            ...centerWhite,
             color: isCall ? "orange" : "",
             textAlign: "center",
             fontFamily: "Barlow",
             fontSize: 12,
           };
         },
-        headerClass: ["cm-header", "no-resize"],
+        headerClass: ["cm-header"],
       },
       {
         headerName: "Tick",
         field: "Tick",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
+        cellStyle: { ...centerWhite, color: "#ff605d", fontWeight: "500px" },
+
         headerClass: ["cm-header"],
       },
       {
         headerName: "Trade",
         field: "Trade",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
-            color: isCall ? "green" : "red",
+            ...centerWhite,
+            color: isCall ? "#00ff59" : "#ff605d",
             textAlign: "center",
             fontFamily: "Barlow",
             fontSize: 12,
@@ -215,8 +232,10 @@ export default function RightRawOption({
       {
         headerName: "Type",
         field: "Type",
-        flex: 1,
         headerStyle,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: centerWhite,
 
         headerClass: ["cm-header"],
@@ -224,44 +243,59 @@ export default function RightRawOption({
       {
         headerName: "Strike",
         field: "Strike",
-        flex: 1.1,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
       {
         headerName: "Spot",
         field: "Spot",
-        flex: 1.4,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
       {
         headerName: "SSD",
         field: "SSD",
-        flex: 1.2,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: (p) => {
+          const base = { ...centerWhite };
+          const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
+          return v < 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+        },
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
-        flex: 1.2,
         headerStyle,
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
 
       {
         headerName: "Price",
         field: "Price",
-        flex: 1.0,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
     ],
     []
@@ -281,14 +315,13 @@ export default function RightRawOption({
   }, []);
 
   return (
-    <div style={{ overflowX: "auto",  marginBottom: "20px" }}>
+    <div style={{ overflowX: "auto", marginBottom: "20px" }}>
       <div
         style={{
           position: "relative",
           width: "100%",
           padding: 5,
           height: "100vh",
-          width: "100%",
         }}
       >
         <AgGridReact

@@ -55,7 +55,7 @@ export default function LeftRawOption({
         startTime: toLocalISOString(startTime),
         endTime: toLocalISOString(endTime),
         buyOrSell: "BS",
-        optionType: "CP",
+        optionType: "C",
         sortMode: "1",
       };
 
@@ -85,8 +85,9 @@ export default function LeftRawOption({
     textAlign: "center",
     fontFamily: "Barlow",
     fontSize: 12,
-    fontWeight: 100,
-    width: "100%",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
   const headerStyle = {
     backgroundColor: COLORS.dark3,
@@ -94,6 +95,9 @@ export default function LeftRawOption({
     fontSize: 12,
     fontFamily: "Barlow",
     textAlign: "center",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
   const currencyCellStyle = (p) => {
     const v = stripMoney(p.value);
@@ -101,68 +105,81 @@ export default function LeftRawOption({
     return { ...centerWhite, color: colorStyle };
   };
   // -> returns "h:mm AM/PM" in UPPERCASE
-function to12hUpper(val) {
-  if (val == null || val === "") return "";
+  function to12hUpper(val) {
+    if (val == null || val === "") return "";
 
-  let d;
+    let d;
 
-  if (val instanceof Date) {
-    d = val;
-  } else if (typeof val === "number") {
-    // epoch seconds vs ms
-    d = new Date(val < 1e12 ? val * 1000 : val);
-  } else if (typeof val === "string") {
-    const s = val.trim();
+    if (val instanceof Date) {
+      d = val;
+    } else if (typeof val === "number") {
+      // epoch seconds vs ms
+      d = new Date(val < 1e12 ? val * 1000 : val);
+    } else if (typeof val === "string") {
+      const s = val.trim();
 
-    // already has AM/PM → normalize
-    const ap = /^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)$/i.exec(s);
-    if (ap) {
-      const h = ((+ap[1] % 12) || 12);
-      const m = String(ap[2] ?? "00").padStart(2, "0");
-      const ampm = ap[4].toUpperCase();
-      return `${h}:${m} ${ampm}`;
+      // already has AM/PM → normalize
+      const ap = /^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)$/i.exec(s);
+      if (ap) {
+        const h = +ap[1] % 12 || 12;
+        const m = String(ap[2] ?? "00").padStart(2, "0");
+        const ampm = ap[4].toUpperCase();
+        return `${h}:${m} ${ampm}`;
+      }
+
+      // 24h "HH:mm[:ss]"
+      const hm = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+      if (hm) {
+        const H = +hm[1],
+          M = +hm[2],
+          S = +(hm[3] || 0);
+        d = new Date();
+        d.setHours(H, M, S, 0);
+      } else {
+        // ISO or other parsable date-time string
+        const tryDate = new Date(s);
+        if (!isNaN(tryDate)) d = tryDate;
+        else return String(val);
+      }
     }
 
-    // 24h "HH:mm[:ss]"
-    const hm = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(s);
-    if (hm) {
-      const H = +hm[1], M = +hm[2], S = +(hm[3] || 0);
-      d = new Date(); d.setHours(H, M, S, 0);
-    } else {
-      // ISO or other parsable date-time string
-      const tryDate = new Date(s);
-      if (!isNaN(tryDate)) d = tryDate; else return String(val);
-    }
+    if (!d || isNaN(d)) return String(val);
+
+    const H = d.getHours();
+    const m = String(d.getMinutes()).padStart(2, "0");
+    const ampm = H >= 12 ? "PM" : "AM";
+    const h12 = H % 12 || 12;
+
+    return `${h12}:${m} ${ampm}`;
   }
-
-  if (!d || isNaN(d)) return String(val);
-
-  const H = d.getHours();
-  const m = String(d.getMinutes()).padStart(2, "0");
-  const ampm = H >= 12 ? "PM" : "AM";
-  const h12 = (H % 12) || 12;
-
-  return `${h12}:${m} ${ampm}`;
-}
-
+  const parsePct = (x) => {
+    if (x == null) return NaN;
+    if (typeof x === "number") return x;
+    const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
+    return m ? parseFloat(m[0]) : NaN;
+  };
 
   const tradeCols = useMemo(
     () => [
       {
         headerName: "Time",
         field: "Time",
-        flex: 1,
         headerStyle,
+        width: 70,
+        minWidth: 50,
+        maxWidth: 80,
         cellStyle: centerWhite,
         valueFormatter: (p) => to12hUpper(p.value),
-  tooltipValueGetter: (p) => to12hUpper(p.value),
+        tooltipValueGetter: (p) => to12hUpper(p.value),
         headerClass: ["cm-header"],
       },
       {
         headerName: "Expiry",
         field: "Expiry",
-        flex: 1.8,
         headerStyle,
+        width: 90,
+        minWidth: 80,
+        maxWidth: 100,
         cellStyle: centerWhite,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
         headerClass: ["cm-header"],
@@ -170,38 +187,45 @@ function to12hUpper(val) {
       {
         headerName: "DTE",
         field: "DTE",
-        flex: 1.0,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: (params) => {
           const isCall = Number(params.value) <= 3;
           return {
+            ...centerWhite,
             color: isCall ? "orange" : "",
             textAlign: "center",
             fontFamily: "Barlow",
             fontSize: 12,
           };
         },
-        headerClass: ["cm-header", "no-resize"],
+        headerClass: ["cm-header"],
       },
       {
         headerName: "Tick",
         field: "Tick",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
+        cellStyle: { ...centerWhite, color: "#00ff59" },
+
         headerClass: ["cm-header"],
       },
       {
         headerName: "Trade",
         field: "Trade",
-        flex: 1,
         headerStyle,
-        cellStyle: centerWhite,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
-            color: isCall ? "green" : "red",
+            ...centerWhite,
+            color: isCall ? "#00ff59" : "#ff605d",
             textAlign: "center",
             fontFamily: "Barlow",
             fontSize: 12,
@@ -212,8 +236,10 @@ function to12hUpper(val) {
       {
         headerName: "Type",
         field: "Type",
-        flex: 1,
         headerStyle,
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
         cellStyle: centerWhite,
 
         headerClass: ["cm-header"],
@@ -221,44 +247,59 @@ function to12hUpper(val) {
       {
         headerName: "Strike",
         field: "Strike",
-        flex: 1.1,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
       {
         headerName: "Spot",
         field: "Spot",
-        flex: 1.4,
         headerStyle,
         cellStyle: centerWhite,
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
       {
         headerName: "SSD",
         field: "SSD",
-        flex: 1.2,
         headerStyle,
-        cellStyle: centerWhite,
+        cellStyle: (p) => {
+          const base = { ...centerWhite };
+          const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
+          return v < 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+        },
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
+        resizable: false,
         headerClass: ["cm-header"],
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
-        flex: 1.2,
         headerStyle,
         cellStyle: currencyCellStyle,
-        valueFormatter: (pp)=> formatNumberToCurrency(pp.value),
+        valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         headerClass: ["cm-header"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
 
       {
         headerName: "Price",
         field: "Price",
-        flex: 1.0,
         headerStyle,
         cellStyle: centerWhite,
-        headerClass: ["cm-header"],
+        headerClass: ["cm-header", "no-resize"],
+        width: 50,
+        minWidth: 40,
+        maxWidth: 60,
       },
     ],
     []

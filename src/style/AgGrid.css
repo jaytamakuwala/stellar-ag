@@ -564,3 +564,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.txt-green {
+  color: #00c853 !important;
+  font-weight: 500 !important;
+}
+.txt-red {
+  color: #ff605d !important;
+  font-weight: 500 !important;
+}
+.txt-orange {
+  color: #ffa726 !important;
+  font-weight: 500 !important;
+}
+
+.txt-blue {
+  color: #0000ff !important;
+  font-weight: 500 !important;
+}

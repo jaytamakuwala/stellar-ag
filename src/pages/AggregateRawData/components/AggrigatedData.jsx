@@ -14,6 +14,8 @@ import {
   getFormatedDateStrForUSA,
   getParentRowId,
   isSameDay,
+  USADateFormatter,
+  USATimeFormatter,
   safeGetDefsCount,
 } from "../../../utils/common";
 import resetSettings from "../../../assets/Images/reset_settings.png";
@@ -23,6 +25,85 @@ import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
 import { DetailCell } from "../../../components/DetailCell";
 import { SellTradesCell } from "../../../components/grids/SellTradeCell";
 import { reconcileByIndex } from "../../../utils/agGridHelper";
+
+// Timezone we care about
+const NY_TZ = "America/New_York";
+
+/** Format a Date as MM/DD/YYYY in New York time */
+function formatUS(d) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(d);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const dd = parts.find((p) => p.type === "day").value;
+  return `${y}/${m}/${dd}`;
+}
+
+/** 0..6 for Sun..Sat in New York */
+function nyWeekday(d) {
+  const name = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    weekday: "short",
+  }).format(d);
+  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return map[name] ?? 0;
+}
+
+/** Minutes since midnight in New York */
+function nyMinutesNow() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const H = Number(parts.find((p) => p.type === "hour").value);
+  const M = Number(parts.find((p) => p.type === "minute").value);
+  return H * 60 + M;
+}
+
+/** Previous trading day (Mon–Fri), ignoring US market holidays */
+function prevTradingDate(fromDate = new Date()) {
+  const dt = new Date(fromDate);
+  for (let i = 0; i < 7; i++) {
+    // step one UTC day back (safe, we always re-interpret in NY via formatters)
+    dt.setUTCDate(dt.getUTCDate() - 1);
+    const wd = nyWeekday(dt);
+    if (wd >= 1 && wd <= 5) return dt;
+  }
+  return fromDate; // fallback (shouldn't hit)
+}
+
+/**
+ * Decide the session date:
+ * - Weekend  => previous Friday
+ * - Weekday & time < 09:30 NY => previous trading day
+ * - Otherwise => today
+ */
+function getSessionDate() {
+  const now = new Date();
+  const wd = nyWeekday(now);
+  const OPEN = 9 * 60 + 30;
+
+  if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun or Sat
+  if (nyMinutesNow() < OPEN) return prevTradingDate(now); // before open
+  return now; // market started/already open
+}
+/** Build payload for a given Date (interpreted in NY), in US format */
+function buildPayloadUS(d, type = "Bull") {
+  const us = formatUS(d); // MM/DD/YYYY
+  return {
+    executionDate: `${us}T00:00:00`,
+    intervalStart: `${us}T09:00:00`,
+    intervalEnd: `${us}T16:45:00`,
+    minsWindows: 5,
+    type,
+  };
+}
 
 export default function FirstAnimatedTable({
   selectedDate,
@@ -40,37 +121,87 @@ export default function FirstAnimatedTable({
   const [subExpandedByParent, setSubExpandedByParent] = useState({});
   const [detailHeights, setDetailHeights] = useState({});
 
+  // const fetchdata = useCallback(async () => {
+  //   try {
+  //     const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
+  //     setFormattedDateStr(dayStr);
+
+  //     setFormattedDateStr(dayStr);
+  //     const queryObj = {
+  //       executionDate: `${dayStr}T00:00:00`,
+  //       intervalStart: `${dayStr}T09:00:00`,
+  //       intervalEnd: `${dayStr}T16:45:00`,
+  //       minsWindows: 5,
+  //       type: "Bull",
+  //     };
+
+  //     const [summaryMainRes, summaryRes] = await Promise.all([
+  //       getSummaryDataMain(queryObj),
+  //       getSummaryData(queryObj),
+  //     ]);
+
+  //     if (!summaryMainRes?.ok) {
+  //       throw new Error(
+  //         summaryMainRes?.error?.error || "Failed to fetch summary main data"
+  //       );
+  //     }
+  //     if (!summaryRes?.ok) {
+  //       throw new Error(
+  //         summaryRes?.error?.error || "Failed to fetch summary data"
+  //       );
+  //     }
+
+  //     setResponseData(summaryMainRes.data || []);
+  //     setSummaryData(summaryRes.data || []);
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error(error.message || "Something went wrong");
+  //   }
+  // }, [selectedDate]);
+  // inside your component
   const fetchdata = useCallback(async () => {
     try {
-      const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
-      setFormattedDateStr(dayStr);
+      // If user picked a date, respect it; else use session logic
+      const primaryDate = selectedDate
+        ? new Date(selectedDate)
+        : getSessionDate();
+      const fallbackDate = prevTradingDate(primaryDate);
 
-      const queryObj = {
-        executionDate: `${dayStr}T00:00:00`,
-        intervalStart: `${dayStr}T09:00:00`,
-        intervalEnd: `${dayStr}T16:45:00`,
-        minsWindows: 5,
-        type: "Bull",
+      // choose payload format here:
+      const primaryPayload = buildPayloadUS(primaryDate, "Bull");
+      const fallbackPayload = buildPayloadUS(fallbackDate, "Bull");
+
+      // reflect date used in UI (US string)
+      setFormattedDateStr(formatUS(primaryDate));
+
+      const callBoth = async (payload) => {
+        const [main, sub] = await Promise.all([
+          getSummaryDataMain(payload),
+          getSummaryData(payload),
+        ]);
+        if (!main?.ok)
+          throw new Error(main?.error?.error || "Main fetch failed");
+        if (!sub?.ok)
+          throw new Error(sub?.error?.error || "Summary fetch failed");
+        return { main: main.data || [], sub: sub.data || [] };
       };
 
-      const [summaryMainRes, summaryRes] = await Promise.all([
-        getSummaryDataMain(queryObj),
-        getSummaryData(queryObj),
-      ]);
-
-      if (!summaryMainRes?.ok) {
-        throw new Error(
-          summaryMainRes?.error?.error || "Failed to fetch summary main data"
-        );
-      }
-      if (!summaryRes?.ok) {
-        throw new Error(
-          summaryRes?.error?.error || "Failed to fetch summary data"
-        );
+      // try primary
+      let usedDate = primaryDate;
+      let data;
+      try {
+        data = await callBoth(primaryPayload);
+        if (!data.main.length && !data.sub.length)
+          throw new Error("No data for primary date");
+      } catch (e) {
+        // fallback to previous trading day
+        data = await callBoth(fallbackPayload);
+        usedDate = fallbackDate;
+        setFormattedDateStr(formatUS(usedDate));
       }
 
-      const incoming = summaryMainRes.data || [];
-      const inComingSummary = summaryRes.data || [];
+      const incoming = data.main || [];
+      const inComingSummary = data.sub || [];
       setResponseData((prev) =>
         reconcileByIndex(
           prev,
@@ -92,23 +223,51 @@ export default function FirstAnimatedTable({
       console.error(error);
       toast.error(error.message || "Something went wrong");
     }
-  }, [selectedDate]);
+  }, [selectedDate, setFormattedDateStr]);
+
+  // useEffect(() => {
+  //   let intervalId;
+  //   const run = async () => {
+  //     await fetchdata();
+  //   };
+
+  //   if (isSameDay(selectedDate, new Date())) {
+  //     run();
+  //     intervalId = setInterval(run, 5000);
+  //   } else {
+  //     run();
+  //   }
+  //   return () => {
+  //     if (intervalId) clearInterval(intervalId);
+  //   };
+  // }, [selectedDate, fetchdata]);
 
   useEffect(() => {
     let intervalId;
-    const run = async () => {
-      await fetchdata();
-    };
+    const run = () => fetchdata();
 
-    if (isSameDay(selectedDate, new Date())) {
+    const wd = nyWeekday(new Date()); // weekday in NY
+    const nowMin = nyMinutesNow(); // minutes in NY
+    const OPEN = 9 * 60 + 30; // 09:30
+
+    if (selectedDate) {
+      // If user picked a date manually -> just fetch once
       run();
-      intervalId = setInterval(run, 5000);
     } else {
-      run();
+      if (wd < 1 || wd > 5) {
+        // Weekend: fetch once (prev Friday), no interval
+        run();
+      } else if (nowMin < OPEN) {
+        // Weekday but market not open yet: fetch once (prev day), no interval
+        run();
+      } else {
+        // Market is open: fetch and poll every 5s
+        run();
+        intervalId = setInterval(run, 5000);
+      }
     }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
+
+    return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
   /* ===========================
@@ -266,14 +425,19 @@ export default function FirstAnimatedTable({
         headerName: "Score",
         flex: 1,
         cellStyle: (p) => {
-          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
+          const raw = String(p.value ?? "").replace(/[$,x]/gi, "");
+          const v = Number(raw);
+
           const base = {
             textAlign: "center",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           };
-          if (v > 10) return { ...base, color: "rgb(14, 165, 233)" };
+
+          if (v > 10) {
+            return { ...base, color: "#0000ff" };
+          }
           return { ...base, color: "white" };
         },
         headerClass: ["cm-header"],
@@ -456,11 +620,11 @@ export default function FirstAnimatedTable({
               suppressRowHoverHighlight={true}
               defaultColDef={{
                 flex: 1,
-                sortable: false,
+                sortable: true,
                 resizable: true,
-                filter: false,
-                // wrapHeaderText: true,
-                // autoHeaderHeight: true,
+                // filter: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
                 headerClass: "cm-header",
               }}
               rowClassRules={{
