@@ -22,6 +22,7 @@ import "../../../style/AgGrid.css";
 import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
 import { DetailCell } from "../../../components/DetailCell";
 import { SellTradesCell } from "../../../components/grids/SellTradeCell";
+import { reconcileByIndex } from "../../../utils/agGridHelper";
 
 export default function FirstAnimatedTable({
   selectedDate,
@@ -49,7 +50,7 @@ export default function FirstAnimatedTable({
         intervalStart: `${dayStr}T09:00:00`,
         intervalEnd: `${dayStr}T16:45:00`,
         minsWindows: 5,
-        type: "Bull"
+        type: "Bull",
       };
 
       const [summaryMainRes, summaryRes] = await Promise.all([
@@ -68,8 +69,25 @@ export default function FirstAnimatedTable({
         );
       }
 
-      setResponseData(summaryMainRes.data || []);
-      setSummaryData(summaryRes.data || []);
+      const incoming = summaryMainRes.data || [];
+      const inComingSummary = summaryRes.data || [];
+      setResponseData((prev) =>
+        reconcileByIndex(
+          prev,
+          incoming,
+          (row, idx) => getParentRowId(row, idx),
+          ["Tick"]
+        )
+      );
+      setSummaryData((prev) =>{
+        return reconcileByIndex(
+          prev,
+          inComingSummary,
+          (row, idx) => getParentRowId(row, idx),
+          ["Tick", "Time"]
+        )
+      
+      });
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
@@ -225,7 +243,7 @@ export default function FirstAnimatedTable({
         flex: 0.9,
         cellStyle: { textAlign: "center", color: "#fff" },
         cellClass: ["whiteTdContent"],
-        headerClass: ["cm-header"]
+        headerClass: ["cm-header"],
       },
       {
         colId: "Premium",
@@ -234,16 +252,14 @@ export default function FirstAnimatedTable({
         flex: 1,
         cellStyle: (p) => {
           const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000)
-            return { color: "#00ff59", textAlign: "center"};
-          if (v > 500000)
-            return { color: "#d6d454", textAlign: "center" };
+          if (v > 1000000) return { color: "#00ff59", textAlign: "center" };
+          if (v > 500000) return { color: "#d6d454", textAlign: "center" };
           return { color: "white", textAlign: "center" };
         },
         headerClass: ["cm-header"],
         valueFormatter: (p) => formatNumberToCurrency(p.value),
       },
-      
+
       {
         colId: "Score",
         field: "Score",
@@ -262,7 +278,7 @@ export default function FirstAnimatedTable({
         },
         headerClass: ["cm-header"],
       },
-      
+
       {
         colId: "Actions",
         headerName: "Analysis",
@@ -437,7 +453,6 @@ export default function FirstAnimatedTable({
               className="ag-theme-quartz header-center main-grid"
               rowData={displayRows}
               columnDefs={parentColsOnly}
-
               suppressRowHoverHighlight={true}
               defaultColDef={{
                 flex: 1,
@@ -659,7 +674,7 @@ function NestedGrid({
         valueFormatter: (p) => formatNumberToCurrency(p.value),
         headerClass: ["cm-header"],
       },
-      
+
       {
         colId: "Score",
         field: "Score",
@@ -668,7 +683,7 @@ function NestedGrid({
         cellStyle: () => ({ color: "white" }),
         headerClass: ["cm-header"],
       },
-     
+
       {
         colId: "__actionsSpacer",
         headerName: "Analysis",

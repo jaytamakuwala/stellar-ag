@@ -22,6 +22,7 @@ import "../../../style/AgGrid.css";
 import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
 import { DetailCell } from "../../../components/DetailCell";
 import { SellTradesCell } from "../../../components/grids/SellTradeCell";
+import { reconcileByIndex } from "../../../utils/agGridHelper";
 
 export default function SecondAnimatedTable({
   selectedDate,
@@ -67,9 +68,24 @@ export default function SecondAnimatedTable({
           summaryRes?.error?.error || "Failed to fetch summary data"
         );
       }
-
-      setResponseData(summaryMainRes.data || []);
-      setSummaryData(summaryRes.data || []);
+      const incoming = summaryMainRes.data || [];
+      const inComingSummary = summaryRes.data || [];
+      setResponseData((prev) =>
+        reconcileByIndex(
+          prev,
+          incoming,
+          (row, idx) => getParentRowId(row, idx),
+          ["Tick"]
+        )
+      );
+      setSummaryData((prev) =>
+        reconcileByIndex(
+          prev,
+          inComingSummary,
+          (row, idx) => getParentRowId(row, idx),
+          ["Tick", 'Time']
+        )
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");

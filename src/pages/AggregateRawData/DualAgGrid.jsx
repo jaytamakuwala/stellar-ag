@@ -235,7 +235,6 @@ export default function AnimatedTable() {
 
   const handleModalEvent = useCallback(
     (index, symbol) => {
-      debugger;
       setAnimationState(true);
       setDetailsofRow({ Tick: symbol });
       // Reset data so you don't see stale series while loading

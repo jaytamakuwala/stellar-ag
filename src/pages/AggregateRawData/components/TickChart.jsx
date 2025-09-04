@@ -20,7 +20,6 @@ export default function TickChart({
   handleModalEventClose,
 }) {
   console.log({ chartData });
-  debugger;
   return (
     <StyleModal
       className={animationState ? "open" : ""}
