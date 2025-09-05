@@ -97,18 +97,22 @@ export const isAuthenticated = () => !!sessionStorage.getItem("token");
 
 export const formatNumberToCurrencyWithComma = (price) => {
   const num = Number(price);
-  if (isNaN(num)) return "-"; 
+  if (isNaN(num)) return "-";
   return num.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: 0, 
+    minimumFractionDigits: 0,
   });
 };
 
 export const stripMoney = (v) => Number(String(v ?? "").replace(/[$,]/g, ""));
-export const percentToNumber = (v) => Number(String(v ?? "").replace("%", "")) || 0;
+export const percentToNumber = (v) =>
+  Number(String(v ?? "").replace("%", "")) || 0;
 
-export function currencyColorStyle(num, { hi = 1_000_000, mid = 500_000 } = {}) {
+export function currencyColorStyle(
+  num,
+  { hi = 1_000_000, mid = 500_000 } = {}
+) {
   if (num > hi) return { color: "#00ff59", fontWeight: 400 };
   if (num > mid) return { color: "#d6d454" };
   return { color: "#fff" };
@@ -122,6 +126,12 @@ export const safeGetDefsCount = (api) => {
 export const getParentRowId = (d, idx) =>
   d?.Tick && d?.Time ? `${d.Tick}-${d.Time}` : d?.Tick ?? `row-${idx ?? 0}`;
 
+export const stableParentId = (row) =>
+  row?.Id ||
+  row?.UniqueKey ||
+  row?.Tick ||
+  `${row?.Tick ?? "?"}-${row?.Time ?? "?"}`;
+
 export function toDDMMYYYY(input) {
   if (!input) return "";
   const d = new Date(input);
@@ -131,7 +141,6 @@ export function toDDMMYYYY(input) {
   const yyyy = d.getFullYear();
   return `${dd}-${mm}-${yyyy}`;
 }
-
 
 export function toLocalISOString(date) {
   const pad = (num) => String(num).padStart(2, "0");
@@ -151,3 +160,46 @@ export function isSameDay(a, b) {
   );
 }
 
+export function to12hUpper(val) {
+  if (val == null || val === "") return "";
+
+  let d;
+
+  if (val instanceof Date) {
+    d = val;
+  } else if (typeof val === "number") {
+    d = new Date(val < 1e12 ? val * 1000 : val);
+  } else if (typeof val === "string") {
+    const s = val.trim();
+
+    const ap = /^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)$/i.exec(s);
+    if (ap) {
+      const h = +ap[1] % 12 || 12;
+      const m = String(ap[2] ?? "00").padStart(2, "0");
+      const ampm = ap[4].toUpperCase();
+      return `${h}:${m} ${ampm}`;
+    }
+
+    const hm = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+    if (hm) {
+      const H = +hm[1],
+        M = +hm[2],
+        S = +(hm[3] || 0);
+      d = new Date();
+      d.setHours(H, M, S, 0);
+    } else {
+      const tryDate = new Date(s);
+      if (!isNaN(tryDate)) d = tryDate;
+      else return String(val);
+    }
+  }
+
+  if (!d || isNaN(d)) return String(val);
+
+  const H = d.getHours();
+  const m = String(d.getMinutes()).padStart(2, "0");
+  const ampm = H >= 12 ? "PM" : "AM";
+  const h12 = H % 12 || 12;
+
+  return `${h12}:${m} ${ampm}`;
+}

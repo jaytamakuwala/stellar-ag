@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   StyleModalFilter,
   StyleMainDiv,
@@ -13,8 +13,8 @@ import {
   formatNumberToCurrency,
   getFormatedDateStrForUSA,
   getParentRowId,
+  stableParentId,
   isSameDay,
-  USADateFormatter,
   USATimeFormatter,
   safeGetDefsCount,
 } from "../../../utils/common";
@@ -29,7 +29,7 @@ import { reconcileByIndex } from "../../../utils/agGridHelper";
 // Timezone we care about
 const NY_TZ = "America/New_York";
 
-/** Format a Date as MM/DD/YYYY in New York time */
+/** Format a Date as YYYY/MM/DD in New York time */
 function formatUS(d) {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: NY_TZ,
@@ -70,12 +70,11 @@ function nyMinutesNow() {
 function prevTradingDate(fromDate = new Date()) {
   const dt = new Date(fromDate);
   for (let i = 0; i < 7; i++) {
-    // step one UTC day back (safe, we always re-interpret in NY via formatters)
     dt.setUTCDate(dt.getUTCDate() - 1);
     const wd = nyWeekday(dt);
     if (wd >= 1 && wd <= 5) return dt;
   }
-  return fromDate; // fallback (shouldn't hit)
+  return fromDate;
 }
 
 /**
@@ -88,14 +87,14 @@ function getSessionDate() {
   const now = new Date();
   const wd = nyWeekday(now);
   const OPEN = 9 * 60 + 30;
-
-  if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun or Sat
+  if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun/Sat
   if (nyMinutesNow() < OPEN) return prevTradingDate(now); // before open
-  return now; // market started/already open
+  return now;
 }
-/** Build payload for a given Date (interpreted in NY), in US format */
+
+/** Build payload for a given Date (NY), in US format */
 function buildPayloadUS(d, type = "Bull") {
-  const us = formatUS(d); // MM/DD/YYYY
+  const us = formatUS(d); // YYYY/MM/DD
   return {
     executionDate: `${us}T00:00:00`,
     intervalStart: `${us}T09:00:00`,
@@ -113,52 +112,44 @@ export default function FirstAnimatedTable({
   animationState,
   formattedDateStr,
   setFormattedDateStr,
+  selectedSummaryData, // kept, but never mutated
 }) {
+  console.log("FirstAnimatedTable");
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
+  const summaryDataRef = useRef([]); // always fresh for renderers
+  useEffect(() => {
+    summaryDataRef.current = summaryData;
+  }, [summaryData]);
+
   const [filterState, setFilterState] = useState(false);
-  const [optionTradeData, setOptionTradeData] = useState({});
+  // const [optionTradeData, setOptionTradeData] = useState({});
   const [subExpandedByParent, setSubExpandedByParent] = useState({});
   const [detailHeights, setDetailHeights] = useState({});
+  const [expandedRowId, setExpandedRowId] = useState(null);
 
-  // const fetchdata = useCallback(async () => {
-  //   try {
-  //     const dayStr = getFormatedDateStrForUSA(selectedDate || new Date());
-  //     setFormattedDateStr(dayStr);
+  const formattedDateStrRef = useRef(formattedDateStr);
+  //const optionTradeDataRef = useRef(optionTradeData);
+  const subExpandedByParentRef = useRef(subExpandedByParent);
+  const detailHeightsRef = useRef(detailHeights);
+  const selectedSummaryDataRef = useRef(selectedSummaryData || []);
 
-  //     setFormattedDateStr(dayStr);
-  //     const queryObj = {
-  //       executionDate: `${dayStr}T00:00:00`,
-  //       intervalStart: `${dayStr}T09:00:00`,
-  //       intervalEnd: `${dayStr}T16:45:00`,
-  //       minsWindows: 5,
-  //       type: "Bull",
-  //     };
-
-  //     const [summaryMainRes, summaryRes] = await Promise.all([
-  //       getSummaryDataMain(queryObj),
-  //       getSummaryData(queryObj),
-  //     ]);
-
-  //     if (!summaryMainRes?.ok) {
-  //       throw new Error(
-  //         summaryMainRes?.error?.error || "Failed to fetch summary main data"
-  //       );
-  //     }
-  //     if (!summaryRes?.ok) {
-  //       throw new Error(
-  //         summaryRes?.error?.error || "Failed to fetch summary data"
-  //       );
-  //     }
-
-  //     setResponseData(summaryMainRes.data || []);
-  //     setSummaryData(summaryRes.data || []);
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error(error.message || "Something went wrong");
-  //   }
-  // }, [selectedDate]);
-  // inside your component
+  // keep refs in sync
+  useEffect(() => {
+    formattedDateStrRef.current = formattedDateStr;
+  }, [formattedDateStr]);
+  // useEffect(() => {
+  //   optionTradeDataRef.current = optionTradeData;
+  // }, [optionTradeData]);
+  useEffect(() => {
+    subExpandedByParentRef.current = subExpandedByParent;
+  }, [subExpandedByParent]);
+  useEffect(() => {
+    detailHeightsRef.current = detailHeights;
+  }, [detailHeights]);
+  useEffect(() => {
+    selectedSummaryDataRef.current = selectedSummaryData || [];
+  }, [selectedSummaryData]);
   const fetchdata = useCallback(async () => {
     try {
       // If user picked a date, respect it; else use session logic
@@ -167,7 +158,6 @@ export default function FirstAnimatedTable({
         : getSessionDate();
       const fallbackDate = prevTradingDate(primaryDate);
 
-      // choose payload format here:
       const primaryPayload = buildPayloadUS(primaryDate, "Bull");
       const fallbackPayload = buildPayloadUS(fallbackDate, "Bull");
 
@@ -186,15 +176,14 @@ export default function FirstAnimatedTable({
         return { main: main.data || [], sub: sub.data || [] };
       };
 
-      // try primary
       let usedDate = primaryDate;
       let data;
       try {
         data = await callBoth(primaryPayload);
-        if (!data.main.length && !data.sub.length)
+        if (!data.main.length && !data.sub.length) {
           throw new Error("No data for primary date");
-      } catch (e) {
-        // fallback to previous trading day
+        }
+      } catch {
         data = await callBoth(fallbackPayload);
         usedDate = fallbackDate;
         setFormattedDateStr(formatUS(usedDate));
@@ -210,63 +199,41 @@ export default function FirstAnimatedTable({
           ["Tick"]
         )
       );
-      setSummaryData((prev) =>{
-        return reconcileByIndex(
-          prev,
-          inComingSummary,
-          (row, idx) => getParentRowId(row, idx),
-          ["Tick", "Time"]
-        )
-      
-      });
+      setSummaryData(inComingSummary);
+      console.log("setSummaryData");
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
     }
   }, [selectedDate, setFormattedDateStr]);
 
-  // useEffect(() => {
-  //   let intervalId;
-  //   const run = async () => {
-  //     await fetchdata();
-  //   };
-
-  //   if (isSameDay(selectedDate, new Date())) {
-  //     run();
-  //     intervalId = setInterval(run, 5000);
-  //   } else {
-  //     run();
-  //   }
-  //   return () => {
-  //     if (intervalId) clearInterval(intervalId);
-  //   };
-  // }, [selectedDate, fetchdata]);
-
+  // Poll only when the market is open (NY time); otherwise, fetch once
   useEffect(() => {
     let intervalId;
     const run = () => fetchdata();
 
-    const wd = nyWeekday(new Date()); // weekday in NY
-    const nowMin = nyMinutesNow(); // minutes in NY
-    const OPEN = 9 * 60 + 30; // 09:30
-
     if (selectedDate) {
-      // If user picked a date manually -> just fetch once
+      // explicit date: single fetch
       run();
     } else {
+      const wd = nyWeekday(new Date());
+      const nowMin = nyMinutesNow();
+      const OPEN = 9 * 60 + 30; // 09:30
+      const CLOSE = 16 * 60 + 45; // 16:45 window end aligned with your payload
+
       if (wd < 1 || wd > 5) {
-        // Weekend: fetch once (prev Friday), no interval
+        // weekend: once (uses prev trading day)
         run();
-      } else if (nowMin < OPEN) {
-        // Weekday but market not open yet: fetch once (prev day), no interval
+      } else if (nowMin < OPEN || nowMin > CLOSE) {
+        // off-hours: once (prev trading day before open, same day after close)
         run();
       } else {
-        // Market is open: fetch and poll every 5s
+        // market open: poll
         run();
         intervalId = setInterval(run, 5000);
       }
     }
-
+    //intervalId = setInterval(run, 5000);
     return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
@@ -280,12 +247,10 @@ export default function FirstAnimatedTable({
     );
   }, [responseData, searchTerm]);
 
-  const [expandedRowId, setExpandedRowId] = useState(null);
-
   const displayRows = useMemo(() => {
     const out = [];
     filteredResponseData.forEach((r, i) => {
-      const id = getParentRowId(r, i);
+      const id = stableParentId(r);
       out.push({ ...r, __kind: "parent", __id: id });
       if (expandedRowId === id) {
         out.push({ __kind: "detail", __parent: r, __id: `detail-${id}` });
@@ -328,18 +293,9 @@ export default function FirstAnimatedTable({
   const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
 
   /* ===========================
-     Column defs (Parent)
+     Column defs (Parent) – stable
      =========================== */
 
-  const headerStyle = {
-    color: "rgb(95,95,95)",
-    background: "#333",
-    fontSize: 12,
-    fontFamily: "Barlow",
-    fontWeight: 700,
-    border: "none",
-    width: "100%",
-  };
   const analysisCellRenderer = useCallback(
     (params) => {
       const symbol = params?.data?.Tick ?? params?.data?.__parent?.Tick ?? "";
@@ -349,8 +305,6 @@ export default function FirstAnimatedTable({
           toast.error("No symbol found for this row");
           return;
         }
-        // This will now be fresh every time:
-        console.log({ formattedDateStr });
         setDetailsofRow(params.data);
         handleModalEvent(params.rowIndex, symbol);
       };
@@ -363,8 +317,9 @@ export default function FirstAnimatedTable({
         />
       );
     },
-    [formattedDateStr, handleModalEvent, setDetailsofRow]
+    [handleModalEvent, setDetailsofRow]
   );
+
   const baseParentCols = useMemo(
     () => [
       {
@@ -418,7 +373,6 @@ export default function FirstAnimatedTable({
         headerClass: ["cm-header"],
         valueFormatter: (p) => formatNumberToCurrency(p.value),
       },
-
       {
         colId: "Score",
         field: "Score",
@@ -427,22 +381,18 @@ export default function FirstAnimatedTable({
         cellStyle: (p) => {
           const raw = String(p.value ?? "").replace(/[$,x]/gi, "");
           const v = Number(raw);
-
           const base = {
             textAlign: "center",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           };
-
-          if (v > 10) {
-            return { ...base, color: "#0000ff" };
-          }
-          return { ...base, color: "white" };
+          return v > 10
+            ? { ...base, color: "#0000ff" }
+            : { ...base, color: "white" };
         },
         headerClass: ["cm-header"],
       },
-
       {
         colId: "Actions",
         headerName: "Analysis",
@@ -451,38 +401,37 @@ export default function FirstAnimatedTable({
         cellRenderer: analysisCellRenderer,
       },
     ],
-    [formattedDateStr, handleModalEvent, setDetailsofRow]
+    [analysisCellRenderer]
   );
 
+  // Keep columnDefs stable; use a ref to read latest summaryData inside the cellRenderer
   const parentColsOnly = useMemo(() => {
-    return baseParentCols.map((col, idx) => {
+    const cols = baseParentCols.map((col, idx) => {
       const c = { ...col };
-      const originalField = c.field;
-      const originalVG = c.valueGetter;
-
       if (idx === 0) {
-        c.valueGetter = (p) => {
-          if (p?.data?.__kind === "detail") return null;
-          if (originalVG) return originalVG(p);
-          if (originalField) return p?.data?.[originalField];
-          return null;
-        };
+        c.valueGetter = (p) =>
+          p?.data?.__kind === "detail" ? null : p?.data?.[c.field];
         c.colSpan = (p) =>
           p?.data?.__kind !== "detail" ? 1 : safeGetDefsCount(p?.api);
         c.cellRenderer = (p) => {
           if (p?.data?.__kind !== "detail") return p?.value;
 
-          const colState = p?.columnApi?.getColumnState?.() || [];
-          const widthMap = {};
-          colState.forEach((s) => {
-            if (s.colId) widthMap[s.colId] = s.width;
-          });
-
           const parent = p.data.__parent;
           const parentDetailId = p.data.__id;
           const symbol = parent?.Tick;
 
-          const baseRows = (summaryData || [])
+          // 2) read from refs (fresh every render)
+          const curSummary = summaryDataRef.current || [];
+          const tickSummaryData = curSummary.filter((d) => d?.Tick === symbol);
+
+          const newSummaryData = reconcileByIndex(
+            selectedSummaryDataRef.current || [],
+            tickSummaryData,
+            (row, idx) => getParentRowId(row, idx),
+            ["Tick", "Time"]
+          );
+
+          const baseRows = (newSummaryData || [])
             .filter((d) => d?.Tick === symbol)
             .map((d) => ({
               ...d,
@@ -490,7 +439,8 @@ export default function FirstAnimatedTable({
               __id: `${d.Tick}-${d.Time}`,
             }));
 
-          const expandedId = subExpandedByParent[parentDetailId] || null;
+          const expandedId =
+            subExpandedByParentRef.current[parentDetailId] || null;
           const setExpandedId = (nextId) =>
             setSubExpandedByParent((prev) => ({
               ...prev,
@@ -498,53 +448,43 @@ export default function FirstAnimatedTable({
             }));
 
           const targetHeight =
-            detailHeights[parentDetailId] ?? AG_GRID_HEIGHTS.DETAIL_DEFAULT_H;
+            detailHeightsRef.current[parentDetailId] ??
+            AG_GRID_HEIGHTS.DETAIL_DEFAULT_H;
 
           return (
-            <div onClick={(e) => e.stopPropagation()}>
-              <div className="ag-theme-quartz">
-                <DetailCell targetHeight={targetHeight}>
-                  <NestedGrid
-                    rows={baseRows}
-                    formattedDateStr={formattedDateStr}
-                    optionTradeData={optionTradeData}
-                    setOptionTradeData={setOptionTradeData}
-                    expandedId={expandedId}
-                    setExpandedId={setExpandedId}
-                    parentWidthMap={widthMap}
-                    onHeightChange={(h) => {
-                      setDetailHeights((prev) =>
-                        prev[parentDetailId] === h
-                          ? prev
-                          : { ...prev, [parentDetailId]: h }
-                      );
-                      p.api?.resetRowHeights?.();
-                    }}
-                  />
-                </DetailCell>
-              </div>
-            </div>
+            <DetailCell targetHeight={targetHeight}>
+              <NestedGrid
+                rows={baseRows}
+                formattedDateStr={formattedDateStrRef.current}
+                //optionTradeData={optionTradeDataRef.current}
+                //setOptionTradeData={setOptionTradeData}
+                expandedId={expandedId}
+                setExpandedId={setExpandedId}
+                parentWidthMap={{}} // keep if needed
+                onHeightChange={(h) => {
+                  const prevH = detailHeightsRef.current[parentDetailId];
+                  if (prevH === h) return;
+                  setDetailHeights((prev) => ({
+                    ...prev,
+                    [parentDetailId]: h,
+                  }));
+                  if (p?.node) {
+                    p.node.setRowHeight(h);
+                    p.api?.onRowHeightChanged();
+                  }
+                }}
+              />
+            </DetailCell>
           );
         };
-        return c;
+      } else {
+        c.valueGetter = (p) =>
+          p?.data?.__kind === "detail" ? null : p?.data?.[c.field];
       }
-
-      c.valueGetter = (p) => {
-        if (p?.data?.__kind === "detail") return null;
-        if (originalVG) return originalVG(p);
-        if (originalField) return p?.data?.[originalField];
-        return null;
-      };
       return c;
     });
-  }, [
-    baseParentCols,
-    summaryData,
-    formattedDateStr,
-    optionTradeData,
-    subExpandedByParent,
-    detailHeights,
-  ]);
+    return cols;
+  }, [baseParentCols]);
   /* ===========================
      Row styles (Parent)
      =========================== */
@@ -622,7 +562,6 @@ export default function FirstAnimatedTable({
                 flex: 1,
                 sortable: true,
                 resizable: true,
-                // filter: true,
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
                 headerClass: "cm-header",
@@ -632,9 +571,7 @@ export default function FirstAnimatedTable({
                 "ag-row-odd": (params) => params.node.rowIndex % 2 !== 0,
               }}
               suppressCellFocus
-              getRowId={(p) =>
-                p?.data?.__id ?? getParentRowId(p?.data ?? {}, p?.rowIndex ?? 0)
-              }
+              getRowId={(p) => p?.data?.__id ?? stableParentId(p?.data ?? {})}
               onRowClicked={onTopRowClicked}
               rowHeight={AG_GRID_HEIGHTS.ROW_H_L1}
               headerHeight={AG_GRID_HEIGHTS.HEADER_H_L1}
@@ -682,7 +619,7 @@ export default function FirstAnimatedTable({
                     type="button"
                     className="btn btn-link p-0"
                     style={{ color: COLORS.white, lineHeight: 0 }}
-                    onClick={handleFilerOptionClose}
+                    onClick={() => setFilterState(false)}
                   >
                     <CloseIcon />
                   </button>
@@ -709,6 +646,7 @@ function NestedGrid({
   parentWidthMap, // kept for parity
   onHeightChange,
 }) {
+  console.log("NestedGrid");
   const flatRows = useMemo(() => {
     const out = [];
     (rows || []).forEach((r) => {
@@ -730,9 +668,7 @@ function NestedGrid({
       if (kind !== "subParent") return;
       const id = e?.data?.__id;
       if (!id) return;
-
-      const current = typeof expandedId === "string" ? expandedId : null;
-      const next = current === id ? null : id;
+      const next = expandedId === id ? null : id;
       setExpandedId(next);
     },
     [expandedId, setExpandedId]
@@ -766,7 +702,7 @@ function NestedGrid({
   }, [nestedHeight, onHeightChange]);
 
   const childCols = useMemo(() => {
-    const cols = [
+    return [
       {
         colId: "Time",
         headerName: "Time",
@@ -787,8 +723,9 @@ function NestedGrid({
               <SellTradesCell
                 parentRow={r}
                 formattedDateStr={formattedDateStr}
-                optionTradeData={optionTradeData}
-                setOptionTradeData={setOptionTradeData}
+                time={new Date().getTime()}
+                //optionTradeData={optionTradeData}
+                //setOptionTradeData={setOptionTradeData}
               />
             </div>
           );
@@ -838,7 +775,6 @@ function NestedGrid({
         valueFormatter: (p) => formatNumberToCurrency(p.value),
         headerClass: ["cm-header"],
       },
-
       {
         colId: "Score",
         field: "Score",
@@ -847,7 +783,6 @@ function NestedGrid({
         cellStyle: () => ({ color: "white" }),
         headerClass: ["cm-header"],
       },
-
       {
         colId: "__actionsSpacer",
         headerName: "Analysis",
@@ -861,8 +796,7 @@ function NestedGrid({
         headerClass: ["cm-header"],
       },
     ];
-    return cols;
-  }, [formattedDateStr, optionTradeData, setOptionTradeData]);
+  }, [formattedDateStr]);
 
   const getChildRowHeight = useCallback(
     (p) =>

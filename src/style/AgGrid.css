@@ -470,7 +470,7 @@
 
 .ag-header-cell-label,
 .ag-header-group-cell-label {
-  flex: 0.40 1 auto;
+  flex: 0.4 1 auto;
 }
 
 .ag-theme-quartz .ag-row-hover {
@@ -580,4 +580,7 @@
 .txt-blue {
   color: #0000ff !important;
   font-weight: 500 !important;
+}
+.ag-body-vertical-scroll {
+  display: none !important;
 }

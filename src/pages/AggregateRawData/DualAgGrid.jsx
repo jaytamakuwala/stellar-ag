@@ -51,7 +51,7 @@ export default function AnimatedTable() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-
+  let selectedSummaryData = [];
   useEffect(() => {
     console.log({ selectedDate });
 
@@ -261,7 +261,6 @@ export default function AnimatedTable() {
   }, []);
 
   const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
-
   return (
     <StyleMainDiv
       style={{ display: "flex", flexDirection: "column", height: "100vh" }}
@@ -321,6 +320,7 @@ export default function AnimatedTable() {
                   animationState={animationState}
                   formattedDateStr={formattedDateStr}
                   setFormattedDateStr={(data) => setFormattedDateStr(data)}
+                  selectedSummaryData={selectedSummaryData}
                 />
               </div>
             </div>

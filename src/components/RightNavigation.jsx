@@ -14,9 +14,14 @@ export default function RightNavigation() {
       <StyleNavightion>
         <div className="IconAction">
           <img src={Favicon} alt="Icon" className="SellerIcon" />
-          <img src={Dashboard} alt="Icon" className="Dashboard" onClick={() => {
+          <img
+            src={Dashboard}
+            alt="Icon"
+            className="Dashboard"
+            onClick={() => {
               navigate("/");
-            }}  />
+            }}
+          />
           <img
             src={Dashboard}
             alt="Icon"
@@ -31,6 +36,22 @@ export default function RightNavigation() {
             className="Dashboard"
             onClick={() => {
               navigate("/magicOptionMain");
+            }}
+          />
+          <img
+            src={Dashboard}
+            alt="Icon"
+            className="Dashboard"
+            onClick={() => {
+              navigate("/UnusualDataMain");
+            }}
+          />
+          <img
+            src={Dashboard}
+            alt="Icon"
+            className="Dashboard"
+            onClick={() => {
+              navigate("/UltraHighVolumeDataMain");
             }}
           />
         </div>

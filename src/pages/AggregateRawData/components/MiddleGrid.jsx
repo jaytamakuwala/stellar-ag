@@ -1,15 +1,13 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 
 import { getAipowerAlerts } from "../../../service/stellarApi";
-import {
-  formatNumberToCurrency,
-  getFormatedDateStrForUSA,
-} from "../../../utils/common";
+import { getParentRowId } from "../../../utils/common";
 import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
 import { StyleMainDiv } from "../../../style/containers/AnimatedTable";
 import "../../../style/AgGrid.css";
+import { reconcileByIndex } from "../../../utils/agGridHelper";
 
 const NY_TZ = "America/New_York";
 
@@ -108,8 +106,15 @@ export default function MiddleGrid({
         usedDate = fallbackDate;
         setFormattedDateStr(formatUS(usedDate));
       }
-
-      setRows(res.data || []);
+      setRows((prev) =>
+        reconcileByIndex(
+          prev,
+          res.data || [],
+          (row, idx) => getParentRowId(row, idx),
+          ["Tick"]
+        )
+      );
+      // setRows(res.data || []);
     } catch (error) {
       console.error("[fetchdata] error:", error);
       toast.error(error.message || "Something went wrong");
@@ -140,11 +145,6 @@ export default function MiddleGrid({
 
     return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
-
-  const filteredResponseData = useMemo(() => {
-    const q = (searchTerm || "").toLowerCase();
-    return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
-  }, [searchTerm]);
 
   const headerStyle = {
     color: "rgb(95,95,95)",
@@ -294,6 +294,26 @@ export default function MiddleGrid({
     };
   }, []);
 
+  const filteredResponseData = useMemo(() => {
+    const q = (searchTerm || "").toLowerCase();
+    return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
+  }, [rows, searchTerm]);
+
+  const displayRows = useMemo(() => {
+    const out = [];
+    filteredResponseData.forEach((r, i) => {
+      out.push({ ...r });
+    });
+    return out;
+  }, [filteredResponseData]);
+
+  const getRowId = useCallback((params) => {
+    const r = params.data || {};
+    // Use a stable unique key for your data.
+    // If your API has an Id, return it here instead.
+    return r.__id ?? `${r.Tick ?? "?"}-${r.Time ?? "?"}-${r.Target ?? "?"}`;
+  }, []);
+
   return (
     <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>
       <div
@@ -306,26 +326,26 @@ export default function MiddleGrid({
       >
         <AgGridReact
           className="ag-theme-quartz header-center main-grid"
-          rowData={rows}
+          rowData={filteredResponseData}
           columnDefs={parentCols}
+          immutableData={true}
+          getRowId={getRowId}
           suppressRowHoverHighlight
+          suppressCellFocus
+          rowHeight={AG_GRID_HEIGHTS.ROW_H_L1}
+          headerHeight={AG_GRID_HEIGHTS.HEADER_H_L1}
+          getRowStyle={getRowStyle}
+          suppressAnimationFrame={true}
           defaultColDef={{
             flex: 1,
-            // sortable: false,
-            // resizable: true,
-            // filter: false,
             wrapHeaderText: true,
             autoHeaderHeight: true,
             headerClass: "cm-header",
           }}
           rowClassRules={{
-            "ag-row-even": (params) => params.node.rowIndex % 2 === 0,
-            "ag-row-odd": (params) => params.node.rowIndex % 2 !== 0,
+            "ag-row-even": (p) => p.node.rowIndex % 2 === 0,
+            "ag-row-odd": (p) => p.node.rowIndex % 2 !== 0,
           }}
-          suppressCellFocus
-          rowHeight={AG_GRID_HEIGHTS.ROW_H_L1}
-          headerHeight={AG_GRID_HEIGHTS.HEADER_H_L1}
-          getRowStyle={getRowStyle}
         />
       </div>
     </div>

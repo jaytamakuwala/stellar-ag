@@ -4,12 +4,14 @@ import {
   stripMoney,
   toDDMMYYYY,
   toLocalISOString,
+  getParentRowId,
 } from "../../utils/common";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AG_GRID_HEIGHTS, COLORS } from "../../utils/constants";
 import { AgGridReact } from "ag-grid-react";
 import { getOptionTradeDetails } from "../../service/stellarApi";
 import { faIR } from "date-fns/locale";
+import { reconcileByIndex } from "../../utils/agGridHelper";
 
 function parseExecDateYMD(execDateStr) {
   if (!execDateStr) return null;
@@ -42,94 +44,105 @@ function parseClockToHM(timeRaw) {
 export function SellTradesCell({
   parentRow,
   formattedDateStr,
+  time,
   optionTradeData,
   setOptionTradeData,
 }) {
+  const [summaryData, setSummaryData] = useState([]);
+  const summaryDataRef = useRef([]); // always fresh for renderers
+
   if (!parentRow) return <div style={{ width: "100%" }}></div>;
 
   const rowKey =
-    parentRow.__id ?? `${parentRow.Tick ?? "tick"}-${parentRow.Time ?? "time"}`;
+    parentRow.__id ??
+    `${parentRow.Tick ?? "tick"}-${parentRow.Time ?? "time"}-${
+      parentRow.TotalCost ?? "totalCost"
+    }`;
   const tick = parentRow.Tick ?? "";
-  const data = optionTradeData[rowKey];
   const inFlightRef = useRef(new Set());
+  console.log("rowKey", rowKey, time);
+  const fetchdata = useCallback(async () => {
+    console.log("fetchdata", rowKey in summaryDataRef.current);
+    // if (!tick || !parentRow.Time) return;
+    // if (rowKey in summaryDataRef.current) return;
+    // if (inFlightRef.current.has(rowKey)) return;
 
-  useEffect(() => {
-    let ignore = false;
+    const execDate = formattedDateStr || getFormatedDateStrForUSA(new Date());
+    const ymd = parseExecDateYMD(execDate);
+    const hm = parseClockToHM(parentRow.Time);
 
-    async function run() {
-      if (!tick || !parentRow.Time) return;
-      if (rowKey in optionTradeData) return;
-      if (inFlightRef.current.has(rowKey)) return;
-
-      const execDate = formattedDateStr || getFormatedDateStrForUSA(new Date());
-      const ymd = parseExecDateYMD(execDate);
-      const hm = parseClockToHM(parentRow.Time);
-
-      if (!ymd || !hm) {
-        if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: [] }));
-        return;
-      }
-
-      try {
-        inFlightRef.current.add(rowKey);
-
-        const startTime = new Date(
-          ymd.year,
-          ymd.month - 1,
-          ymd.day,
-          hm.hours,
-          hm.minutes
-        );
-        const endTime = new Date(startTime.getTime() + 10 * 60 * 1000);
-
-        const query = {
-          startTime: toLocalISOString(startTime),
-          endTime: toLocalISOString(endTime),
-          optionSymbol: tick,
-          buyOrSell: "BUY",
-        };
-
-        const res = await getOptionTradeDetails(query);
-
-        let rows =
-          (Array.isArray(res) && res) ||
-          (Array.isArray(res?.data) && res.data) ||
-          (Array.isArray(res?.rows) && res.rows) ||
-          (Array.isArray(res?.data?.rows) && res.data.rows) ||
-          [];
-
-        rows = rows
-          .filter((x) => {
-            const side = String(x?.BuyOrSell ?? x?.side ?? x?.orderSide ?? "")
-              .trim()
-              .toUpperCase();
-            return side === "" || side === "BUY" || side === "B";
-          })
-          .map((x, i) => ({
-            id: x.id ?? `${tick}-${x.Time ?? i}`,
-            ...x,
-          }));
-
-        // if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: rows }));
-        setOptionTradeData((prev) => {
-          const prevArr = prev[rowKey];
-          if (Array.isArray(prevArr) && prevArr.length === rows.length)
-            return prev;
-          return { ...prev, [rowKey]: rows };
-        });
-      } catch (e) {
-        if (!ignore) setOptionTradeData((prev) => ({ ...prev, [rowKey]: [] }));
-      } finally {
-        inFlightRef.current.delete(rowKey);
-      }
+    if (!ymd || !hm) {
+      //if (!ignore) setSummaryData((prev) => ({ ...prev, [rowKey]: [] }));
+      return;
     }
 
-    run();
-    return () => {
-      ignore = true;
-    };
-  }, [rowKey, tick, formattedDateStr, parentRow?.Time, setOptionTradeData]);
+    try {
+      inFlightRef.current.add(rowKey);
 
+      const startTime = new Date(
+        ymd.year,
+        ymd.month - 1,
+        ymd.day,
+        hm.hours,
+        hm.minutes
+      );
+      const endTime = new Date(startTime.getTime() + 10 * 60 * 1000);
+
+      const query = {
+        startTime: toLocalISOString(startTime),
+        endTime: toLocalISOString(endTime),
+        optionSymbol: tick,
+        buyOrSell: "BUY",
+      };
+
+      const res = await getOptionTradeDetails(query);
+
+      let rows =
+        (Array.isArray(res) && res) ||
+        (Array.isArray(res?.data) && res.data) ||
+        (Array.isArray(res?.rows) && res.rows) ||
+        (Array.isArray(res?.data?.rows) && res.data.rows) ||
+        [];
+
+      rows = rows
+        .filter((x) => {
+          const side = String(x?.BuyOrSell ?? x?.side ?? x?.orderSide ?? "")
+            .trim()
+            .toUpperCase();
+          return side === "" || side === "BUY" || side === "B";
+        })
+        .map((x, i) => ({
+          id: x.id ?? `${tick}-${x.Time ?? i}-${x.TotalCost ?? i}`,
+          ...x,
+        }));
+      console.log("row", rows, summaryDataRef.current[rowKey]);
+      const updatedRows = reconcileByIndex(
+        summaryDataRef.current[rowKey],
+        rows,
+        (row, idx) => getParentRowId(row, idx),
+        ["id"]
+      );
+      //if (!ignore) setSummaryData((prev) => ({ ...prev, [rowKey]: rows }));
+      setSummaryData((prev) => {
+        const prevArr = prev[rowKey];
+        if (Array.isArray(prevArr) && prevArr.length === rows.length)
+          return prev;
+        return { ...prev, [rowKey]: updatedRows };
+      });
+    } catch (e) {
+      //if (!ignore) setSummaryData((prev) => ({ ...prev, [rowKey]: [] }));
+    } finally {
+      inFlightRef.current.delete(rowKey);
+    }
+  }, [time]);
+
+  useEffect(() => {
+    fetchdata();
+  }, [time]);
+
+  useEffect(() => {
+    summaryDataRef.current = summaryData;
+  }, [summaryData]);
 
   const headerStyle = {
     backgroundColor: COLORS.dark3,
@@ -304,7 +317,7 @@ export function SellTradesCell({
         cellStyle: (p) => {
           const base = { ...centerWhiteBase };
           const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
-          return v > 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+          return v > 3 ? { ...base, color: "#0000ff", fontWeight: 400 } : base;
         },
         width: 70,
         minWidth: 40,
@@ -354,7 +367,11 @@ export function SellTradesCell({
     <div className="ag-theme-quartz no-padding-grid" style={{ width: "%" }}>
       <AgGridReact
         className="third-grid no-padding-grid"
-        rowData={Array.isArray(data) ? data : []}
+        rowData={
+          Array.isArray(summaryDataRef.current[rowKey])
+            ? summaryDataRef.current[rowKey]
+            : []
+        }
         columnDefs={tradeCols}
         headerHeight={AG_GRID_HEIGHTS.HEADER_H_L3}
         suppressRowHoverHighlight
@@ -367,7 +384,9 @@ export function SellTradesCell({
         suppressCellFocus
         getRowId={(pp) =>
           pp?.data?.id ||
-          `${pp?.data?.Tick ?? ""}-${pp?.data?.Time ?? ""}-${pp?.rowIndex ?? 0}`
+          `${pp?.data?.Tick ?? ""}-${pp?.data?.Time ?? ""}-${
+            pp?.rowIndex ?? 0
+          }-${pp?.TotalCost ?? 0}`
         }
         getRowStyle={getLevelThirdRowStyle}
         domLayout="autoHeight"

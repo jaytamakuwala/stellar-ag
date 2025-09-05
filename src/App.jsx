@@ -11,8 +11,10 @@ import EmailVerified from "./pages/Authentication/EmailVerified";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import optionMain from "./pages/rowOptionData/optionMain"
-import magicOptionMain from "./pages/MagicOptionData/magicOptionMain"
+import optionMain from "./pages/rowOptionData/optionMain";
+import magicOptionMain from "./pages/MagicOptionData/magicOptionMain";
+import UnusualDataMain from "./pages/UnusualOptionData/UnusualDataMain";
+import UltraHighVolumeDataMain from "./pages/UltraHighVolumeData/UltraHighVolumeMain";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -31,7 +33,11 @@ export default function App() {
             <Route path="/" Component={StockTableGrid} />
             <Route path="/optionMain" Component={optionMain} />
             <Route path="/magicOptionMain" Component={magicOptionMain} />
-
+            <Route path="/UnusualDataMain" Component={UnusualDataMain} />
+            <Route
+              path="/UltraHighVolumeDataMain"
+              Component={UltraHighVolumeDataMain}
+            />
           </Route>
           <Route path="*" element={<SignIn />} />
         </Routes>
