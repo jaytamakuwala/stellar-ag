@@ -1,39 +1,46 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 import {
   toLocalISOString,
+  getRowStyle,
+  
 } from "../../../utils/common";
 import { getMagicOptionData } from "../../../service/stellarApi";
 import {
-  getFormatedDateStrForUSA,
-} from "../../../utils/common";
-import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
+  AG_GRID_HEIGHTS,
+  COLORS,
+  cellBase,
+  headerBase,
+} from "../../../utils/constants";
 import "../../../style/AgGrid.css";
+import { formatUS, getSessionDate } from "../../../utils/agGridHelper";
 
 export default function LeftMagicOption({
   selectedDate,
   searchTerm,
   setFormattedDateStr,
+  Type,
+  Containcolor,
 }) {
   const [rows, setRows] = useState([]);
 
   const fetchdata = useCallback(async () => {
     try {
-      const base = selectedDate ? new Date(selectedDate) : new Date();
-
-      const dayStr = getFormatedDateStrForUSA(base);
-      setFormattedDateStr(dayStr);
+      const primaryDate = selectedDate
+        ? new Date(selectedDate)
+        : getSessionDate();
+      setFormattedDateStr(formatUS(primaryDate));
 
       const startTime = new Date(
-        base.getFullYear(),
-        base.getMonth(),
-        base.getDate()
+        primaryDate.getFullYear(),
+        primaryDate.getMonth(),
+        primaryDate.getDate()
       );
 
       const query = {
         tradeDate: toLocalISOString(startTime),
-        side: "Bull",
+        side: Type,
       };
 
       const res = await getMagicOptionData(query);
@@ -57,27 +64,6 @@ export default function LeftMagicOption({
     return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
   }, [rows, searchTerm]);
 
-  const cellBase = {
-    color: COLORS.white,
-    textAlign: "center",
-    fontFamily: "Barlow",
-    fontSize: 12,
-    fontWeight: 100,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-  const headerBase = {
-    backgroundColor: COLORS.dark3,
-    color: COLORS.dimText,
-    fontSize: 12,
-    fontFamily: "Barlow",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-
   const tradeCols = useMemo(
     () => [
       {
@@ -87,7 +73,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 100,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "Tick",
@@ -95,8 +80,7 @@ export default function LeftMagicOption({
         headerStyle: headerBase,
         minWidth: 70,
         flex: 1,
-        cellStyle: { ...cellBase, color: "#00ff59" },
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase, color: Containcolor },
       },
       {
         headerName: "Type",
@@ -105,7 +89,6 @@ export default function LeftMagicOption({
         minWidth: 50,
         flex: 0.7,
         cellStyle: cellBase,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "Probability",
@@ -113,8 +96,7 @@ export default function LeftMagicOption({
         headerStyle: headerBase,
         minWidth: 75,
         flex: 1,
-        cellStyle: { ...cellBase, color: "#00ff59" },
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase, color: Containcolor },
       },
       {
         headerName: "Anomaly(1-10)",
@@ -123,7 +105,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 100,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "Score",
@@ -132,7 +113,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 50,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "Orders",
@@ -141,7 +121,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 60,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "SSDScore",
@@ -150,7 +129,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "SSDSurge",
@@ -161,9 +139,8 @@ export default function LeftMagicOption({
         flex: 1,
         valueFormatter: (params) => {
           if (params.value == null) return "-";
-          return params.value ;
+          return params.value;
         },
-        headerClass: ["cm-header"],
       },
       {
         headerName: "AmtScore",
@@ -172,7 +149,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 80,
         flex: 1,
-        headerClass: ["cm-header"],
       },
 
       {
@@ -184,9 +160,8 @@ export default function LeftMagicOption({
         flex: 1,
         valueFormatter: (params) => {
           if (params.value == null) return "-";
-          return params.value ;
+          return params.value;
         },
-        headerClass: ["cm-header"],
       },
       {
         headerName: "Clusters",
@@ -195,7 +170,6 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        headerClass: ["cm-header"],
       },
       {
         headerName: "ClusterScore",
@@ -204,24 +178,11 @@ export default function LeftMagicOption({
         cellStyle: cellBase,
         minWidth: 90,
         flex: 1,
-        headerClass: ["cm-header", "no-resize"],
+        resizable: false,
       },
     ],
     []
   );
-
-  const getRowStyle = useCallback((params) => {
-    const isEvenRow = params.node.rowIndex % 2 === 0;
-    const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
-
-    return {
-      background: `${rowOverlay}`,
-      color: "rgb(245, 245, 245)",
-      transition: "opacity 0.3s ease-in-out",
-      fontFamily: "Barlow",
-      fontSize: 12,
-    };
-  }, []);
 
   return (
     <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>

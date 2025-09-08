@@ -16,93 +16,29 @@ import {
   stableParentId,
   isSameDay,
   USATimeFormatter,
+  currencyColorStyle,
   safeGetDefsCount,
 } from "../../../utils/common";
 import resetSettings from "../../../assets/Images/reset_settings.png";
 import { AgGridReact } from "ag-grid-react";
 import "../../../style/AgGrid.css";
-import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
+import {
+  AG_GRID_HEIGHTS,
+  cellBase,
+  COLORS,
+  headerBase,
+} from "../../../utils/constants";
 import { DetailCell } from "../../../components/DetailCell";
 import { SellTradesCell } from "../../../components/grids/SellTradeCell";
-import { reconcileByIndex } from "../../../utils/agGridHelper";
-
-// Timezone we care about
-const NY_TZ = "America/New_York";
-
-/** Format a Date as YYYY/MM/DD in New York time */
-function formatUS(d) {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: NY_TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(d);
-  const y = parts.find((p) => p.type === "year").value;
-  const m = parts.find((p) => p.type === "month").value;
-  const dd = parts.find((p) => p.type === "day").value;
-  return `${y}/${m}/${dd}`;
-}
-
-/** 0..6 for Sun..Sat in New York */
-function nyWeekday(d) {
-  const name = new Intl.DateTimeFormat("en-US", {
-    timeZone: NY_TZ,
-    weekday: "short",
-  }).format(d);
-  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  return map[name] ?? 0;
-}
-
-/** Minutes since midnight in New York */
-function nyMinutesNow() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: NY_TZ,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
-  const H = Number(parts.find((p) => p.type === "hour").value);
-  const M = Number(parts.find((p) => p.type === "minute").value);
-  return H * 60 + M;
-}
-
-/** Previous trading day (Mon–Fri), ignoring US market holidays */
-function prevTradingDate(fromDate = new Date()) {
-  const dt = new Date(fromDate);
-  for (let i = 0; i < 7; i++) {
-    dt.setUTCDate(dt.getUTCDate() - 1);
-    const wd = nyWeekday(dt);
-    if (wd >= 1 && wd <= 5) return dt;
-  }
-  return fromDate;
-}
-
-/**
- * Decide the session date:
- * - Weekend  => previous Friday
- * - Weekday & time < 09:30 NY => previous trading day
- * - Otherwise => today
- */
-function getSessionDate() {
-  const now = new Date();
-  const wd = nyWeekday(now);
-  const OPEN = 9 * 60 + 30;
-  if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun/Sat
-  if (nyMinutesNow() < OPEN) return prevTradingDate(now); // before open
-  return now;
-}
-
-/** Build payload for a given Date (NY), in US format */
-function buildPayloadUS(d, type = "Bull") {
-  const us = formatUS(d); // YYYY/MM/DD
-  return {
-    executionDate: `${us}T00:00:00`,
-    intervalStart: `${us}T09:00:00`,
-    intervalEnd: `${us}T16:45:00`,
-    minsWindows: 5,
-    type,
-  };
-}
+import {
+  reconcileByIndex,
+  formatUS,
+  nyWeekday,
+  nyMinutesNow,
+  prevTradingDate,
+  getSessionDate,
+  buildPayloadUS,
+} from "../../../utils/agGridHelper";
 
 export default function FirstAnimatedTable({
   selectedDate,
@@ -112,9 +48,11 @@ export default function FirstAnimatedTable({
   animationState,
   formattedDateStr,
   setFormattedDateStr,
-  selectedSummaryData, // kept, but never mutated
+  selectedSummaryData,
+  Type,
+  Containcolor,
 }) {
-  console.log("FirstAnimatedTable");
+  // console.log("FirstAnimatedTable");
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
   const summaryDataRef = useRef([]); // always fresh for renderers
@@ -158,8 +96,8 @@ export default function FirstAnimatedTable({
         : getSessionDate();
       const fallbackDate = prevTradingDate(primaryDate);
 
-      const primaryPayload = buildPayloadUS(primaryDate, "Bull");
-      const fallbackPayload = buildPayloadUS(fallbackDate, "Bull");
+      const primaryPayload = buildPayloadUS(primaryDate, Type);
+      const fallbackPayload = buildPayloadUS(fallbackDate, Type);
 
       // reflect date used in UI (US string)
       setFormattedDateStr(formatUS(primaryDate));
@@ -228,12 +166,11 @@ export default function FirstAnimatedTable({
         // off-hours: once (prev trading day before open, same day after close)
         run();
       } else {
-        // market open: poll
         run();
         intervalId = setInterval(run, 5000);
+        //     // market open: poll
       }
     }
-    //intervalId = setInterval(run, 5000);
     return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
@@ -327,50 +264,40 @@ export default function FirstAnimatedTable({
         field: "Time",
         headerName: "Time",
         flex: 1,
-        cellStyle: {
-          color: "rgb(98, 95, 95)",
-          fontWeight: "700",
-          textAlign: "center",
-        },
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
       },
       {
         colId: "Tick",
         field: "Tick",
         headerName: "Tick",
         flex: 1,
-        cellStyle: { color: "#00ff59", textAlign: "center" },
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase, color: Containcolor },
+        haderStyle: headerBase,
       },
       {
         colId: "Probability",
         field: "Probability",
         headerName: "Probability",
         flex: 1,
-        cellStyle: { color: "#00ff59", textAlign: "center" },
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase, color: Containcolor },
+        haderStyle: headerBase,
       },
       {
         colId: "Orders",
         field: "Orders",
         headerName: "Orders",
         flex: 0.9,
-        cellStyle: { textAlign: "center", color: "#fff" },
-        cellClass: ["whiteTdContent"],
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase },
+
+        haderStyle: headerBase,
       },
       {
         colId: "Premium",
         field: "Premium",
         headerName: "Premium",
         flex: 1,
-        cellStyle: (p) => {
-          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000) return { color: "#00ff59", textAlign: "center" };
-          if (v > 500000) return { color: "#d6d454", textAlign: "center" };
-          return { color: "white", textAlign: "center" };
-        },
-        headerClass: ["cm-header"],
+        haderStyle: headerBase,
+        cellStyle: (p) => currencyColorStyle(p.value),
         valueFormatter: (p) => formatNumberToCurrency(p.value),
       },
       {
@@ -381,30 +308,23 @@ export default function FirstAnimatedTable({
         cellStyle: (p) => {
           const raw = String(p.value ?? "").replace(/[$,x]/gi, "");
           const v = Number(raw);
-          const base = {
-            textAlign: "center",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          };
-          return v > 10
-            ? { ...base, color: "#0000ff" }
-            : { ...base, color: "white" };
+
+          return v > 10 ? { ...cellBase, color: COLORS.cyan } : { ...cellBase };
         },
-        headerClass: ["cm-header"],
+        haderStyle: headerBase,
       },
       {
         colId: "Actions",
         headerName: "Analysis",
         flex: 1,
-        headerClass: ["cm-header", "no-resize"],
+        haderStyle: headerBase,
+
         cellRenderer: analysisCellRenderer,
       },
     ],
     [analysisCellRenderer]
   );
 
-  // Keep columnDefs stable; use a ref to read latest summaryData inside the cellRenderer
   const parentColsOnly = useMemo(() => {
     const cols = baseParentCols.map((col, idx) => {
       const c = { ...col };
@@ -512,12 +432,9 @@ export default function FirstAnimatedTable({
 
       return {
         background: `${gradient},${rowOverlay}`,
-        color: "rgb(245, 245, 245)",
         opacity: isDimmed ? 0.1 : 1,
         pointerEvents: isDimmed ? "none" : "auto",
         transition: "opacity 0.3s ease-in-out",
-        fontFamily: "Barlow",
-        fontSize: 12,
       };
     },
     [expandedRowId]
@@ -731,57 +648,46 @@ function NestedGrid({
           );
         },
         cellStyle: {
-          color: "rgb(98, 95, 95)",
-          fontWeight: "700",
-          textAlign: "center",
+          ...cellBase,
+          color: COLORS.timeColor,
         },
-        headerClass: ["cm-header"],
       },
       {
         colId: "Tick",
         field: "Tick",
         headerName: "Tick",
         flex: 1,
-        cellClass: ["BlackTdContent"],
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase },
       },
       {
         colId: "Probability",
         field: "Probability",
         headerName: "Probability",
         flex: 1,
-        cellClass: ["BlackTdContent"],
-        headerClass: ["cm-header"],
+        cellStyle: cellBase,
       },
       {
         colId: "Orders",
         field: "Orders",
         headerName: "Orders",
         flex: 0.7,
-        cellClass: ["BlackTdContent"],
-        headerClass: ["cm-header"],
+        cellStyle: cellBase,
       },
       {
         colId: "Premium",
         field: "Premium",
         headerName: "Premium",
         flex: 1,
-        cellStyle: (p) => {
-          const v = Number(String(p.value ?? "").replace(/[$,]/g, ""));
-          if (v > 1000000) return { color: "#00ff59", fontWeight: 400 };
-          if (v > 500000) return { color: "#d6d454", fontWeight: 400 };
-          return { color: "white" };
-        },
+
+        cellStyle: (p) => currencyColorStyle(p.value),
         valueFormatter: (p) => formatNumberToCurrency(p.value),
-        headerClass: ["cm-header"],
       },
       {
         colId: "Score",
         field: "Score",
         headerName: "Score",
         flex: 1,
-        cellStyle: () => ({ color: "white" }),
-        headerClass: ["cm-header"],
+        cellStyle: { ...cellBase },
       },
       {
         colId: "__actionsSpacer",
@@ -791,9 +697,8 @@ function NestedGrid({
         resizable: false,
         sortable: false,
         filter: false,
-        cellClass: ["BlackTdContent"],
         valueGetter: () => "",
-        headerClass: ["cm-header"],
+        haderStyle: headerBase,
       },
     ];
   }, [formattedDateStr]);
@@ -820,10 +725,6 @@ function NestedGrid({
         row.__id !== expandedId;
       return {
         background: isDim ? COLORS.dark3 : baseEven,
-        color: COLORS.white,
-        fontWeight: 100,
-        fontSize: 12,
-        fontFamily: "Barlow",
         transition: "opacity 200ms ease, filter 200ms ease",
         opacity: isDim ? 0.35 : 1,
       };

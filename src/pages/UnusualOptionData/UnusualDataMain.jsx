@@ -1,20 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState,useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
 import LeftUnusualData from "./components/LeftUnusualData.jsx";
-import RightUnusualData from "./components/RightUnusualData.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
-
+import { COLORS } from "../../utils/constants";
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-// import MiddleGrid from "./components/MiddleGrid";
+import { UserContext } from "../../context/UserContext";
 
 export default function UnusualDataMain() {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const {selectedDate, setSelectedDate} = useContext(UserContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -52,8 +51,8 @@ export default function UnusualDataMain() {
       <RightNavigation />
       <>
         <DualGridHeader
-          date={selectedDate}
-          setDate={(date) => setSelectedDate(date)}
+          selectedDate={selectedDate}
+          setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
@@ -90,6 +89,8 @@ export default function UnusualDataMain() {
           >
             <div style={{ overflow: "auto", marginLeft: "" }}>
               <LeftUnusualData
+                Type={"Bull"}
+                Containcolor={COLORS.lime}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -114,7 +115,9 @@ export default function UnusualDataMain() {
             }}
           >
             <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <RightUnusualData
+              <LeftUnusualData
+                Type={"Bear"}
+                Containcolor={COLORS.red}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {

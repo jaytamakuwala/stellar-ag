@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
 import FirstAnimatedTable from "./components/AggrigatedData.jsx";
-import SecondAnimatedTable from "./components/RawData.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
 import TickChart from "./components/TickChart";
@@ -18,9 +17,10 @@ import {
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import MiddleGrid from "./components/MiddleGrid";
+import { COLORS } from "../../utils/constants";
+import { UserContext } from "../../context/UserContext";
 
 export default function AnimatedTable() {
-  const [selectedDate, setSelectedDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -51,6 +51,8 @@ export default function AnimatedTable() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
+  const { selectedDate, setSelectedDate } = useContext(UserContext);
+
   let selectedSummaryData = [];
   useEffect(() => {
     console.log({ selectedDate });
@@ -273,8 +275,8 @@ export default function AnimatedTable() {
       {!animationState ? (
         <>
           <DualGridHeader
-            date={selectedDate}
-            setDate={(date) => setSelectedDate(date)}
+            selectedDate={selectedDate}
+            setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
             setSearchTerm={(data) => setSearchTerm(data)}
             filterState={filterState}
             setFilterState={(data) => setFilterState(data)}
@@ -311,6 +313,8 @@ export default function AnimatedTable() {
             >
               <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
                 <FirstAnimatedTable
+                  Type={"Bull"}
+                  Containcolor={COLORS.lime}
                   selectedDate={selectedDate}
                   searchTerm={searchTerm}
                   handleModalEvent={(idx, symbol) => {
@@ -355,7 +359,9 @@ export default function AnimatedTable() {
               }}
             >
               <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
-                <SecondAnimatedTable
+                <FirstAnimatedTable
+                  Type={"Bear"}
+                  Containcolor={COLORS.red}
                   selectedDate={selectedDate}
                   searchTerm={searchTerm}
                   handleModalEvent={(idx, symbol) => {

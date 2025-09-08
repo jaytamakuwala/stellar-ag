@@ -1,20 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState,useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import LeftUltraHighVolume from "./components/LeftUltraHighVolume.jsx";
-import RightUltraHighVolume from "./components/RightUltraHighVolume.jsx";
+import LeftUltraHighVolume from "./components/LeftUltraHighVolume";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
+import { COLORS } from "../../utils/constants";
+import { getUltraHighVolumeOptionData } from "../../service/stellarApi";
 
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-// import MiddleGrid from "./components/MiddleGrid";
+import { UserContext } from "../../context/UserContext";
 
 export default function UltraHighVolumeMain() {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const { selectedDate, setSelectedDate } = useContext(UserContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -52,8 +53,8 @@ export default function UltraHighVolumeMain() {
       <RightNavigation />
       <>
         <DualGridHeader
-          date={selectedDate}
-          setDate={(date) => setSelectedDate(date)}
+          selectedDate={selectedDate}
+          setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
@@ -90,6 +91,9 @@ export default function UltraHighVolumeMain() {
           >
             <div style={{ overflow: "auto", marginLeft: "" }}>
               <LeftUltraHighVolume
+                Type={"C"}
+                Containcolor={COLORS.lime}
+                field={"OptionSymbol"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -114,7 +118,10 @@ export default function UltraHighVolumeMain() {
             }}
           >
             <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <RightUltraHighVolume
+              <LeftUltraHighVolume
+                Type={"P"}
+                Containcolor={COLORS.red}
+                field={"Tick"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {

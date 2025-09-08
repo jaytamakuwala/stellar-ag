@@ -6,15 +6,24 @@ import {
   toDDMMYYYY,
   stripMoney,
   currencyColorStyle,
+  parsePct,
+  getRowStyle,
 } from "../../../utils/common";
 import { getOptionTradeDetails } from "../../../service/stellarApi";
 import {
   formatNumberToCurrency,
   getFormatedDateStrForUSA,
+  to12hUpper,
 } from "../../../utils/common";
-import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
+import {
+  AG_GRID_HEIGHTS,
+  cellBase,
+  COLORS,
+  headerBase,
+} from "../../../utils/constants";
 import { StyleMainDiv } from "../../../style/containers/AnimatedTable";
 import "../../../style/AgGrid.css";
+import { formatUS, getSessionDate } from "../../../utils/agGridHelper";
 
 export default function LeftRawOption({
   selectedDate,
@@ -22,29 +31,31 @@ export default function LeftRawOption({
   animationState,
   formattedDateStr,
   setFormattedDateStr,
+  Type,
+  Containcolor,
 }) {
   const [rows, setRows] = useState([]);
 
   const fetchdata = useCallback(async () => {
     try {
-      const base = selectedDate ? new Date(selectedDate) : new Date();
-
-      const dayStr = getFormatedDateStrForUSA(base);
-      setFormattedDateStr(dayStr);
+      const primaryDate = selectedDate
+        ? new Date(selectedDate)
+        : getSessionDate();
+      setFormattedDateStr(formatUS(primaryDate));
 
       const startTime = new Date(
-        base.getFullYear(),
-        base.getMonth(),
-        base.getDate(),
+        primaryDate.getFullYear(),
+        primaryDate.getMonth(),
+        primaryDate.getDate(),
         9,
         0,
         0,
         0
       );
       const endTime = new Date(
-        base.getFullYear(),
-        base.getMonth(),
-        base.getDate(),
+        primaryDate.getFullYear(),
+        primaryDate.getMonth(),
+        primaryDate.getDate(),
         16,
         45,
         0,
@@ -55,7 +66,7 @@ export default function LeftRawOption({
         startTime: toLocalISOString(startTime),
         endTime: toLocalISOString(endTime),
         buyOrSell: "BS",
-        optionType: "C",
+        optionType: Type,
         sortMode: "1",
       };
 
@@ -73,90 +84,17 @@ export default function LeftRawOption({
   useEffect(() => {
     fetchdata();
   }, [selectedDate]);
-
+  
   const filteredResponseData = useMemo(() => {
     const q = (searchTerm || "").trim().toLowerCase();
     if (!q) return rows;
     return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
   }, [rows, searchTerm]);
 
-  const centerWhite = {
-    color: COLORS.white,
-    textAlign: "center",
-    fontFamily: "Barlow",
-    fontSize: 12,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-  const headerStyle = {
-    backgroundColor: COLORS.dark3,
-    color: COLORS.dimText,
-    fontSize: 12,
-    fontFamily: "Barlow",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
   const currencyCellStyle = (p) => {
     const v = stripMoney(p.value);
     const colorStyle = currencyColorStyle(v).color;
-    return { ...centerWhite, color: colorStyle };
-  };
-  // -> returns "h:mm AM/PM" in UPPERCASE
-  function to12hUpper(val) {
-    if (val == null || val === "") return "";
-
-    let d;
-
-    if (val instanceof Date) {
-      d = val;
-    } else if (typeof val === "number") {
-      // epoch seconds vs ms
-      d = new Date(val < 1e12 ? val * 1000 : val);
-    } else if (typeof val === "string") {
-      const s = val.trim();
-
-      // already has AM/PM → normalize
-      const ap = /^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)$/i.exec(s);
-      if (ap) {
-        const h = +ap[1] % 12 || 12;
-        const m = String(ap[2] ?? "00").padStart(2, "0");
-        const ampm = ap[4].toUpperCase();
-        return `${h}:${m} ${ampm}`;
-      }
-
-      // 24h "HH:mm[:ss]"
-      const hm = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(s);
-      if (hm) {
-        const H = +hm[1],
-          M = +hm[2],
-          S = +(hm[3] || 0);
-        d = new Date();
-        d.setHours(H, M, S, 0);
-      } else {
-        // ISO or other parsable date-time string
-        const tryDate = new Date(s);
-        if (!isNaN(tryDate)) d = tryDate;
-        else return String(val);
-      }
-    }
-
-    if (!d || isNaN(d)) return String(val);
-
-    const H = d.getHours();
-    const m = String(d.getMinutes()).padStart(2, "0");
-    const ampm = H >= 12 ? "PM" : "AM";
-    const h12 = H % 12 || 12;
-
-    return `${h12}:${m} ${ampm}`;
-  }
-  const parsePct = (x) => {
-    if (x == null) return NaN;
-    if (typeof x === "number") return x;
-    const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
-    return m ? parseFloat(m[0]) : NaN;
+    return { ...cellBase, color: colorStyle };
   };
 
   const tradeCols = useMemo(
@@ -164,11 +102,12 @@ export default function LeftRawOption({
       {
         headerName: "Time",
         field: "Time",
-        headerStyle,
+        headerStyle: headerBase,
+
         width: 70,
         minWidth: 50,
         maxWidth: 80,
-        cellStyle: centerWhite,
+        cellStyle: cellBase,
         valueFormatter: (p) => to12hUpper(p.value),
         tooltipValueGetter: (p) => to12hUpper(p.value),
         headerClass: ["cm-header"],
@@ -176,29 +115,26 @@ export default function LeftRawOption({
       {
         headerName: "Expiry",
         field: "Expiry",
-        headerStyle,
+        headerStyle: headerBase,
         width: 90,
         minWidth: 80,
         maxWidth: 100,
-        cellStyle: centerWhite,
+        cellStyle: cellBase,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
         headerClass: ["cm-header"],
       },
       {
         headerName: "DTE",
         field: "DTE",
-        headerStyle,
+        headerStyle: headerBase,
         width: 50,
         minWidth: 40,
         maxWidth: 60,
         cellStyle: (params) => {
           const isCall = Number(params.value) <= 3;
           return {
-            ...centerWhite,
-            color: isCall ? "orange" : "",
-            textAlign: "center",
-            fontFamily: "Barlow",
-            fontSize: 12,
+            ...cellBase,
+            color: isCall ? COLORS.orange : "",
           };
         },
         headerClass: ["cm-header"],
@@ -206,29 +142,26 @@ export default function LeftRawOption({
       {
         headerName: "Tick",
         field: "Tick",
-        headerStyle,
+        headerStyle: headerBase,
         width: 50,
         minWidth: 40,
         maxWidth: 60,
-        cellStyle: { ...centerWhite, color: "#00ff59" },
+        cellStyle: { ...cellBase, color: Containcolor },
 
         headerClass: ["cm-header"],
       },
       {
         headerName: "Trade",
         field: "Trade",
-        headerStyle,
+        headerStyle: headerBase,
         width: 50,
         minWidth: 40,
         maxWidth: 60,
         cellStyle: (params) => {
           const isCall = String(params.value).toUpperCase() === "CALL";
           return {
-            ...centerWhite,
-            color: isCall ? "#00ff59" : "#ff605d",
-            textAlign: "center",
-            fontFamily: "Barlow",
-            fontSize: 12,
+            ...cellBase,
+            color: isCall ? COLORS.lime : COLORS.red,
           };
         },
         headerClass: ["cm-header"],
@@ -236,19 +169,19 @@ export default function LeftRawOption({
       {
         headerName: "Type",
         field: "Type",
-        headerStyle,
+        headerStyle: headerBase,
         width: 50,
         minWidth: 40,
         maxWidth: 60,
-        cellStyle: centerWhite,
+        cellStyle: cellBase,
 
         headerClass: ["cm-header"],
       },
       {
         headerName: "Strike",
         field: "Strike",
-        headerStyle,
-        cellStyle: centerWhite,
+        headerStyle: headerBase,
+        cellStyle: cellBase,
         headerClass: ["cm-header"],
         width: 50,
         minWidth: 40,
@@ -257,8 +190,8 @@ export default function LeftRawOption({
       {
         headerName: "Spot",
         field: "Spot",
-        headerStyle,
-        cellStyle: centerWhite,
+        headerStyle: headerBase,
+        cellStyle: cellBase,
         headerClass: ["cm-header"],
         width: 50,
         minWidth: 40,
@@ -267,22 +200,21 @@ export default function LeftRawOption({
       {
         headerName: "SSD",
         field: "SSD",
-        headerStyle,
+        headerStyle: headerBase,
         cellStyle: (p) => {
-          const base = { ...centerWhite };
-          const v = parsePct(p.value); // handles "3%", " 3 %", 3, etc.
-          return v < 3 ? { ...base, color: "rgb(14, 165, 233)" } : base;
+          const v = parsePct(p.value);
+          return v < 3 ? { ...cellBase, color: COLORS.cyan } : cellBase;
         },
         width: 50,
         minWidth: 40,
         maxWidth: 60,
-        resizable: false,
+        resizable: true,
         headerClass: ["cm-header"],
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
-        headerStyle,
+        headerStyle: headerBase,
         cellStyle: currencyCellStyle,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         headerClass: ["cm-header"],
@@ -294,8 +226,8 @@ export default function LeftRawOption({
       {
         headerName: "Price",
         field: "Price",
-        headerStyle,
-        cellStyle: centerWhite,
+        headerStyle: headerBase,
+        cellStyle: cellBase,
         headerClass: ["cm-header", "no-resize"],
         width: 50,
         minWidth: 40,
@@ -304,19 +236,6 @@ export default function LeftRawOption({
     ],
     []
   );
-
-  const getRowStyle = useCallback((params) => {
-    const isEvenRow = params.node.rowIndex % 2 === 0;
-    const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
-
-    return {
-      background: `${rowOverlay}`,
-      color: "rgb(245, 245, 245)",
-      transition: "opacity 0.3s ease-in-out",
-      fontFamily: "Barlow",
-      fontSize: 12,
-    };
-  }, []);
 
   return (
     <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>

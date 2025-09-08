@@ -1,26 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState,useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
 import LeftRawOption from "./components/LeftRawOption.jsx";
-import RightRawOption from "./components/RightRawOption.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
-import TickChart from "../AggregateRawData/components/TickChart";
-import {
-  getChartBarData,
-  getChartBubbleData,
-  getChartBubbleExpiryData,
-  getChartPieData,
-} from "../../service/stellarApi";
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-// import MiddleGrid from "./components/MiddleGrid";
+import { COLORS } from "../../utils/constants";
+import { UserContext } from "../../context/UserContext";
+
 
 export default function optionMain() {
-  const [selectedDate, setSelectedDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -40,6 +33,7 @@ export default function optionMain() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
+  const { selectedDate, setSelectedDate } = useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -58,8 +52,8 @@ export default function optionMain() {
       <RightNavigation />
       <>
         <DualGridHeader
-          date={selectedDate}
-          setDate={(date) => setSelectedDate(date)}
+         selectedDate ={selectedDate}
+          setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
@@ -96,6 +90,8 @@ export default function optionMain() {
           >
             <div style={{ overflow: "auto", marginLeft: "" }}>
               <LeftRawOption
+                Type={"C"}
+                Containcolor={COLORS.lime}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -120,7 +116,9 @@ export default function optionMain() {
             }}
           >
             <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <RightRawOption
+              <LeftRawOption
+                Type={"P"}
+                Containcolor={COLORS.red}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {

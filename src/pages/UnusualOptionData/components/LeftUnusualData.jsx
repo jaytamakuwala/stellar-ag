@@ -1,35 +1,44 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
-import {
-  toLocalISOString,
-} from "../../../utils/common";
 import { getUnusualOptionData } from "../../../service/stellarApi";
 import {
   getFormatedDateStrForUSA,
-  to12hUpper,formatNumberToCurrency,toDDMMYYYY
+  to12hUpper,
+  formatNumberToCurrency,
+  toDDMMYYYY,
+  getRowStyle,
 } from "../../../utils/common";
-import { AG_GRID_HEIGHTS, COLORS } from "../../../utils/constants";
+import {
+  AG_GRID_HEIGHTS,
+  COLORS,
+  headerBase,
+  cellBase,
+} from "../../../utils/constants";
+import { getSessionDate } from "../../../utils/agGridHelper";
 import "../../../style/AgGrid.css";
 
 export default function RightUnusualData({
   selectedDate,
   searchTerm,
   setFormattedDateStr,
+  Type,
+  Containcolor,
 }) {
   const [rows, setRows] = useState([]);
 
   const fetchdata = useCallback(async () => {
     try {
-      const base = selectedDate ? new Date(selectedDate) : new Date();
-
-      const dayStr = getFormatedDateStrForUSA(base);
+      const primaryDate = selectedDate
+        ? new Date(selectedDate)
+        : getSessionDate();
+      const dayStr = getFormatedDateStrForUSA(primaryDate);
       setFormattedDateStr(dayStr);
 
       const query = {
         tradeDate: dayStr,
-        side: "Bull",
-        SortBy: "Time"
+        side: Type,
+        SortBy: "Time",
       };
 
       const res = await getUnusualOptionData(query);
@@ -53,27 +62,6 @@ export default function RightUnusualData({
     return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
   }, [rows, searchTerm]);
 
-  const cellBase = {
-    color: COLORS.white,
-    textAlign: "center",
-    fontFamily: "Barlow",
-    fontSize: 12,
-    fontWeight: 100,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-  const headerBase = {
-    backgroundColor: COLORS.dark3,
-    color: COLORS.dimText,
-    fontSize: 12,
-    fontFamily: "Barlow",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-
   const tradeCols = useMemo(
     () => [
       {
@@ -83,7 +71,7 @@ export default function RightUnusualData({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        valueFormatter: (pp)=> to12hUpper(pp.value),
+        valueFormatter: (pp) => to12hUpper(pp.value),
         headerClass: ["cm-header"],
       },
       {
@@ -92,8 +80,8 @@ export default function RightUnusualData({
         headerStyle: headerBase,
         minWidth: 100,
         flex: 1,
-        valueFormatter: (pp)=> toDDMMYYYY(pp.value),
-        cellStyle: { ...cellBase, },
+        valueFormatter: (pp) => toDDMMYYYY(pp.value),
+        cellStyle: { ...cellBase },
         headerClass: ["cm-header"],
       },
       {
@@ -102,7 +90,7 @@ export default function RightUnusualData({
         headerStyle: headerBase,
         minWidth: 70,
         flex: 0.7,
-        cellStyle: {...cellBase, color: "#00ff59"},
+        cellStyle: { ...cellBase, color: Containcolor },
         headerClass: ["cm-header"],
       },
       {
@@ -111,7 +99,7 @@ export default function RightUnusualData({
         headerStyle: headerBase,
         minWidth: 60,
         flex: 1,
-        cellStyle: { ...cellBase, color: "#00ff59" },
+        cellStyle: { ...cellBase, color: Containcolor },
         headerClass: ["cm-header"],
       },
       {
@@ -148,7 +136,7 @@ export default function RightUnusualData({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        valueFormatter: (pp)=> formatNumberToCurrency(pp.value),
+        valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         headerClass: ["cm-header"],
       },
       {
@@ -158,10 +146,7 @@ export default function RightUnusualData({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        valueFormatter: (params) => {
-          if (params.value == null) return "-";
-          return params.value ;
-        },
+
         headerClass: ["cm-header"],
       },
       {
@@ -181,31 +166,14 @@ export default function RightUnusualData({
         cellStyle: cellBase,
         minWidth: 70,
         flex: 1,
-        valueFormatter: (params) => {
-          if (params.value == null) return "-";
-          return params.value ;
-        },
+
         resizable: false,
 
         headerClass: ["cm-header"],
       },
-      
     ],
     []
   );
-
-  const getRowStyle = useCallback((params) => {
-    const isEvenRow = params.node.rowIndex % 2 === 0;
-    const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
-
-    return {
-      background: `${rowOverlay}`,
-      color: "rgb(245, 245, 245)",
-      transition: "opacity 0.3s ease-in-out",
-      fontFamily: "Barlow",
-      fontSize: 12,
-    };
-  }, []);
 
   return (
     <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>
@@ -229,8 +197,7 @@ export default function RightUnusualData({
             sortable: true,
             resizable: true,
             filter: false,
-            // wrapHeaderText: true,
-            // autoHeaderHeight: true,
+
             headerClass: "cm-header",
           }}
           rowClassRules={{

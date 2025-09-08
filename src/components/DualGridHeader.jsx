@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import { StyleOption } from "../style/containers/AnimatedTable";
+import { UserContext } from "../context/UserContext";
 
 export default function DualGridHeader({
-  date,
-  setDate,
   setSearchTerm,
   filterState,
   setFilterState,
-  hader
+  hader,
 }) {
-  const [draftDate, setDraftDate] = useState(date);
+  const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const [draftDate, setDraftDate] = useState(selectedDate);
 
   useEffect(() => {
-    setDraftDate(date ?? null);
-  }, [date]);
+    setDraftDate(selectedDate ?? null);
+  }, [selectedDate]);
   return (
     <StyleOption>
       <h4 className="TitleAction m-0" style={{ color: "#fff" }}>
-       {hader}
+        {hader}
       </h4>
 
       <div className="rightNavigation">
@@ -38,12 +38,14 @@ export default function DualGridHeader({
             alignItems: "center",
           }}
         >
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider
+            dateAdapter={AdapterDateFns}
+          >
             <DatePicker
               value={draftDate}
               onChange={(val) => setDraftDate(val)}
               onAccept={(val) => {
-                setDate(val ?? null);
+                setSelectedDate(val ?? null);
               }}
               disableFuture
               slotProps={{

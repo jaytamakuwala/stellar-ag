@@ -1,3 +1,5 @@
+import { cellBase, COLORS } from "./constants";
+import { useMemo } from "react";
 export const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
@@ -109,15 +111,6 @@ export const stripMoney = (v) => Number(String(v ?? "").replace(/[$,]/g, ""));
 export const percentToNumber = (v) =>
   Number(String(v ?? "").replace("%", "")) || 0;
 
-export function currencyColorStyle(
-  num,
-  { hi = 1_000_000, mid = 500_000 } = {}
-) {
-  if (num > hi) return { color: "#00ff59", fontWeight: 400 };
-  if (num > mid) return { color: "#d6d454" };
-  return { color: "#fff" };
-}
-
 export const safeGetDefsCount = (api) => {
   const defs = api?.getColumnDefs?.();
   return Array.isArray(defs) ? defs.length : 1;
@@ -203,3 +196,51 @@ export function to12hUpper(val) {
 
   return `${h12}:${m} ${ampm}`;
 }
+export function to12h(val) {
+  if (!val) return "";
+  if (typeof val !== "string" || val.includes("T")) {
+    const d = new Date(val);
+
+    return isNaN(d)
+      ? String(val)
+      : d.toLocaleTimeString("en-IN", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+  }
+  const parts = val.split(":").map(Number);
+  if (Number.isNaN(parts[0])) return val;
+  const [H, M = 0, S = 0] = parts;
+  const d = new Date();
+  d.setHours(H, M, S, 0);
+  return d.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+export const parsePct = (x) => {
+  if (x == null) return NaN;
+  if (typeof x === "number") return x;
+  const m = String(x).match(/-?\d+(?:\.\d+)?/); // grabs 3 or 3.5 from "3.5%"
+  return m ? parseFloat(m[0]) : NaN;
+};
+
+export const currencyColorStyle = (p) => {
+  const v = Number(String(p ?? "").replace(/[$,]/g, ""));
+  if (v > 1000000) return { ...cellBase,color: COLORS.lime, };
+  if (v > 500000) return {...cellBase, color: COLORS.yellow, };
+  return { ...cellBase,color: COLORS.white,  };
+};
+
+export const getRowStyle = (params) => {
+  const isEvenRow = params.node.rowIndex % 2 === 0;
+  const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
+
+  return {
+    background: `${rowOverlay}`,
+    color: COLORS.white,
+    transition: "opacity 0.3s ease-in-out",
+  };
+};

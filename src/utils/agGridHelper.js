@@ -53,3 +53,80 @@ export function reconcileByIndex(prev, incoming, keyFn, fieldsToCheck = []) {
   }
   return next;
 }
+
+const NY_TZ = "America/New_York";
+
+/** Format a Date as YYYY/MM/DD in New York time */
+export function formatUS(d) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(d);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const dd = parts.find((p) => p.type === "day").value;
+  return `${y}/${m}/${dd}`;
+}
+
+/** 0..6 for Sun..Sat in New York */
+export function nyWeekday(d) {
+  const name = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    weekday: "short",
+  }).format(d);
+  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return map[name] ?? 0;
+}
+
+/** Minutes since midnight in New York */
+export function nyMinutesNow() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: NY_TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const H = Number(parts.find((p) => p.type === "hour").value);
+  const M = Number(parts.find((p) => p.type === "minute").value);
+  return H * 60 + M;
+}
+
+/** Previous trading day (Mon–Fri), ignoring US market holidays */
+export function prevTradingDate(fromDate = new Date()) {
+  const dt = new Date(fromDate);
+  for (let i = 0; i < 7; i++) {
+    dt.setUTCDate(dt.getUTCDate() - 1);
+    const wd = nyWeekday(dt);
+    if (wd >= 1 && wd <= 5) return dt;
+  }
+  return fromDate;
+}
+
+/**
+ * Decide the session date:
+ * - Weekend  => previous Friday
+ * - Weekday & time < 09:30 NY => previous trading day
+ * - Otherwise => today
+ */
+export function getSessionDate() {
+  const now = new Date();
+  const wd = nyWeekday(now);
+  const OPEN = 9 * 60 + 30;
+  if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun/Sat
+  if (nyMinutesNow() < OPEN) return prevTradingDate(now); // before open
+  return now;
+}
+
+/** Build payload for a given Date (NY), in US format */
+export function buildPayloadUS(d, type = "Bull") {
+  const us = formatUS(d); // YYYY/MM/DD
+  return {
+    executionDate: `${us}T00:00:00`,
+    intervalStart: `${us}T09:00:00`,
+    intervalEnd: `${us}T16:45:00`,
+    minsWindows: 5,
+    type,
+  };
+}
