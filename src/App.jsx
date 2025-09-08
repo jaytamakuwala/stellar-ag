@@ -11,8 +11,8 @@ import EmailVerified from "./pages/Authentication/EmailVerified";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import optionMain from "./pages/rowOptionData/optionMain";
-import magicOptionMain from "./pages/MagicOptionData/magicOptionMain";
+import OptionMain from "./pages/rowOptionData/optionMain";
+import MagicOptionMain from "./pages/MagicOptionData/magicOptionMain";
 import UnusualDataMain from "./pages/UnusualOptionData/UnusualDataMain";
 import UltraHighVolumeDataMain from "./pages/UltraHighVolumeData/UltraHighVolumeMain";
 
@@ -24,19 +24,19 @@ export default function App() {
       <Toaster />
       <Router>
         <Routes>
-          <Route path="/signin" Component={SignIn} />
-          <Route path="/signup" Component={SignUp} />
-          <Route path="/forgotPassword" Component={ForgotPassword} />
-          <Route path="/resetPassword" Component={ResetPassword} />
-          <Route path="/emailVerified" Component={EmailVerified} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route path="/emailVerified" element={<EmailVerified />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/" Component={StockTableGrid} />
-            <Route path="/optionMain" Component={optionMain} />
-            <Route path="/magicOptionMain" Component={magicOptionMain} />
-            <Route path="/UnusualDataMain" Component={UnusualDataMain} />
+            <Route path="/" element={<StockTableGrid />} />
+            <Route path="/optionMain" element={<OptionMain />} />
+            <Route path="/magicOptionMain" element={<MagicOptionMain />} />
+            <Route path="/UnusualDataMain" element={<UnusualDataMain />} />
             <Route
               path="/UltraHighVolumeDataMain"
-              Component={UltraHighVolumeDataMain}
+              element={<UltraHighVolumeDataMain />}
             />
           </Route>
           <Route path="*" element={<SignIn />} />

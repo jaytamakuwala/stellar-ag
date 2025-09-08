@@ -244,3 +244,32 @@ export const getRowStyle = (params) => {
     transition: "opacity 0.3s ease-in-out",
   };
 };
+
+export const getCurrentUSADate = (date) => {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(date || new Date());
+
+  const getPart = (type) => parts.find((p) => p.type === type)?.value;
+
+  const year = getPart("year");
+  const month = getPart("month");
+  const day = getPart("day");
+  const hour = getPart("hour");
+  const minute = getPart("minute");
+  const second = getPart("second");
+
+  return new Date(
+    `${year}-${month}-${day}T${hour}:${minute}:${second}`
+  );
+};
+
