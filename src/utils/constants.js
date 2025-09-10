@@ -16,7 +16,7 @@ export const COLORS = {
   orange: "#ffa726",
   red: "#ff605d",
   dimText: "rgb(149, 149, 149)",
-timeColor: "rgb(95,95,95)",
+  timeColor: "rgb(95,95,95)",
   dark0: "#000",
   dark1: "#111",
   dark2: "#282828",
@@ -34,7 +34,7 @@ export const cellBase = {
   textOverflow: "ellipsis",
 };
 export const headerBase = {
-  backgroundColor: COLORS.dark3,
+  backgroundColor: "#161618",
   color: COLORS.dimText,
   fontSize: 12,
   fontFamily: "Barlow",

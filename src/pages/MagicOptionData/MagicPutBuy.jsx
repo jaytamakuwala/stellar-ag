@@ -4,18 +4,17 @@ import {
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import UltraHighVolume from "./components/UltraHighVolume";
+import MagicOption from "./components/MagicOption.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
-import { COLORS } from "../../utils/constants";
-import { getUltraHighVolumeOptionData } from "../../service/stellarApi";
 
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
+// import MiddleGrid from "./components/MiddleGrid";
+import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 
-export default function UltraHighVolumeMain() {
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+export default function magicOptionMain() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -35,6 +34,7 @@ export default function UltraHighVolumeMain() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
+  const { selectedDate, setSelectedDate } = useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -58,6 +58,7 @@ export default function UltraHighVolumeMain() {
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
+          hader={"Magic Put Buys"}
         />
         {filterState ? (
           <StyleModalFilter>
@@ -72,69 +73,21 @@ export default function UltraHighVolumeMain() {
             />
           </StyleModalFilter>
         ) : null}
-        <div
-          style={{
-            display: "flex",
-            flex: 1,
-          }}
-        >
-          {/* First Grid */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ overflow: "auto", marginLeft: "" }}>
-              <UltraHighVolume
-                Type={"C"}
-                Containcolor={COLORS.lime}
-                field={"OptionSymbol"}
-                hader={"Ultra High Volume Call Buy"}
-                selectedDate={selectedDate}
-                searchTerm={searchTerm}
-                handleModalEvent={(idx, symbol) => {
-                  handleModalEvent(idx, symbol);
-                }}
-                setDetailsofRow={(data) => setDetailsofRow(data)}
-                animationState={animationState}
-                formattedDateStr={formattedDateStr}
-                setFormattedDateStr={(data) => setFormattedDateStr(data)}
-              />
-            </div>
-          </div>
 
-          {/* Second Grid */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
+        <div style={{ overflow: "hidden", marginLeft: "" }}>
+          <MagicOption
+            Type={"Bear"}
+            Containcolor={COLORS.red}
+            selectedDate={selectedDate}
+            searchTerm={searchTerm}
+            handleModalEvent={(idx, symbol) => {
+              handleModalEvent(idx, symbol);
             }}
-          >
-            <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <UltraHighVolume
-                Type={"P"}
-                Containcolor={COLORS.red}
-                field={"Tick"}
-                hader={"Ultra High Volume Put Buy"}
-                selectedDate={selectedDate}
-                searchTerm={searchTerm}
-                handleModalEvent={(idx, symbol) => {
-                  handleModalEvent(idx, symbol);
-                }}
-                setDetailsofRow={(data) => setDetailsofRow(data)}
-                animationState={animationState}
-                formattedDateStr={formattedDateStr}
-                setFormattedDateStr={(data) => setFormattedDateStr(data)}
-              />
-            </div>
-          </div>
+            setDetailsofRow={(data) => setDetailsofRow(data)}
+            animationState={animationState}
+            formattedDateStr={formattedDateStr}
+            setFormattedDateStr={(data) => setFormattedDateStr(data)}
+          />
         </div>
       </>
       )

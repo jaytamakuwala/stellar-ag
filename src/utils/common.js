@@ -229,11 +229,16 @@ export const parsePct = (x) => {
 
 export const currencyColorStyle = (p) => {
   const v = Number(String(p ?? "").replace(/[$,]/g, ""));
-  if (v > 1000000) return { ...cellBase,color: COLORS.lime, };
-  if (v > 500000) return {...cellBase, color: COLORS.yellow, };
-  return { ...cellBase,color: COLORS.white,  };
+  if (v > 1000000) return { ...cellBase, color: COLORS.lime };
+  if (v > 500000) return { ...cellBase, color: COLORS.yellow };
+  return { ...cellBase, color: COLORS.white };
 };
-
+export const DteColorStyle = (p) => {
+  const v = Number(String(p ?? "").replace(/[$,]/g, ""));
+  if (v < 3 && v > 0) return { ...cellBase, color: COLORS.cyan };
+  if (3 <= v && v <= 10) return { ...cellBase, color: COLORS.yellow };
+  return { ...cellBase, color: COLORS.white };
+};
 export const getRowStyle = (params) => {
   const isEvenRow = params.node.rowIndex % 2 === 0;
   const rowOverlay = isEvenRow ? COLORS.dark4 : COLORS.dark3;
@@ -243,4 +248,30 @@ export const getRowStyle = (params) => {
     color: COLORS.white,
     transition: "opacity 0.3s ease-in-out",
   };
+};
+
+export const getCurrentUSADate = (date) => {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(date || new Date());
+
+  const getPart = (type) => parts.find((p) => p.type === type)?.value;
+
+  const year = getPart("year");
+  const month = getPart("month");
+  const day = getPart("day");
+  const hour = getPart("hour");
+  const minute = getPart("minute");
+  const second = getPart("second");
+
+  return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
 };

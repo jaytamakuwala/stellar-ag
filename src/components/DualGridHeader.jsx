@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import  { useEffect, useState, useContext } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import { StyleOption } from "../style/containers/AnimatedTable";
 import { UserContext } from "../context/UserContext";
+import { getCurrentUSADate } from "../utils/common";
 
 export default function DualGridHeader({
   setSearchTerm,
@@ -16,7 +17,7 @@ export default function DualGridHeader({
   const [draftDate, setDraftDate] = useState(selectedDate);
 
   useEffect(() => {
-    setDraftDate(selectedDate ?? null);
+    setDraftDate(selectedDate ?? new Date());
   }, [selectedDate]);
   return (
     <StyleOption>
@@ -45,7 +46,7 @@ export default function DualGridHeader({
               value={draftDate}
               onChange={(val) => setDraftDate(val)}
               onAccept={(val) => {
-                setSelectedDate(val ?? null);
+                setSelectedDate(getCurrentUSADate(val ?? null));
               }}
               disableFuture
               slotProps={{

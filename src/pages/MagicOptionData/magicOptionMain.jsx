@@ -4,7 +4,7 @@ import {
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import LeftMagicOption from "./components/LeftMagicOption.jsx";
+import MagicOption from "./components/MagicOption.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
 
@@ -53,12 +53,12 @@ export default function magicOptionMain() {
       <RightNavigation />
       <>
         <DualGridHeader
-         selectedDate ={selectedDate}
+          selectedDate={selectedDate}
           setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
-          hader={"Magic Option Data"}
+          hader={"Magic Call Buys"}
         />
         {filterState ? (
           <StyleModalFilter>
@@ -73,65 +73,21 @@ export default function magicOptionMain() {
             />
           </StyleModalFilter>
         ) : null}
-        <div
-          style={{
-            display: "flex",
-            flex: 1,
-          }}
-        >
-          {/* First Grid */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ overflow: "auto", marginLeft: "" }}>
-              <LeftMagicOption
-                Type={"Bull"}
-                Containcolor={COLORS.lime}
-                selectedDate={selectedDate}
-                searchTerm={searchTerm}
-                handleModalEvent={(idx, symbol) => {
-                  handleModalEvent(idx, symbol);
-                }}
-                setDetailsofRow={(data) => setDetailsofRow(data)}
-                animationState={animationState}
-                formattedDateStr={formattedDateStr}
-                setFormattedDateStr={(data) => setFormattedDateStr(data)}
-              />
-            </div>
-          </div>
 
-          {/* Second Grid */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
+        <div style={{ overflow: "hidden", }}>
+          <MagicOption
+            Type={"Bull"}
+            Containcolor={COLORS.lime}
+            selectedDate={selectedDate}
+            searchTerm={searchTerm}
+            handleModalEvent={(idx, symbol) => {
+              handleModalEvent(idx, symbol);
             }}
-          >
-            <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <LeftMagicOption
-                Type={"Bear"}
-                Containcolor={COLORS.red}
-                selectedDate={selectedDate}
-                searchTerm={searchTerm}
-                handleModalEvent={(idx, symbol) => {
-                  handleModalEvent(idx, symbol);
-                }}
-                setDetailsofRow={(data) => setDetailsofRow(data)}
-                animationState={animationState}
-                formattedDateStr={formattedDateStr}
-                setFormattedDateStr={(data) => setFormattedDateStr(data)}
-              />
-            </div>
-          </div>
+            setDetailsofRow={(data) => setDetailsofRow(data)}
+            animationState={animationState}
+            formattedDateStr={formattedDateStr}
+            setFormattedDateStr={(data) => setFormattedDateStr(data)}
+          />
         </div>
       </>
       )

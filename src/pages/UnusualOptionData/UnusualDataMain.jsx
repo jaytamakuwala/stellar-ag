@@ -4,7 +4,7 @@ import {
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import LeftUnusualData from "./components/LeftUnusualData.jsx";
+import UnusualData from "./components/UnusualData.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
 import { COLORS } from "../../utils/constants";
@@ -56,7 +56,6 @@ export default function UnusualDataMain() {
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
-          hader={"Unusual Option Data"}
         />
         {filterState ? (
           <StyleModalFilter>
@@ -88,9 +87,10 @@ export default function UnusualDataMain() {
             }}
           >
             <div style={{ overflow: "auto", marginLeft: "" }}>
-              <LeftUnusualData
+              <UnusualData
                 Type={"Bull"}
                 Containcolor={COLORS.lime}
+                hader = {"Unusual Call Options"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -114,10 +114,11 @@ export default function UnusualDataMain() {
               overflow: "hidden",
             }}
           >
-            <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
-              <LeftUnusualData
+            <div style={{ flex: 1, overflow: "hidden", marginLeft: "" }}>
+              <UnusualData
                 Type={"Bear"}
                 Containcolor={COLORS.red}
+                hader={"Unusual Put Options"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {

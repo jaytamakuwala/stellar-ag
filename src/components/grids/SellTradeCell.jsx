@@ -331,6 +331,8 @@ import {
   getParentRowId,
   to12hUpper,
   parsePct,
+  DteColorStyle,
+  formatNumberToCurrency,
 } from "../../utils/common";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -357,7 +359,9 @@ function parseExecDateYMD(execDateStr) {
 }
 
 function parseClockToHM(timeRaw) {
-  const s = String(timeRaw ?? "").trim().toUpperCase();
+  const s = String(timeRaw ?? "")
+    .trim()
+    .toUpperCase();
   const m = s.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/);
   if (!m) return null;
   let hours = parseInt(m[1], 10);
@@ -374,6 +378,7 @@ export function SellTradesCell({
   time,
   optionTradeData,
   setOptionTradeData,
+  Containcolor,
 }) {
   // Use objects keyed by rowKey
   const [summaryData, setSummaryData] = useState({});
@@ -480,11 +485,12 @@ export function SellTradesCell({
         headerName: "Time",
         field: "Time",
         headerStyle: headerBase,
-        cellStyle: cellBase,
+        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
         width: 65,
         minWidth: 50,
         maxWidth: 70,
         resizable: false,
+
         valueFormatter: (pp) => to12hUpper(pp.value),
         headerClass: ["cm-header"],
       },
@@ -498,6 +504,8 @@ export function SellTradesCell({
         minWidth: 80,
         maxWidth: 100,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "Trade",
@@ -511,6 +519,8 @@ export function SellTradesCell({
         minWidth: 40,
         maxWidth: 60,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "Type",
@@ -532,6 +542,8 @@ export function SellTradesCell({
         minWidth: 50,
         maxWidth: 60,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "Spot",
@@ -542,16 +554,22 @@ export function SellTradesCell({
         minWidth: 50,
         maxWidth: 80,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
         headerStyle: headerBase,
         cellStyle: currencyCellStyle,
+        valueFormatter: (pp) => `$${(pp.value)}`,
+
         width: 80,
         minWidth: 70,
         maxWidth: 100,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "SSD",
@@ -566,6 +584,8 @@ export function SellTradesCell({
         minWidth: 40,
         maxWidth: 80,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "Price",
@@ -576,16 +596,20 @@ export function SellTradesCell({
         minWidth: 40,
         maxWidth: 80,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
       {
         headerName: "DTE",
         field: "DTE",
         headerStyle: headerBase,
-        cellStyle: cellBase,
+        cellStyle: (p) => DteColorStyle(p.value),
         width: 80,
         minWidth: 70,
         maxWidth: 100,
         resizable: false,
+        headerClass: ["cm-header"],
+
       },
     ],
     []
