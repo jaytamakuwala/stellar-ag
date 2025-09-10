@@ -26,11 +26,11 @@ export default function App() {
       <Toaster />
       <Router>
         <Routes>
-          <Route path="/signin" Component={SignIn} />
-          <Route path="/signup" Component={SignUp} />
-          <Route path="/forgotPassword" Component={ForgotPassword} />
-          <Route path="/resetPassword" Component={ResetPassword} />
-          <Route path="/emailVerified" Component={EmailVerified} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route path="/emailVerified" element={<EmailVerified />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/" Component={StockTableGrid} />
             <Route path="/optionMain" Component={optionMain} />
@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/UnusualDataMain" Component={UnusualDataMain} />
             <Route
               path="/UltraHighVolumeDataMain"
-              Component={UltraHighVolumeDataMain}
+              element={<UltraHighVolumeDataMain />}
             />
           </Route>
           <Route path="*" element={<SignIn />} />
