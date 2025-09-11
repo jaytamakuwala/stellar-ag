@@ -10,7 +10,7 @@ import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 
 import { getAipowerAlerts } from "../../../service/stellarApi";
-import { getParentRowId, to12h, getRowStyle } from "../../../utils/common";
+import { getParentRowId, to12h, getRowStyle, to12hUpper } from "../../../utils/common";
 import {
   AG_GRID_HEIGHTS,
   cellBase,
@@ -38,7 +38,7 @@ export default function AiPowerData({
   // setRows,
 }) {
   const [rows, setRows] = useState([]);
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const { selectedDate,} = useContext(UserContext);
 
   // const fetchdata = useCallback(async () => {
   //   try {
@@ -204,13 +204,13 @@ export default function AiPowerData({
         field: "Target",
         headerName: "Target",
         flex: 1,
-        minWidth: 50,
+        minWidth: 100,
         cellStyle: { ...cellBase },
         resizable: false,
-        valueFormatter: (params) => {
-          if (!params.value) return "";
-          return String(params.value).split("-")[0].trim();
-        },
+        // valueFormatter: (params) => {
+        //   if (!params.value) return "";
+        //   return String(params.value).split("-")[0].trim();
+        // },
         headerStyle: headerBase,
       },
     ],
@@ -265,7 +265,7 @@ export default function AiPowerData({
         }}
       >
         <AgGridReact
-          className="ag-theme-quartz header-center main-grid"
+          className="ag-theme-quartz header-center main-grid main-grid "
           rowData={filteredResponseData}
           columnDefs={parentCols}
           immutableData={true}

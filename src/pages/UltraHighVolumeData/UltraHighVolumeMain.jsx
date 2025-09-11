@@ -15,8 +15,8 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
 
 export default function UltraHighVolumeMain() {
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+    useContext(UserContext);
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -137,7 +137,6 @@ export default function UltraHighVolumeMain() {
           </div>
         </div>
       </>
-      )
     </StyleMainDiv>
   );
 }

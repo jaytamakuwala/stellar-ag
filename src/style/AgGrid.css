@@ -189,8 +189,10 @@
 /* Center all header text in the third (SellTradesCell) grid */
 .third-grid .hdr-center .ag-header-cell-label {
   justify-content: center;
+  z-index: 1;
   /* center the flex container */
   align-items: center;
+  overflow-x: auto;
 }
 
 .third-grid .hdr-center .ag-header-cell-text {
@@ -198,7 +200,10 @@
   /* center the text itself */
   width: 100%;
 }
-
+.third-grid {
+  width: 100% !important;
+  overflow-x: auto;
+}
 /* Center all header text in the main grid */
 .main-grid .hdr-center .ag-header-cell-label {
   justify-content: center;
@@ -556,7 +561,7 @@
 .main-grid .ag-root {
   border-radius: 7px !important;
   /* enforce 7px on main wrapper */
-  overflow: hidden;
+  overflow: auto;
   /* keep rounded clipping */
 }
 .ag-theme-quartz .ag-cell {
@@ -581,6 +586,69 @@
   color: #0000ff !important;
   font-weight: 500 !important;
 }
-.ag-body-vertical-scroll {
-  display: none !important;
+
+.main-grid ::-webkit-scrollbar {
+  width: 60px;
+}
+
+.main-grid ::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+.main-grid ::-webkit-scrollbar-thumb {
+  background-color: rgb(95, 95, 95); /* default thumb */
+  border-radius: 0px;
+  /* border: 2px solid #121212;        */
+}
+
+.main-grid ::-webkit-scrollbar-thumb:active {
+  background-color: #9ca3af; /* on drag */
+}
+
+.main-grid ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scope tighter to the vertical scrolling viewport to stabilize layout */
+.main-grid .ag-center-cols-viewport {
+  scrollbar-gutter: stable;
+}
+
+.main-grid .ag-center-cols-viewport {
+  scrollbar-width: auto; /* thin / auto / none */
+  scrollbar-color: #4b5563 #121212; /* thumb / track */
+}
+
+.third-grid ::-webkit-scrollbar {
+  width: 40px;
+  min-width: 20px;
+  max-width: 60px;
+}
+
+.third-grid ::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+.third-grid ::-webkit-scrollbar-thumb {
+  background-color: rgb(95, 95, 95); /* default thumb */
+  border-radius: 0px;
+  /* border: 2px solid #121212;        */
+}
+
+.third-grid ::-webkit-scrollbar-thumb:active {
+  background-color: #282828; /* on drag */
+}
+
+.third-grid ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scope tighter to the vertical scrolling viewport to stabilize layout */
+.third-grid .ag-center-cols-viewport {
+  scrollbar-gutter: stable;
+}
+
+.third-grid .ag-center-cols-viewport {
+  scrollbar-width: none; /* thin / auto / none */
+  scrollbar-color: #4b5563 #121212; /* thumb / track */
 }

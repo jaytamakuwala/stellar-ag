@@ -1,4 +1,4 @@
-import  { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SearchIcon from "@mui/icons-material/Search";
@@ -7,15 +7,10 @@ import { StyleOption } from "../style/containers/AnimatedTable";
 import { UserContext } from "../context/UserContext";
 import { getCurrentUSADate } from "../utils/common";
 
-export default function DualGridHeader({
-  setSearchTerm,
-  filterState,
-  setFilterState,
-  hader,
-}) {
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+export default function DualGridHeader({ filterState, setFilterState, hader }) {
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+    useContext(UserContext);
   const [draftDate, setDraftDate] = useState(selectedDate);
-
   useEffect(() => {
     setDraftDate(selectedDate ?? new Date());
   }, [selectedDate]);
@@ -39,9 +34,7 @@ export default function DualGridHeader({
             alignItems: "center",
           }}
         >
-          <LocalizationProvider
-            dateAdapter={AdapterDateFns}
-          >
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               value={draftDate}
               onChange={(val) => setDraftDate(val)}
@@ -60,7 +53,9 @@ export default function DualGridHeader({
           <input
             type="text"
             placeholder="Search Tick"
+            // {(e) => setDraftSearchTerm(e.target.value)}
             onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
           />
           <SearchIcon className="SearchIcon" />
         </div>

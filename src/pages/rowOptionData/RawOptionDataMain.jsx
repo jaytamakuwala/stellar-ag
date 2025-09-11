@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState,useContext } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
@@ -12,9 +12,8 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 
-
 export default function optionMain() {
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -33,7 +32,8 @@ export default function optionMain() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+    useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -52,12 +52,12 @@ export default function optionMain() {
       <RightNavigation />
       <>
         <DualGridHeader
-         selectedDate ={selectedDate}
+          selectedDate={selectedDate}
           setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
-          hader={"All Call Buys"}
+          // hader={"All Call Buys"}
         />
         {filterState ? (
           <StyleModalFilter>
@@ -72,11 +72,26 @@ export default function optionMain() {
             />
           </StyleModalFilter>
         ) : null}
-        
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
             <div style={{ overflow: "auto", marginLeft: "" }}>
               <RawOption
                 Type={"C"}
                 Containcolor={COLORS.lime}
+                hader={"All Call Buys"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -88,9 +103,36 @@ export default function optionMain() {
                 setFormattedDateStr={(data) => setFormattedDateStr(data)}
               />
             </div>
-         
+          </div>
+
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ flex: 1, overflow: "auto", marginLeft: "" }}>
+              <RawOption
+                Type={"P"}
+                Containcolor={COLORS.red}
+                hader={"All Put Buy"}
+                selectedDate={selectedDate}
+                searchTerm={searchTerm}
+                handleModalEvent={(idx, symbol) => {
+                  handleModalEvent(idx, symbol);
+                }}
+                setDetailsofRow={(data) => setDetailsofRow(data)}
+                animationState={animationState}
+                formattedDateStr={formattedDateStr}
+                setFormattedDateStr={(data) => setFormattedDateStr(data)}
+              />
+            </div>
+          </div>
+        </div>
       </>
-      )
     </StyleMainDiv>
   );
 }

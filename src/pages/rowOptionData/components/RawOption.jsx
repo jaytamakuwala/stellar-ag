@@ -32,6 +32,7 @@ export default function RawOption({
   formattedDateStr,
   setFormattedDateStr,
   Type,
+  hader,
   Containcolor,
 }) {
   const [rows, setRows] = useState([]);
@@ -100,11 +101,11 @@ export default function RawOption({
       {
         headerName: "Time",
         field: "Time",
-        headerStyle: {...headerBase,},
+        headerStyle: { ...headerBase },
         flex: 1,
         minWidth: 50,
         maxWidth: 80,
-        cellStyle: {...cellBase, color: COLORS.timeColor, fontWeight:"700"},
+        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
         valueFormatter: (p) => to12hUpper(p.value),
         tooltipValueGetter: (p) => to12hUpper(p.value),
         headerClass: ["cm-header"],
@@ -190,7 +191,7 @@ export default function RawOption({
         headerStyle: headerBase,
         cellStyle: (p) => {
           const v = parsePct(p.value);
-          return v < 3 ? { ...cellBase, color: COLORS.cyan } : cellBase;
+          return v > 3 ? { ...cellBase, color: COLORS.cyan } : cellBase;
         },
         flex: 1,
 
@@ -220,7 +221,24 @@ export default function RawOption({
   );
 
   return (
-    <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>
+    <div style={{ overflowX: "auto", width: "100%", marginBottom: "0px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "6px 10px",
+          margin: "0 0 6px",
+          color: "#fff",
+          borderRadius: 6,
+          fontSize: 20,
+          fontWeight: 500,
+          marginBottom: "0px",
+          marginTop: "0px",
+        }}
+      >
+        <span>{hader}</span>
+      </div>
       <div
         style={{
           position: "relative",

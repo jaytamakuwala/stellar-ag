@@ -24,6 +24,7 @@ import {
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import AiPowerData from "./components/AiPowerData";
+import { UserContext } from "../../context/UserContext";
 import { COLORS } from "../../utils/constants";
 // import {
 //   formatNumberToCurrency,
@@ -48,10 +49,8 @@ import { COLORS } from "../../utils/constants";
 //   prevTradingDate,
 //   buildPayloadUS,
 // } from "../../utils/agGridHelper";
-import { UserContext } from "../../context/UserContext";
 
 export default function AnimatedTable() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -81,7 +80,8 @@ export default function AnimatedTable() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+    useContext(UserContext);
 
   let selectedSummaryData = [];
   useEffect(() => {
@@ -442,6 +442,7 @@ export default function AnimatedTable() {
           <DualGridHeader
             selectedDate={selectedDate}
             setSelectedDate={(selectedDate) => setSelectedDate(selectedDate)}
+            searchTerm={searchTerm}
             setSearchTerm={(data) => setSearchTerm(data)}
             filterState={filterState}
             setFilterState={(data) => setFilterState(data)}
@@ -479,6 +480,8 @@ export default function AnimatedTable() {
               <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
                 <Aggrigated
                   Type={"Bull"}
+                  buyOrSell="BUY"
+                  optionType={"C"}
                   Containcolor={COLORS.lime}
                   selectedDate={selectedDate}
                   searchTerm={searchTerm}
@@ -490,11 +493,7 @@ export default function AnimatedTable() {
                   formattedDateStr={formattedDateStr}
                   setFormattedDateStr={(data) => setFormattedDateStr(data)}
                   selectedSummaryData={selectedSummaryData}
-                  // summaryData={summaryData}
-                  // setSummaryData={setSummaryData}
-                  // setResponseData={setResponseData}
-                  // responseData={responseData}
-                  hader= {"Aggregated Call Buys"}
+                  hader={"Aggregated Call Buys"}
                 />
               </div>
             </div>
@@ -515,9 +514,7 @@ export default function AnimatedTable() {
                   animationState={animationState}
                   formattedDateStr={formattedDateStr}
                   setFormattedDateStr={(data) => setFormattedDateStr(data)}
-                  hader = {"Alerts"}
-                  // rows={rows}
-                  // setRows={setRows}
+                  hader={"Alerts"}
                 />
               </div>
             </div>
@@ -534,6 +531,8 @@ export default function AnimatedTable() {
               <div style={{ flex: 1, overflow: "auto", marginLeft: "-60px" }}>
                 <Aggrigated
                   Type={"Bear"}
+                  buyOrSell={"SELL"}
+                  optionType={"P"}
                   Containcolor={COLORS.red}
                   selectedDate={selectedDate}
                   searchTerm={searchTerm}
@@ -544,11 +543,7 @@ export default function AnimatedTable() {
                   animationState={animationState}
                   formattedDateStr={formattedDateStr}
                   setFormattedDateStr={(data) => setFormattedDateStr(data)}
-                  hader ={"Aggregated Put Buys"}
-                  // summaryData={summaryData}
-                  // setSummaryData={setSummaryData}
-                  // setResponseData={setResponseData}
-                  // responseData={responseData}
+                  hader={"Aggregated Put Buys"}
                 />
               </div>
             </div>
@@ -561,8 +556,8 @@ export default function AnimatedTable() {
           isSmallScreen2={isSmallScreen2}
           detailsofRow={detailsofRow}
           handleModalEventClose={handleModalEventClose}
-          // chartData={chartData}
-          // groupedByDate={groupedByDate}
+          chartData={chartData}
+          groupedByDate={groupedByDate}
         />
       )}
     </StyleMainDiv>

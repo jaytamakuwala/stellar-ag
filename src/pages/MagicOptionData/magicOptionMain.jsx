@@ -4,7 +4,7 @@ import {
   StyleModalFilter,
 } from "../../style/containers/AnimatedTable";
 import RightNavigation from "../../components/RightNavigation";
-import MagicOption from "./components/MagicOption.jsx";
+import MagicOption from "./components/MagicOption";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
 
@@ -14,8 +14,8 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 
-export default function magicOptionMain() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function MagicOptionMain() {
+  // const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -35,6 +35,7 @@ export default function magicOptionMain() {
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
   const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const { searchTerm, setSearchTerm } = useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -74,7 +75,7 @@ export default function magicOptionMain() {
           </StyleModalFilter>
         ) : null}
 
-        <div style={{ overflow: "hidden", }}>
+        <div style={{ overflow: "hidden" }}>
           <MagicOption
             Type={"Bull"}
             Containcolor={COLORS.lime}
@@ -90,7 +91,6 @@ export default function magicOptionMain() {
           />
         </div>
       </>
-      )
     </StyleMainDiv>
   );
 }

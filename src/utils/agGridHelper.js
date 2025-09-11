@@ -104,22 +104,6 @@ export function prevTradingDate(fromDate = new Date()) {
   return fromDate;
 }
 
-/**
- * Decide the session date:
- * - Weekend  => previous Friday
- * - Weekday & time < 09:30 NY => previous trading day
- * - Otherwise => today
- */
-// export function getSessionDate() {
-//   const now = new Date();
-//   const wd = nyWeekday(now);
-//   const OPEN = 9 * 60 + 30;
-//   if (wd === 0 || wd === 6) return prevTradingDate(now); // Sun/Sat
-//   if (nyMinutesNow() < OPEN) return prevTradingDate(now); // before open
-//   return now;
-// }
-
-/** Build payload for a given Date (NY), in US format */
 export function buildPayloadUS(d, type = "Bull") {
   const us = formatUS(d); // YYYY/MM/DD
   return {

@@ -1,4 +1,11 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+  useContext,
+} from "react";
 import {
   StyleModalFilter,
   StyleMainDiv,
@@ -39,10 +46,11 @@ import {
   prevTradingDate,
   buildPayloadUS,
 } from "../../../utils/agGridHelper";
+import { UserContext } from "../../../context/UserContext";
 
 export default function Aggrigated({
   selectedDate,
-  searchTerm = "",
+  searchTerm,
   handleModalEvent,
   setDetailsofRow,
   animationState,
@@ -51,12 +59,15 @@ export default function Aggrigated({
   selectedSummaryData,
   Type,
   Containcolor,
-  hader
+  hader,
+  buyOrSell,
+  optionType
   // setSummaryData,
   // summaryData,
   // responseData,
   // setResponseData,
 }) {
+  // const {summaryData, setSummaryData, responseData, setResponseData} = useContext(UserContext);
   // console.log("FirstAnimatedTable");
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
@@ -171,26 +182,22 @@ export default function Aggrigated({
       } else {
         run();
         intervalId = setInterval(run, 5000);
-        //     // market open: poll
       }
     }
     return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
-  // /* ===========================
-  //    Row filtering and expansion
-  //    =========================== */
-  const filteredResponseData = useMemo(() => {
-    const q = (searchTerm || "").toLowerCase();
-    return responseData.filter((row) =>
-      (row?.Tick ?? "").toLowerCase().includes(q)
-    );
-  }, [responseData, searchTerm]);
   // const filteredResponseData = useMemo(() => {
   //   const q = (searchTerm || "").toLowerCase();
-  //   const list = Array.isArray(responseData) ? responseData : []; // FIX
-  //   return list.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
+  //   return responseData.filter((row) =>
+  //     (row?.Tick ?? "").toLowerCase().includes(q)
+  //   );
   // }, [responseData, searchTerm]);
+  const filteredResponseData = useMemo(() => {
+    const q = (searchTerm || "").toLowerCase();
+    const list = Array.isArray(responseData) ? responseData : []; // FIX
+    return list.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
+  }, [responseData, searchTerm]);
 
   const displayRows = useMemo(() => {
     const out = [];
@@ -237,10 +244,6 @@ export default function Aggrigated({
 
   const handleFilerOptionClose = useCallback(() => setFilterState(false), []);
 
-  /* ===========================
-     Column defs (Parent) – stable
-     =========================== */
-
   const analysisCellRenderer = useCallback(
     (params) => {
       const symbol = params?.data?.Tick ?? params?.data?.__parent?.Tick ?? "";
@@ -272,8 +275,8 @@ export default function Aggrigated({
         field: "Time",
         headerName: "Time",
         flex: 1,
-        haderStyle: {...headerBase,}, 
-        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700", },
+        haderStyle: { ...headerBase },
+        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
       },
       {
         colId: "Tick",
@@ -281,7 +284,7 @@ export default function Aggrigated({
         headerName: "Tick",
         flex: 1,
         cellStyle: { ...cellBase, color: Containcolor },
-        haderStyle: {...headerBase,},
+        haderStyle: { ...headerBase },
       },
       {
         colId: "Probability",
@@ -297,7 +300,7 @@ export default function Aggrigated({
         headerName: "Orders",
         flex: 0.9,
         cellStyle: { ...cellBase },
-        haderStyle: {...headerBase, },
+        haderStyle: { ...headerBase },
       },
       {
         colId: "Premium",
@@ -384,6 +387,8 @@ export default function Aggrigated({
               <NestedGrid
                 rows={baseRows}
                 formattedDateStr={formattedDateStrRef.current}
+                buyOrSell={buyOrSell}
+                optionType={optionType}
                 //optionTradeData={optionTradeDataRef.current}
                 //setOptionTradeData={setOptionTradeData}
                 expandedId={expandedId}
@@ -470,23 +475,23 @@ export default function Aggrigated({
     <StyleMainDiv>
       {!animationState ? (
         <div style={{ overflowX: "auto", width: "100%" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "6px 10px",
-                margin: "0 0 6px",
-                color: "#fff",
-                borderRadius: 6,
-                fontSize: 20,
-                fontWeight: 500,
-                marginBottom:"0px",
-                marginTop:"0px"
-              }}
-            >
-              <span>{hader}</span>
-            </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "6px 10px",
+              margin: "0 0 6px",
+              color: "#fff",
+              borderRadius: 6,
+              fontSize: 20,
+              fontWeight: 500,
+              marginBottom: "0px",
+              marginTop: "0px",
+            }}
+          >
+            <span>{hader}</span>
+          </div>
           <div
             style={{
               position: "relative",
@@ -496,7 +501,7 @@ export default function Aggrigated({
             }}
           >
             <AgGridReact
-              className="ag-theme-quartz header-center main-grid"
+              className="ag-theme-quartz header-center main-grid main-grid "
               rowData={displayRows}
               columnDefs={parentColsOnly}
               suppressRowHoverHighlight={true}
@@ -507,6 +512,7 @@ export default function Aggrigated({
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
                 headerClass: "cm-header",
+                animateRows: true,
               }}
               rowClassRules={{
                 "ag-row-even": (params) => params.node.rowIndex % 2 === 0,
@@ -587,6 +593,8 @@ function NestedGrid({
   setExpandedId,
   parentWidthMap, // kept for parity
   onHeightChange,
+  buyOrSell,
+  optionType
 }) {
   console.log("NestedGrid");
   const flatRows = useMemo(() => {
@@ -626,7 +634,8 @@ function NestedGrid({
       const key = getRowKeyFor(parentRow);
       const arr = optionTradeData?.[key];
       const len = Array.isArray(arr) ? arr.length + 1 : 5;
-      return AG_GRID_HEIGHTS.HEADER_H_L3 + AG_GRID_HEIGHTS.ROW_H_L3 * len;
+      // return AG_GRID_HEIGHTS.HEADER_H_L3 + AG_GRID_HEIGHTS.ROW_H_L3 * len;
+      return 150
     },
     [optionTradeData, getRowKeyFor]
   );
@@ -666,8 +675,9 @@ function NestedGrid({
                 parentRow={r}
                 formattedDateStr={formattedDateStr}
                 time={new Date().getTime()}
-                //optionTradeData={optionTradeData}
-                //setOptionTradeData={setOptionTradeData}
+                buyOrSell={buyOrSell}
+                optionType={optionType}
+  
               />
             </div>
           );
@@ -677,7 +687,6 @@ function NestedGrid({
           color: COLORS.timeColor,
           fontWeight: "700",
         },
-        
       },
       {
         colId: "Tick",
@@ -758,7 +767,7 @@ function NestedGrid({
       return {
         background: isDim ? COLORS.dark3 : baseEven,
         transition: "opacity 200ms ease, filter 200ms ease",
-        opacity: isDim ? 0.35 : 1,
+        opacity: isDim ? 0.1 : 1,
       };
     },
     [expandedId]

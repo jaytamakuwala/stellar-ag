@@ -14,8 +14,8 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 
-export default function magicOptionMain() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function MagicPutBuy() {
+  // const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -34,7 +34,8 @@ export default function magicOptionMain() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate } = useContext(UserContext);
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+    useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -90,7 +91,6 @@ export default function magicOptionMain() {
           />
         </div>
       </>
-      )
     </StyleMainDiv>
   );
 }

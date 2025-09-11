@@ -58,7 +58,7 @@ export default function UltraHighVolume({
   const filteredResponseData = useMemo(() => {
     const q = (searchTerm || "").trim().toLowerCase();
     if (!q) return rows;
-    return rows.filter((row) => (row?.Tick ?? "").toLowerCase().includes(q));
+    return rows.filter((row) => (row?.Tick ?? row.OptionSymbol ?? "").toLowerCase().includes(q));
   }, [rows, searchTerm]);
 
   const tradeCols = useMemo(
@@ -78,7 +78,7 @@ export default function UltraHighVolume({
         headerName: "Tick",
         field: field,
         headerStyle: headerBase,
-        minWidth: 100,
+        minWidth: 70,
         flex: 0.7,
         cellStyle: { ...cellBase, color: Containcolor },
         headerClass: ["cm-header"],
@@ -87,7 +87,7 @@ export default function UltraHighVolume({
         headerName: "Type",
         field: "Type",
         headerStyle: headerBase,
-        minWidth: 60,
+        minWidth: 50,
         flex: 1,
         cellStyle: { ...cellBase, color: Containcolor },
         headerClass: ["cm-header"],
@@ -108,11 +108,10 @@ export default function UltraHighVolume({
         flex: 1,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
         cellStyle: (p) => currencyColorStyle(p.value),
-
         headerClass: ["cm-header"],
       },
       {
-        headerName: "AvgPremium",
+        headerName: "A Premium",
         field: "AvgPremium",
         headerStyle: headerBase,
         cellStyle: cellBase,
@@ -145,15 +144,15 @@ export default function UltraHighVolume({
         flex: 1,
         headerClass: ["cm-header"],
       },
-      {
-        headerName: "AvgOrders",
-        field: "AvgOrders",
-        headerStyle: headerBase,
-        cellStyle: cellBase,
-        minWidth: 80,
-        flex: 1,
-        headerClass: ["cm-header"],
-      },
+      // {
+      //   headerName: "AvgOrders",
+      //   field: "AvgOrders",
+      //   headerStyle: headerBase,
+      //   cellStyle: cellBase,
+      //   minWidth: 80,
+      //   flex: 1,
+      //   headerClass: ["cm-header"],
+      // },
       {
         headerName: "S Premium",
         field: "SharePremium",
@@ -166,14 +165,13 @@ export default function UltraHighVolume({
       },
 
       {
-        headerName: "AvgSharePremium",
+        headerName: "A S Premium",
         field: "AvgSharePremium",
         headerStyle: headerBase,
         cellStyle: cellBase,
         minWidth: 130,
         flex: 1,
         valueFormatter: (pp) => formatNumberToCurrency(pp.value),
-
         headerClass: ["cm-header"],
       },
 
@@ -230,8 +228,6 @@ export default function UltraHighVolume({
             sortable: true,
             resizable: true,
             filter: false,
-            // wrapHeaderText: true,
-            // autoHeaderHeight: true,
             headerClass: "cm-header",
           }}
           rowClassRules={{

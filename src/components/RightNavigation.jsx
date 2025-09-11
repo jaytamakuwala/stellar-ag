@@ -37,14 +37,7 @@ export default function RightNavigation() {
               navigate("/optionMain");
             }}
           />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/AllPutBuys");
-            }}
-          />
+         
           <img
             src={Dashboard}
             alt="Icon"

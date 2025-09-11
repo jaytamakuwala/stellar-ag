@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
-import { toLocalISOString, getRowStyle } from "../../../utils/common";
+import { toLocalISOString, getRowStyle,to12hUpper } from "../../../utils/common";
 import { getMagicOptionData } from "../../../service/stellarApi";
 import {
   AG_GRID_HEIGHTS,
@@ -60,6 +60,15 @@ export default function MagicOption({
 
   const tradeCols = useMemo(
     () => [
+      {
+        headerName: "Time",
+        field: "Time",
+        headerStyle: headerBase,
+        cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
+        minWidth: 100,
+        valueFormatter: (p) => to12hUpper(p.value),
+        flex: 1,
+      },
       {
         headerName: "TimeBucket",
         field: "TimeBucket",
@@ -212,8 +221,6 @@ export default function MagicOption({
             sortable: true,
             resizable: true,
             filter: false,
-            // wrapHeaderText: true,
-            // autoHeaderHeight: true,
             headerClass: "cm-header",
           }}
           rowClassRules={{
