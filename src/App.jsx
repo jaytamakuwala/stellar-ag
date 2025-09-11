@@ -12,7 +12,7 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import optionMain from "./pages/rowOptionData/RawOptionDataMain";
-import MagicOptionMain from "./pages/MagicOptionData/MagicOptionMain";
+import MagicOptionMain from "./pages/MagicOptionData/magicOptionMain";
 import MagicPutBuy from "./pages/MagicOptionData/MagicPutBuy";
 import UnusualDataMain from "./pages/UnusualOptionData/UnusualDataMain";
 import UltraHighVolumeDataMain from "./pages/UltraHighVolumeData/UltraHighVolumeMain";
