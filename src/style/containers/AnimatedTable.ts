@@ -1,664 +1,685 @@
-import { BorderBottom, Height, Padding } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import zIndex from '@mui/material/styles/zIndex';
+import { BorderBottom, Height, Margin, Padding } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import zIndex from "@mui/material/styles/zIndex";
+import { he } from "date-fns/locale";
 
-export const StyleMainDiv = styled('div')({
+export const StyleMainDiv = styled("div")({
   position: "relative",
   height: "100%",
   overflow: "hidden",
   paddingBottom: "0px",
-  marginLeft:"65px",
+  marginLeft: "65px",
 });
 
-export const StyleTopEvents = styled('div')({
+export const StyleTopEvents = styled("div")({
   position: "relative",
 });
 
-export const StyledTable = styled('div')({
-  position: 'relative',
-  fontFamily:"Barlow",
-  border:'none',
-  overflow: 'hidden', 
-  '& tr:nth-of-type(odd)': {
-    backgroundColor: 'rgba(95, 95, 95, 0.15) !important',
+export const StyledTable = styled("div")({
+  position: "relative",
+  fontFamily: "Barlow",
+  border: "none",
+  overflow: "hidden",
+  "& tr:nth-of-type(odd)": {
+    backgroundColor: "rgba(95, 95, 95, 0.15) !important",
   },
-   '& .Light_Mode tr:nth-of-type(odd)': {
-    backgroundColor: 'rgba(95, 95, 95, 0.15) !important',
+  "& .Light_Mode tr:nth-of-type(odd)": {
+    backgroundColor: "rgba(95, 95, 95, 0.15) !important",
   },
-  '& .TheadTable' : {
-    position: "sticky", 
-    top: 0, 
-    zIndex: "5", 
+  "& .TheadTable": {
+    position: "sticky",
+    top: 0,
+    zIndex: "5",
   },
-  '& ul' : {
+  "& ul": {
     padding: "0 20px",
   },
-  '& .Tbodyscroll' : {
-    maxHeight: "90vh", 
+  "& .Tbodyscroll": {
+    maxHeight: "90vh",
     overflowY: "auto",
     overflowX: "auto",
     minWidth: "950px",
   },
-  '& table': {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border:'none',
+  "& table": {
+    width: "100%",
+    borderCollapse: "collapse",
+    border: "none",
   },
-  '& th' : {
-    fontSize: '12px',
-    background: 'rgba(45,45,45, 0.1)',
-    fontWeight: '600',
-    color:'#959595',
-    position:'relative',
-    fontFamily:'Barlow'
+  "& th": {
+    fontSize: "12px",
+    background: "rgba(45,45,45, 0.1)",
+    fontWeight: "600",
+    color: "#959595",
+    position: "relative",
+    fontFamily: "Barlow",
   },
-  '& th:first-child': { 
-    borderTopLeftRadius: '6px'
+  "& th:first-child": {
+    borderTopLeftRadius: "6px",
   },
-  '& th:last-child' : {
-      borderTopRightRadius: '6px'
+  "& th:last-child": {
+    borderTopRightRadius: "6px",
   },
-  '& th:not(:last-child)::after': {
+  "& th:not(:last-child)::after": {
     content: '""',
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    top: '40%',  
-    height: '25%', 
-    width: '1px',
-    backgroundColor: '#666',
+    top: "40%",
+    height: "25%",
+    width: "1px",
+    backgroundColor: "#666",
     opacity: 0.5,
-    pointerEvents: 'none'
- },
-  '& td' : {
-    fontSize: '12px',
-    fontFamily:'Barlow'
+    pointerEvents: "none",
   },
-  '& th, & td': {
-    padding: '5px 10px',
-    textAlign: 'left',
-    border: 'none ',
+  "& td": {
+    fontSize: "12px",
+    fontFamily: "Barlow",
   },
-  '& tbody tr': {
-    display: 'table-row',
-    cursor:"pointer",
+  "& th, & td": {
+    padding: "5px 10px",
+    textAlign: "left",
+    border: "none ",
   },
-  '& .GreenColor td:nth-child(n+2):nth-child(-n+9) ': {
-    color: '#00FF59',
+  "& tbody tr": {
+    display: "table-row",
+    cursor: "pointer",
   },
-  '& .RedColor td:nth-child(n+2):nth-child(-n+9)': {
-    color: '#FF605D',
+  "& .GreenColor td:nth-child(n+2):nth-child(-n+9) ": {
+    color: "#00FF59",
   },
-  '& .OptionSelection' : {
-    height:'35px',
-    width:"150px",
+  "& .RedColor td:nth-child(n+2):nth-child(-n+9)": {
+    color: "#FF605D",
+  },
+  "& .OptionSelection": {
+    height: "35px",
+    width: "150px",
     border: "1px solid #f1f1f1",
-    padding:"5px 15px",
-    cursor:"pounter",
-    margin:"15px 10px 0 10px",
-    borderRadius: "5px" 
+    padding: "5px 15px",
+    cursor: "pounter",
+    margin: "15px 10px 0 10px",
+    borderRadius: "5px",
   },
-  '& .yellow-font' : {
-    color: '#d6d454 !important',
+  "& .yellow-font": {
+    color: "#d6d454 !important",
   },
-  '& .green-font' : {
-    color: '#00FF59 !important',
+  "& .green-font": {
+    color: "#00FF59 !important",
   },
-  '& .LastChild td:last-child' : {
-    textAlign:"center",
+  "& .LastChild td:last-child": {
+    textAlign: "center",
   },
-  '& .accordion-content-row' : {
-    backgroundColor: 'rgba(149, 149, 149, .15)',
+  "& .accordion-content-row": {
+    backgroundColor: "rgba(149, 149, 149, .15)",
   },
-  '& .NotshowAfter::after' : {
-    display: 'none',
+  "& .NotshowAfter::after": {
+    display: "none",
   },
-  '& .sky-blue-font' : {
-    color: '#0ea5e9 !important',
+  "& .sky-blue-font": {
+    color: "#0ea5e9 !important",
   },
 
-
-  '@media (max-width:1000px)': {
-    '& .RightsideModal .Chart' :{
-      flex: '1 1 100%',
-      height: '100% !important',
+  "@media (max-width:1000px)": {
+    "& .RightsideModal .Chart": {
+      flex: "1 1 100%",
+      height: "100% !important",
     },
-    '& .RightsideModal' :{
-      overflowX: 'auto',
+    "& .RightsideModal": {
+      overflowX: "auto",
     },
-    '& .BiDirectionalBarChart' :{
-      flex: '1 1 100%',
-      width: '100%',
-      height: 'auto !important',
-      marginTop: '2px',
+    "& .BiDirectionalBarChart": {
+      flex: "1 1 100%",
+      width: "100%",
+      height: "auto !important",
+      marginTop: "2px",
     },
-    '& tr th:nth-child(5), tr td:nth-child(5)' : {
-      display: 'none',
-    }, 
-  }
+    "& tr th:nth-child(5), tr td:nth-child(5)": {
+      display: "none",
+    },
+  },
 });
-export const StyleModal = styled('div')({
+export const StyleModal = styled("div")({
   background: "#282828",
-  marginBottom:"30px",
+  marginBottom: "30px",
   width: "0",
   transition: "all 0.2s ease-in-out",
-  position:"absolute",
-  '& .RightsideModal': {
-    position:'fixed',
-    zIndex:'999999',
-    top:'0',
-    bottom:'0',
-    right: 'auto',
-    left:'0',
-    overflowY:"auto",
-    overflowX:"hidden",
-    transition: 'all 0.2s ease-in-out',
-    fontFamily:"Barlow",
+  position: "absolute",
+  "& .RightsideModal": {
+    position: "fixed",
+    zIndex: "999999",
+    top: "0",
+    bottom: "0",
+    right: "auto",
+    left: "0",
+    overflowY: "auto",
+    overflowX: "hidden",
+    transition: "all 0.2s ease-in-out",
+    fontFamily: "Barlow",
     width: "0",
   },
-  '& .DivCollection': {
-    display: 'flex',
+  "& .DivCollection": {
+    display: "flex",
     flexWrap: "wrap",
-    height:'100%',
+    height: "100%",
   },
-  '& .BuySellTime': {
-    position: 'relative',
+  "& .BuySellTime": {
+    position: "relative",
   },
-  '& .BuySellTime .BorderRight::after': {
-    height: '106%'
+  "& .BuySellTime .BorderRight::after": {
+    height: "106%",
   },
-  '& .BuySellTime .Heading': {
-    position: 'absolute',
-    zIndex:"99999",
-    marginTop:"10px",
+  "& .BuySellTime .Heading": {
+    position: "absolute",
+    zIndex: "99999",
+    marginTop: "10px",
   },
-  '& .RightsideModal .Chart svg': {
+  "& .RightsideModal .Chart svg": {
     width: "99%",
-    height: '44.5vh !important',
+    height: "44.5vh !important",
   },
-  '& .RightsideModal .BiDirectionalBarChart': {
+  "& .RightsideModal .BiDirectionalBarChart": {
     flex: "1 1 45%",
-    width: '50%',
-    height: '50vh !important',
-    marginTop: '98px',
+    width: "50%",
+    height: "50vh !important",
+    marginTop: "98px",
   },
-  '& .RightsideModal .ChartBi': {
+  "& .RightsideModal .ChartBi": {
     flex: "1 1 45%",
-    width: '99%',
-    height: '48.5vh !important',
+    width: "99%",
+    height: "48.5vh !important",
   },
-  '& .closeInnerModal': {
-    display: 'flex',
-    position: 'absolute',
-    zIndex:"999999999",
-    right:'12px',
-    top: '0px',
-    width: '22px',
-    height: '22px',
+  "& .closeInnerModal": {
+    display: "flex",
+    position: "absolute",
+    zIndex: "999999999",
+    right: "12px",
+    top: "0px",
+    width: "22px",
+    height: "22px",
   },
-  '& .col-lg-8': {
+  "& .col-lg-8": {
     width: "70%",
   },
-  '& .col-lg-4': {
+  "& .col-lg-4": {
     width: "30%",
-    paddingLeft:"0",
+    paddingLeft: "0",
   },
-  '& .ag-charts-canvas-container': {
-    marginTop:"10px",
-    paddingRight: "0" ,
-    height: "100px"
+  "& .ag-charts-canvas-container": {
+    marginTop: "10px",
+    paddingRight: "0",
+    height: "100px",
   },
-  '& .ag-charts-canvas-center': {
-    background: '#282828 !important',
-    display: "inline-table"
-  },
-  '& .ag-charts-styles ': {
-    background: '#282828 !important',
+  "& .ag-charts-canvas-center": {
+    background: "#282828 !important",
     display: "inline-table",
   },
-  '& .BorderBottom': {
-    background: '#333 !important',
-    width:"100%",
-    height:"5px",
-    marginTop:"30px"
+  "& .ag-charts-styles ": {
+    background: "#282828 !important",
+    display: "inline-table",
   },
-  '& .BorderBottom1': {
-    background: '#333 !important',
-    width:"101%",
-    height:"5px",
-    marginTop:"30px",
+  "& .BorderBottom": {
+    background: "#333 !important",
+    width: "100%",
+    height: "5px",
+    marginTop: "30px",
+  },
+  "& .BorderBottom1": {
+    background: "#333 !important",
+    width: "101%",
+    height: "5px",
+    marginTop: "30px",
     position: "relative",
     left: "0",
     zIndex: "99",
   },
-  '& .BorderRight': {
-    position:"relative",
-  }, 
-  '& .BorderRight::after': {
+  "& .BorderRight": {
+    position: "relative",
+  },
+  "& .BorderRight::after": {
     content: '""',
     position: "absolute",
     top: 0,
     right: "-4px",
     height: "110%",
-    borderRight: '5px solid #333',
+    borderRight: "5px solid #333",
     display: "block",
     zIndex: "999",
-  }, 
-  '& .Ca1Top::after ': {
-    top: "-11px", 
   },
-  '& .BorderTopSet ': {
-    top: "-11px", 
+  "& .Ca1Top::after ": {
+    top: "-11px",
   },
-  '& .BottomGraphs .BorderRight:nth-child(3)::after, .BottomGraphs .BorderRight:nth-child(6)::after': {
-    borderRight: "none",
+  "& .BorderTopSet ": {
+    top: "-11px",
   },
-  '& .BottomGraphs .BorderRight:nth-child(1), .BottomGraphs .BorderRight:nth-child(2), .BottomGraphs .BorderRight:nth-child(3)': {
-    top: "-25px",
-  },
-  '& .BottomGraphs .BorderRight:nth-child(1)::after': {
+  "& .BottomGraphs .BorderRight:nth-child(3)::after, .BottomGraphs .BorderRight:nth-child(6)::after":
+    {
+      borderRight: "none",
+    },
+  "& .BottomGraphs .BorderRight:nth-child(1), .BottomGraphs .BorderRight:nth-child(2), .BottomGraphs .BorderRight:nth-child(3)":
+    {
+      top: "-25px",
+    },
+  "& .BottomGraphs .BorderRight:nth-child(1)::after": {
     top: "10px",
   },
-  '& .BottomGraphs .BorderRight:nth-child(4), .BottomGraphs .BorderRight:nth-child(5), .BottomGraphs .BorderRight:nth-child(6)': {
-    borderTop: '5px solid #333',
-  },
-  '& .BottomGraphs .BorderRight:nth-child(7), .BottomGraphs .BorderRight:nth-child(8), .BottomGraphs .BorderRight:nth-child(9)': {
-    marginTop:"30px",
-    borderTop: '5px solid #333',
-  },
+  "& .BottomGraphs .BorderRight:nth-child(4), .BottomGraphs .BorderRight:nth-child(5), .BottomGraphs .BorderRight:nth-child(6)":
+    {
+      borderTop: "5px solid #333",
+    },
+  "& .BottomGraphs .BorderRight:nth-child(7), .BottomGraphs .BorderRight:nth-child(8), .BottomGraphs .BorderRight:nth-child(9)":
+    {
+      marginTop: "30px",
+      borderTop: "5px solid #333",
+    },
   // '& .BottomGraphs .BorderRight:nth-child(6)': {
   //   borderBottom: '5px solid #333',
   // },
-  
-  '@media (max-width: 768px)': {
-    '&.chart-container': {
+
+  "@media (max-width: 768px)": {
+    "&.chart-container": {
       height: "300px",
-    }
+    },
   },
-  '@media (max-width:1000px)': {
-    '& .Chart' : {
-      width: '505px !important',
+  "@media (max-width:1000px)": {
+    "& .Chart": {
+      width: "505px !important",
     },
-    '& .Header' : {
-      marginRight: '0',
-    }, 
-    '& .RightsideModal .BiDirectionalBarChart' : {
-      width: 'inherit',
-      height: 'auto !important',
+    "& .Header": {
+      marginRight: "0",
     },
-    '& .FirstBiDirectionalBarChart' : {
-      marginTop: '0px !important',
+    "& .RightsideModal .BiDirectionalBarChart": {
+      width: "inherit",
+      height: "auto !important",
     },
-    '& .SecondBiDirectionalBarChart' : {
-      marginTop: '7px !important',
+    "& .FirstBiDirectionalBarChart": {
+      marginTop: "0px !important",
     },
-    '& .DivCollection' : {
-      display: 'block !important',
-      width: '500px',
-      overflowX: 'auto',
+    "& .SecondBiDirectionalBarChart": {
+      marginTop: "7px !important",
     },
-    '& .Chart svg ' : {
-      width: '100%',
-      height:"90vh !important",
+    "& .DivCollection": {
+      display: "block !important",
+      width: "500px",
+      overflowX: "auto",
     },
-    '& .RightsideModal .ChartBi ' : {
-      width: '100%',
+    "& .Chart svg ": {
+      width: "100%",
+      height: "90vh !important",
     },
-    '& .RightsideModal .Chart' :{
-      flex: '1 1 100%',
-      height: 'auto !important',
-    },
-    '& .RightsideModal .Chart svg': {
-      width: '100%',
-      height: 'auto !important',
-    },
-    '& .BorderBottom, .BorderRight::after, .BorderBottom1': {
-      display:"none",
-    },
-    '& .BottomGraphs .BorderRight:nth-child(4), .BottomGraphs .BorderRight:nth-child(5), .BottomGraphs .BorderRight:nth-child(6)': {
-      borderTop: 'none',
-    },
-    '& .BottomGraphs .BorderRight:nth-child(7), .BottomGraphs .BorderRight:nth-child(8), .BottomGraphs .BorderRight:nth-child(9)': {
-      marginTop:"0px",
-      borderTop: 'none',
-    }
-  }, 
-  '@media (max-width:900px)': {
-    '& .col-lg-8': {
+    "& .RightsideModal .ChartBi ": {
       width: "100%",
     },
-    '& .col-lg-4': {
+    "& .RightsideModal .Chart": {
+      flex: "1 1 100%",
+      height: "auto !important",
+    },
+    "& .RightsideModal .Chart svg": {
       width: "100%",
-      paddingLeft:"0",
+      height: "auto !important",
     },
-    '& .Firstchart': {
+    "& .BorderBottom, .BorderRight::after, .BorderBottom1": {
+      display: "none",
+    },
+    "& .BottomGraphs .BorderRight:nth-child(4), .BottomGraphs .BorderRight:nth-child(5), .BottomGraphs .BorderRight:nth-child(6)":
+      {
+        borderTop: "none",
+      },
+    "& .BottomGraphs .BorderRight:nth-child(7), .BottomGraphs .BorderRight:nth-child(8), .BottomGraphs .BorderRight:nth-child(9)":
+      {
+        marginTop: "0px",
+        borderTop: "none",
+      },
+  },
+  "@media (max-width:900px)": {
+    "& .col-lg-8": {
+      width: "100%",
+    },
+    "& .col-lg-4": {
+      width: "100%",
+      paddingLeft: "0",
+    },
+    "& .Firstchart": {
       paddingRight: "0px !important",
     },
-    '& .SmallPaddRight': {
+    "& .SmallPaddRight": {
       paddingRight: "0px !important",
-    }, 
-    '& .BottomPiechart': {
+    },
+    "& .BottomPiechart": {
       height: "600px !important",
-    },        
-  }, 
+    },
+  },
 });
-export const StyleAniamtionModal = styled('div')({
-  fontFamily:"Barlow",
-  position: 'absolute',
-  zIndex:'999999',
-  top: '0',
-  left: '0',
-  width: '100%',
-  height: '100%;',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'flex-end',
-  '& .Modal-Content': {
-    backgroundColor: '#282828',
-    width: '100%',
-    maxWidth: '100%',
-    borderRadius: '10px',
-    padding: '20px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-    transform: 'translateY(100%)',
-    animation: 'slideUp 0.3s ease-in-out forwards',
-    overflowY: 'auto',
-    height: '100%',
+export const StyleAniamtionModal = styled("div")({
+  fontFamily: "Barlow",
+  position: "absolute",
+  zIndex: "999999",
+  top: "0",
+  left: "0",
+  width: "100%",
+  height: "100%;",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "flex-end",
+  "& .Modal-Content": {
+    backgroundColor: "#282828",
+    width: "100%",
+    maxWidth: "100%",
+    borderRadius: "10px",
+    padding: "20px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
+    transform: "translateY(100%)",
+    animation: "slideUp 0.3s ease-in-out forwards",
+    overflowY: "auto",
+    height: "100%",
   },
-  '& .Modal-Content.Light_Mode': {
-    backgroundColor: 'rgba(225,225,225,100%)',
-    borderRadius:"0px",
+  "& .Modal-Content.Light_Mode": {
+    backgroundColor: "rgba(225,225,225,100%)",
+    borderRadius: "0px",
   },
-  '@keyframes slideUp': {
+  "@keyframes slideUp": {
     from: {
-      transform: 'translateY(100%)',
+      transform: "translateY(100%)",
     },
     to: {
-      transform: 'translateY(0)',
+      transform: "translateY(0)",
     },
   },
-  '& .CloseBtnDetails': {
-    position: 'absolute',
-    right: '18px',
-    top: '19px',
+  "& .CloseBtnDetails": {
+    position: "absolute",
+    right: "18px",
+    top: "19px",
   },
-  '& table': {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border:'none',
-    marginTop:'20px',
+  "& table": {
+    width: "100%",
+    borderCollapse: "collapse",
+    border: "none",
+    marginTop: "20px",
   },
-  '& th' : {
-    fontSize: '12px',
-    background: 'rgba(110,107,107,10%)',
-    fontWeight: '500',
-    color: 'rgba(149, 149, 149, 1)',
+  "& th": {
+    fontSize: "12px",
+    background: "rgba(110,107,107,10%)",
+    fontWeight: "500",
+    color: "rgba(149, 149, 149, 1)",
   },
-  '& td' : {
-    fontSize: '12px',
-    fontFamily:'Barlow'
+  "& td": {
+    fontSize: "12px",
+    fontFamily: "Barlow",
   },
-  '& th, & td': {
-    padding: '5px 10px',
-    textAlign: 'left',
-    border: 'none ',
+  "& th, & td": {
+    padding: "5px 10px",
+    textAlign: "left",
+    border: "none ",
   },
-  '& tbody tr': {
-    display: 'table-row',
+  "& tbody tr": {
+    display: "table-row",
   },
-  '& .GreenColor td:nth-child(n+2):nth-child(-n+9):nth-child(-n+9):nth-child(-n+9) ': {
-    color: '#00FF59',
+  "& .GreenColor td:nth-child(n+2):nth-child(-n+9):nth-child(-n+9):nth-child(-n+9) ":
+    {
+      color: "#00FF59",
+    },
+  "& .RedColor td:nth-child(n+2):nth-child(-n+9)": {
+    color: "#FF605D",
   },
-  '& .RedColor td:nth-child(n+2):nth-child(-n+9)': {
-    color: '#FF605D',
-  },
-  '& .accordion-content-row': {
-    background:'#333',
+  "& .accordion-content-row": {
+    background: "#333",
   },
 });
-export const StyleOption = styled('div')({
-  position: 'relative',
-  padding: '0 20px 20px',
-  zIndex: '9999',
-  marginTop: '10px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  '& .rightNavigation' : {
-    display:'flex',
-    justifyContent:'right',
-    alignItems: 'center'    
+export const StyleOption = styled("div")({
+  position: "relative",
+  padding: "0 20px 20px",
+  zIndex: "9999",
+  marginTop: "10px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  "& .rightNavigation": {
+    display: "flex",
+    justifyContent: "right",
+    alignItems: "center",
   },
-  '& .SearchInputs' : {
-    marginRight:'15px',
-    fontSize:'14px',
-    position:'relative',
-    display:'flex',
-    justifyContent:'right',
-    alignItems: 'center'    
+  "& .SearchInputs": {
+    marginRight: "15px",
+    fontSize: "14px",
+    position: "relative",
+    display: "flex",
+    justifyContent: "right",
+    alignItems: "center",
   },
-  '& .SearchInputs input' : {
-    height:"35px",
-    marginLeft:'15px',
-    borderRadius:'5px',
-    border: 'none',
-    padding:'10px 35px',
-    background: '#959595',
-    fontSize:"14px",
-    fontWeight:"500"
+  "& .SearchInputs input": {
+    height: "35px",
+    marginLeft: "15px",
+    borderRadius: "5px",
+    border: "none",
+    padding: "10px 35px",
+    background: "#959595",
+    fontSize: "14px",
+    fontWeight: "500",
   },
-  '& .ShowInLine':{
-    display:"flex",
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+  "& .ShowInLine": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
-  '& .SearchInputs input::placeholder' : {    
-    color: '#000',
-    fontSize:'14px',
+  "& .SearchInputs input::placeholder": {
+    color: "#000",
+    fontSize: "14px",
   },
-  '& .SearchInputs svg' : {
-    position: 'absolute',
-    left:'22px',
-    zIndex: '99999',
-    color: '#000',
-    width:'20px',
+  "& .SearchInputs svg": {
+    position: "absolute",
+    left: "22px",
+    zIndex: "99999",
+    color: "#000",
+    width: "20px",
   },
-  '& .Filtericon' : {
-    height: '35px',
-    display:'flex',
-    alignItems: 'center',
-    fontSize:'14px',
-    background:'#2838CF',
-    fontWeight:"500"
+  "& .Filtericon": {
+    height: "35px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: "14px",
+    background: "#2838CF",
+    fontWeight: "500",
   },
-  '& .Filtericon svg' : {
-    fontSize: '20px',
-    marginRight:'10px',
+  "& .Filtericon svg": {
+    fontSize: "20px",
+    marginRight: "10px",
   },
-  '& .badge' : {
-    marginLeft: '10px',
+  "& .badge": {
+    marginLeft: "10px",
   },
-  '& .MuiPickersInputBase-root, .MuiPickersOutlinedInput-notchedOutline ' : {
-    outline: '0',
-    border:'none !important',
+  "& .MuiPickersInputBase-root, .MuiPickersOutlinedInput-notchedOutline ": {
+    outline: "0",
+    border: "none !important",
   },
-  '& .MuiIconButton-root' : {
-    margin: '0px',
-    padding: '0px',
-    position:'relative',
-    left:'0px',
+  "& .MuiIconButton-root": {
+    margin: "0px",
+    padding: "0px",
+    position: "relative",
+    left: "0px",
   },
-  '@media (max-width:800px)': {
-    width:'100%',
-    marginTop:'10px',
-    display: 'block',
-    '& .SearchInputs': {
-      display: 'flex',
-      flexDirection: 'column',
-      marginRight: '8px',
+  "@media (max-width:800px)": {
+    width: "100%",
+    marginTop: "10px",
+    display: "block",
+    "& .SearchInputs": {
+      display: "flex",
+      flexDirection: "column",
+      marginRight: "8px",
     },
-    '& .MuiDialog-root.MuiModal-root': {
-      zIndex: '99999',
+    "& .MuiDialog-root.MuiModal-root": {
+      zIndex: "99999",
     },
-    '& .SearchInputs input' : {
-      marginTop: '15px',
-      marginLeft: '6px',
-      marginBottom:'10px',
-      width:'80%',
+    "& .SearchInputs input": {
+      marginTop: "15px",
+      marginLeft: "6px",
+      marginBottom: "10px",
+      width: "80%",
     },
-    '& .SmallScreen ' : {
-      width:'30% !important',
+    "& .SmallScreen ": {
+      width: "30% !important",
     },
-    '& .SmallScreen .MuiFormControl-root' : {
-      width:'95% !important',
+    "& .SmallScreen .MuiFormControl-root": {
+      width: "95% !important",
     },
-    '& .ShowInLine': {
-      display: 'flex',
-      flexDirection: 'column',
-
+    "& .ShowInLine": {
+      display: "flex",
+      flexDirection: "column",
     },
-    '& .OptionSelection' :{
-      width:'80% !important',
+    "& .OptionSelection": {
+      width: "80% !important",
     },
-    '& .Filtericon' :{
-      marginLeft: '2px',
-      marginBottom:'15px',
-      marginTop:'20px',
+    "& .Filtericon": {
+      marginLeft: "2px",
+      marginBottom: "15px",
+      marginTop: "20px",
     },
-    '& .SearchIcon' : {
-      top: '21px !important',
-      left: '40px !important',
+    "& .SearchIcon": {
+      top: "21px !important",
+      left: "40px !important",
     },
-    '& .SmallScreen svg' : {
-      top:'-12px',
-      left:'25px !important',
-    }, 
+    "& .SmallScreen svg": {
+      top: "-12px",
+      left: "25px !important",
+    },
   },
-  '@media (max-height: 600px)': {
-    '& .RightsideModal .Chart svg' : {
-      height: '59vh !important',
+  "@media (max-height: 600px)": {
+    "& .RightsideModal .Chart svg": {
+      height: "59vh !important",
     },
   },
 });
-export const StyleModalFilter = styled('div')({
-    position:'fixed',
-    zIndex:'999999',
-    top:'0',
-    bottom:'0',
-    left: 'auto',
-    right:'0',
-    width:'100%',
-    overflowY:"auto",
-    overflowX:"hidden",
-    transition: 'all 0.5s ease-in-out',
-    padding:'15px',    
-    background:"rgba(0,0,0,0.5)",
-    backdropFilter:'blur(1px)',
-  '& .resetSettings': {
-    width:"20.5px",
-    height:"20.5px",
+export const StyleModalFilter = styled("div")({
+  position: "fixed",
+  zIndex: "999999",
+  top: "0",
+  bottom: "0",
+  left: "auto",
+  right: "0",
+  width: "100%",
+  overflowY: "auto",
+  overflowX: "hidden",
+  transition: "all 0.5s ease-in-out",
+  padding: "15px",
+  background: "rgba(0,0,0,0.5)",
+  backdropFilter: "blur(1px)",
+  "& .resetSettings": {
+    width: "20.5px",
+    height: "20.5px",
   },
-  '& .badge': {
+  "& .badge": {
     fontSize: "16px",
-    fontWeight:"normal",
+    fontWeight: "normal",
   },
-  '& .RightsideModal': {
-    position:'fixed',
-    zIndex:'9999999',
-    top:'0',
-    bottom:'0',
-    left: 'auto',
-    right:'0',
-    width:'100%',
-    overflowY:"auto",
-    overflowX:"hidden",
-    transition: 'all 0.5s ease-in-out',
-    padding:'15px',    
-    backgroundColor:" #434343 !important",
+  "& .RightsideModal": {
+    position: "fixed",
+    zIndex: "9999999",
+    top: "0",
+    bottom: "0",
+    left: "auto",
+    right: "0",
+    width: "100%",
+    overflowY: "auto",
+    overflowX: "hidden",
+    transition: "all 0.5s ease-in-out",
+    padding: "15px",
+    backgroundColor: " #434343 !important",
   },
-  '& .DivCollection': {
-    display: 'flex',
+  "& .DivCollection": {
+    display: "flex",
     flexDirection: "row",
-    justifyContent: 'space-between',
-    height: '30px',
-    width: '100%',
+    justifyContent: "space-between",
+    height: "30px",
+    width: "100%",
   },
-  '& .RightIcon': {
-    display: 'flex',
-    alignItems: 'center',
-  }, 
-  '& .BothSide' : {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    fontSize:"14px",
+  "& .RightIcon": {
+    display: "flex",
+    alignItems: "center",
   },
-  '& .BothSide label' : {
-    fontSize:"22px",
-  }, 
-  '& .ButtonSame' : {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize:"14px",
-    width:'100%',
-    paddingBottom:"50px !important",
+  "& .BothSide": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontSize: "14px",
   },
-  '& .ButtonSame button' : {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize:"14px",
-    width:'210px',
-    textAlign: 'center',
-    height: '40px',
-    marginBottom:'30px',
-    margin:"0 10px",
+  "& .BothSide label": {
+    fontSize: "22px",
   },
-  '@media (max-width:767px)': {
-    '& .RightsideModal': {
-      width:'90% !important',  
-    },   
+  "& .ButtonSame": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "14px",
+    width: "100%",
+    paddingBottom: "50px !important",
+  },
+  "& .ButtonSame button": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "14px",
+    width: "210px",
+    textAlign: "center",
+    height: "40px",
+    marginBottom: "30px",
+    margin: "0 10px",
+  },
+  "@media (max-width:767px)": {
+    "& .RightsideModal": {
+      width: "90% !important",
+    },
   },
 });
-export const StyleNavightion = styled('div')({
-    position:'fixed',
-    zIndex:'999999',
-    top:'0',
-    bottom:'0',
-    left: '0',
-    right:'0',
-    width:'66px',
-    overflowY:"hidden",
-    overflowX:"hidden",
-    padding:'15px',
-    background:"#3e3e3e",
+export const StyleNavightion = styled("div")({
+  position: "fixed",
+  zIndex: "999999",
+  top: "0",
+  bottom: "0",
+  left: "0",
+  right: "0",
+  width: "66px",
+  overflowY: "hidden",
+  overflowX: "hidden",
+  padding: "15px",
+  background: "#3e3e3e",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "space-between",
+  "& img": {
+    cursor: "pointer",
+  },
+  "& .SellerIcon": {
+    width: "39px",
+    height: "39px",
+  },
+  "& .Dashboard": {
+    marginTop: "50px",
+    height: "20px",
+    width: "20px",
+  },
+  "& .rawoption": {
+    marginTop: "30px",
+    width: "20px",
+    height: "20px",
+  },
+
+  "& img.active": {
+    backgroundColor: "#282828", 
+    padding: "20px", 
+    width: "30px", 
+    height: "30px", 
+    boxSizing: "content-box",
+  },
+  "& .Account": {
+    marginBottom: "25px",
+  },
+  "& .IconAction": {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: 'space-between',
-    '& img': {
-      cursor:"pointer",
+  },
+  "@media (max-width:767px)": {
+    "& .RightsideModal": {
+      width: "90% !important",
     },
-  '& .SellerIcon': {
-    width:"39px",
-    height:"39px",
-  },
-  '& .Dashboard': {
-    marginTop:"50px",
-  },
-  '& .Account': {
-    marginBottom:"25px",
-  },
-  '& .IconAction': {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },  
-  '@media (max-width:767px)': {
-    '& .RightsideModal': {
-      width:'90% !important',  
-    },   
   },
 });
 export const StyleDetailRow = styled("div")({
@@ -800,4 +821,4 @@ export const StyleDetailRow = styled("div")({
       opacity: 1,
     },
   },
-})
+});

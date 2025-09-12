@@ -3,88 +3,79 @@ import Favicon from "../assets/Images/favicon.png";
 import Dashboard from "../assets/Images/space_dashboard.png";
 import Account from "../assets/Images/account_circle.png";
 import Logout from "../assets/Images/logout.png";
+import rawoption from "../assets/Images/rawoption.png";
+import magic_call from "../assets/Images/magic_call.png";
+import magic_put from "../assets/Images/magic_put.png";
+import ultra from "../assets/Images/ultra.png";
+import unusual from "../assets/Images/unusual.png";
 import { signout } from "../service/stellarApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function RightNavigation() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // helper to check active route
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <>
-      <StyleNavightion>
-        <div className="IconAction">
-          <img
-            src={Favicon}
-            alt="Icon"
-            className="SellerIcon"
-            onClick={() => {
-              navigate("/");
-            }}
-          />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/");
-            }}
-          />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/optionMain");
-            }}
-          />
-         
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/MagicOptionMain");
-            }}
-          />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/MagicPutBuy");
-            }}
-          />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/UnusualDataMain");
-            }}
-          />
-          <img
-            src={Dashboard}
-            alt="Icon"
-            className="Dashboard"
-            onClick={() => {
-              navigate("/UltraHighVolumeDataMain");
-            }}
-          />
-        </div>
-        <div className="IconAction">
-          <img src={Account} alt="Icon" className="Account" />
-          <img
-            src={Logout}
-            alt="Icon"
-            className="Logout"
-            onClick={() => {
-              signout();
-              sessionStorage.removeItem("token");
-              navigate("/signin");
-            }}
-          />
-        </div>
-      </StyleNavightion>
-    </>
+    <StyleNavightion>
+      <div className="IconAction">
+        <img
+          src={Favicon}
+          alt="Icon"
+          onClick={() => navigate("/")}
+        />
+        <img
+          src={Dashboard}
+          alt="Icon"
+          className={`Dashboard ${isActive("/") ? "active" : ""}`}
+          onClick={() => navigate("/")}
+        />
+        <img
+          src={rawoption}
+          alt="Icon"
+          className={`rawoption ${isActive("/optionMain") ? "active" : ""}`}
+          onClick={() => navigate("/optionMain")}
+        />
+        <img
+          src={magic_call}
+          alt="Icon"
+          className={`rawoption ${isActive("/MagicOptionMain") ? "active" : ""}`}
+          onClick={() => navigate("/MagicOptionMain")}
+        />
+        <img
+          src={magic_put}
+          alt="Icon"
+          className={`rawoption ${isActive("/MagicPutBuy") ? "active" : ""}`}
+          onClick={() => navigate("/MagicPutBuy")}
+        />
+        <img
+          src={unusual}
+          alt="Icon"
+          className={`rawoption ${isActive("/UnusualDataMain") ? "active" : ""}`}
+          onClick={() => navigate("/UnusualDataMain")}
+        />
+        <img
+          src={ultra}
+          alt="Icon"
+          className={`rawoption ${isActive("/UltraHighVolumeDataMain") ? "active" : ""}`}
+          onClick={() => navigate("/UltraHighVolumeDataMain")}
+        />
+      </div>
+      <div className="IconAction">
+        <img src={Account} alt="Icon" className="Account" />
+        <img
+          src={Logout}
+          alt="Icon"
+          className="Logout"
+          onClick={() => {
+            signout();
+            sessionStorage.removeItem("token");
+            navigate("/signin");
+          }}
+        />
+      </div>
+    </StyleNavightion>
   );
 }

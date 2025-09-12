@@ -7,6 +7,7 @@
   --ag-header-border-color: transparent;
   --ag-row-border-color: transparent;
   --ag-header-background-color: transparent;
+
   /* keep if you want header same bg as body */
 }
 
@@ -20,6 +21,7 @@
 .main-grid .ag-center-cols-container {
   border: none !important;
   box-shadow: none !important;
+  position: relative !important;
 }
 
 /* Header: remove borders + the underline separator */
@@ -379,38 +381,6 @@
   background: transparent !important;
 }
 
-/* ===== Spinner / overlay ===== */
-.grid-loading {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 3;
-  border-radius: 8px;
-}
-
-.overlay-center {
-  display: grid;
-  place-items: center;
-  padding: 18px 0;
-}
-
-.spinner {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.25);
-  border-top-color: #8892ce;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .loader-msg {
   margin-top: 8px;
   color: #cfcfcf;
@@ -651,4 +621,54 @@
 .third-grid .ag-center-cols-viewport {
   scrollbar-width: none; /* thin / auto / none */
   scrollbar-color: #4b5563 #121212; /* thumb / track */
+}
+
+
+/* Smooth slide/fade for newly added parent rows */
+.ag-theme-quartz .row-new-in {
+  animation: rowSlideIn 0.8s ease-out both;
+  will-change: transform, opacity;
+}
+
+@keyframes rowSlideIn {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+/* Smooth slide/fade for newly added rows */
+.ag-theme-quartz .row-new-in {
+  animation: rowSlideIn 0.8s ease-out both;
+  will-change: transform, opacity;
+}
+
+@keyframes rowSlideIn {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+/* AgGrid.css (or your stylesheet) */
+.ag-theme-quartz .row-new-in {
+  animation: rowSlideIn 5s cubic-bezier(1.22, 1, 1.36, 1) both; /* was 0.8s ease-out */
+  will-change: transform, opacity;
+}
+
+@keyframes rowSlideIn {
+  from {
+    transform: translateY(-10px); /* a tiny bit more travel helps it feel slower */
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
