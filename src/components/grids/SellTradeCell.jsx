@@ -59,7 +59,6 @@ export function SellTradesCell({
   buyOrSell,
   optionType
 }) {
-  // Use objects keyed by rowKey
   const [summaryData, setSummaryData] = useState({});
   const summaryDataRef = useRef({}); // always fresh for renderers
 
@@ -167,11 +166,9 @@ export function SellTradesCell({
         field: "Time",
         headerStyle: headerBase,
         cellStyle: { ...cellBase, color: COLORS.timeColor, fontWeight: "700" },
-        width: 65,
-        minWidth: 50,
-        maxWidth: 70,
+        flex: 0.8,
+        minWidth: 60,
         resizable: false,
-
         valueFormatter: (pp) => to12hUpper(pp.value),
         headerClass: ["cm-header"],
       },
@@ -181,12 +178,10 @@ export function SellTradesCell({
         headerStyle: headerBase,
         cellStyle: cellBase,
         valueFormatter: (pp) => toDDMMYYYY(pp.value),
-        width: 95,
-        minWidth: 80,
-        maxWidth: 100,
+        flex: 1.5,
+        minWidth: 90,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "Trade",
@@ -196,21 +191,18 @@ export function SellTradesCell({
           const isCall = String(params.value).toUpperCase() === "CALL";
           return { ...cellBase, color: isCall ? COLORS.lime : COLORS.red };
         },
-        width: 50,
-        minWidth: 40,
-        maxWidth: 60,
+        flex: 0.7,
+        minWidth: 50,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "Type",
         field: "Type",
         headerStyle: headerBase,
         cellStyle: cellBase,
-        width: 55,
-        minWidth: 50,
-        maxWidth: 60,
+        flex: 1,
+        minWidth: 60,
         resizable: false,
         headerClass: ["cm-header"],
       },
@@ -219,38 +211,31 @@ export function SellTradesCell({
         field: "Strike",
         headerStyle: headerBase,
         cellStyle: cellBase,
-        width: 55,
-        minWidth: 50,
-        maxWidth: 60,
+        flex: 1,
+        minWidth: 60,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "Spot",
         field: "Spot",
         headerStyle: headerBase,
         cellStyle: cellBase,
-        width: 65,
-        minWidth: 50,
-        maxWidth: 80,
+        flex: 1,
+        minWidth: 65,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "TotalCost",
         field: "TotalCost",
         headerStyle: headerBase,
         cellStyle: currencyCellStyle,
-        valueFormatter: (pp) => `$${(pp.value)}`,
-
-        width: 80,
-        minWidth: 70,
-        maxWidth: 100,
+        valueFormatter: (pp) => `$${pp.value}`,
+        flex: 1,
+        minWidth: 80,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "SSD",
@@ -261,36 +246,30 @@ export function SellTradesCell({
           const v = parsePct(p.value);
           return v > 3 ? { ...base, color: COLORS.cyan } : base;
         },
-        width: 70,
-        minWidth: 40,
-        maxWidth: 80,
+        flex: 1,
+        minWidth: 70,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "Price",
         field: "Price",
         headerStyle: headerBase,
         cellStyle: cellBase,
-        width: 60,
-        minWidth: 40,
-        maxWidth: 80,
+        flex: 1,
+        minWidth: 60,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
       {
         headerName: "DTE",
         field: "DTE",
         headerStyle: headerBase,
         cellStyle: (p) => DteColorStyle(p.value),
-        width: 80,
-        minWidth: 70,
-        maxWidth: 100,
+        flex: 0.6,
+        minWidth: 45,
         resizable: false,
         headerClass: ["cm-header"],
-
       },
     ],
     []

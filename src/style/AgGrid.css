@@ -672,3 +672,12 @@
     opacity: 1;
   }
 }
+.main-grid .no-pad {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure the nested content spans the full cell width */
+.main-grid .full-bleed {
+  width: 100%;
+}

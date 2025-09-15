@@ -663,9 +663,7 @@ export const StyleNavightion = styled("div")({
 
   "& img.active": {
     backgroundColor: "#282828", 
-    padding: "20px", 
-    width: "30px", 
-    height: "30px", 
+    padding: "30px",  
     boxSizing: "content-box",
   },
   "& .Account": {

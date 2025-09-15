@@ -62,13 +62,9 @@ export default function Aggrigated({
   hader,
   buyOrSell,
   optionType
-  // setSummaryData,
-  // summaryData,
-  // responseData,
-  // setResponseData,
+
 }) {
-  // const {summaryData, setSummaryData, responseData, setResponseData} = useContext(UserContext);
-  // console.log("FirstAnimatedTable");
+  
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
   const summaryDataRef = useRef([]); // always fresh for renderers
@@ -187,12 +183,6 @@ export default function Aggrigated({
     return () => intervalId && clearInterval(intervalId);
   }, [selectedDate, fetchdata]);
 
-  // const filteredResponseData = useMemo(() => {
-  //   const q = (searchTerm || "").toLowerCase();
-  //   return responseData.filter((row) =>
-  //     (row?.Tick ?? "").toLowerCase().includes(q)
-  //   );
-  // }, [responseData, searchTerm]);
   const filteredResponseData = useMemo(() => {
     const q = (searchTerm || "").toLowerCase();
     const list = Array.isArray(responseData) ? responseData : []; // FIX
@@ -344,6 +334,8 @@ export default function Aggrigated({
           p?.data?.__kind === "detail" ? null : p?.data?.[c.field];
         c.colSpan = (p) =>
           p?.data?.__kind !== "detail" ? 1 : safeGetDefsCount(p?.api);
+        c.cellClass = (p) =>
+          p?.data?.__kind === "detail" ? "no-pad" : undefined;
         c.cellRenderer = (p) => {
           if (p?.data?.__kind !== "detail") return p?.value;
 
@@ -384,6 +376,7 @@ export default function Aggrigated({
 
           return (
             <DetailCell targetHeight={targetHeight}>
+               <div className="full-bleed">
               <NestedGrid
                 rows={baseRows}
                 formattedDateStr={formattedDateStrRef.current}
@@ -407,6 +400,7 @@ export default function Aggrigated({
                   }
                 }}
               />
+              </div>
             </DetailCell>
           );
         };
@@ -665,6 +659,8 @@ function NestedGrid({
           if (p?.data?.__kind !== "subDetail") return 1;
           return safeGetDefsCount(p?.api);
         },
+         cellClass: (p) =>
+          p?.data?.__kind === "subDetail" ? "no-pad" : undefined,
         cellRenderer: (p) => {
           if (p?.data?.__kind !== "subDetail") return p?.value;
           const r = p?.data?.__parent;
