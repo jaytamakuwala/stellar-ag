@@ -1,4 +1,3 @@
-
 import {
   currencyColorStyle,
   getFormatedDateStrForUSA,
@@ -21,6 +20,8 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { getOptionTradeDetails } from "../../service/stellarApi";
 import { reconcileByIndex } from "../../utils/agGridHelper";
+import "../../style/AgGrid.css";
+import { Height } from "@mui/icons-material";
 
 function parseExecDateYMD(execDateStr) {
   if (!execDateStr) return null;
@@ -57,7 +58,7 @@ export function SellTradesCell({
   setOptionTradeData,
   Containcolor,
   buyOrSell,
-  optionType
+  optionType,
 }) {
   const [summaryData, setSummaryData] = useState({});
   const summaryDataRef = useRef({}); // always fresh for renderers
@@ -99,7 +100,6 @@ export function SellTradesCell({
         optionSymbol: tick,
         optionType: optionType,
         buyOrSell: buyOrSell,
-
       };
 
       const res = await getOptionTradeDetails(query);
@@ -285,19 +285,22 @@ export function SellTradesCell({
   }, []);
 
   return (
-    <div className="ag-theme-quartz no-padding-grid " style={{ width: "100%" ,overflowX:"auto", height:150}}>
+    <div
+    className="third-grid-wrap third-grid ag-theme-quartz"
+    style={{ width: "100%", height: 150, background: COLORS.dark4 }}
+    >
       <AgGridReact
-        className="third-grid no-padding-grid"
+        className="ag-theme-quartz third-grid "
         rowData={summaryData[rowKey] ?? []}
         columnDefs={tradeCols}
         headerHeight={AG_GRID_HEIGHTS.HEADER_H_L3}
-        suppressRowHoverHighlight
         rowHeight={AG_GRID_HEIGHTS.ROW_H_L3}
         defaultColDef={{
           resizable: true,
           wrapHeaderText: true,
           autoHeaderHeight: true,
         }}
+        suppressRowHoverHighlight
         suppressCellFocus
         getRowId={(pp) =>
           pp?.data?.id ||
@@ -309,7 +312,6 @@ export function SellTradesCell({
         domLayout="normal"
         overlayNoRowsTemplate="<span style='padding:8px; color:#9aa3af;'>No trades in this window</span>"
         overlayLoadingTemplate="<span style='padding:8px; color:#9aa3af;'>Loading…</span>"
-        style={{ width: "100%", background: COLORS.dark4 }}
       />
     </div>
   );

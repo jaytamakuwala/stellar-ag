@@ -34,57 +34,10 @@ export default function AiPowerData({
   formattedDateStr,
   setFormattedDateStr,
   hader,
-  // rows,
-  // setRows,
 }) {
   const [rows, setRows] = useState([]);
   const { selectedDate,} = useContext(UserContext);
 
-  // const fetchdata = useCallback(async () => {
-  //   try {
-  //     const primaryDate = selectedDate
-  //       ? new Date(selectedDate)
-  //       : new Date();
-  //     const fallbackDate = prevTradingDate(primaryDate);
-
-  //     const buildPayload = (d) => ({
-  //       alertDate: formatUS(d),
-  //       algo: "V1",
-  //     });
-
-  //     // Reflect date used in UI
-  //     setFormattedDateStr(formatUS(primaryDate));
-
-  //     const tryCall = async (payload) => {
-  //       const res = await getAipowerAlerts(payload);
-  //       if (!res?.ok)
-  //         throw new Error(res?.error?.error || "Failed to fetch AiPower Data");
-  //       return res;
-  //     };
-
-  //     let usedDate = primaryDate;
-  //     let res = await tryCall(buildPayload(primaryDate));
-
-  //     // If API returned ok but no rows, try previous trading day once
-  //     if (!Array.isArray(res.data) || res.data.length === 0) {
-  //       res = await tryCall(buildPayload(fallbackDate));
-  //       usedDate = fallbackDate;
-  //       setFormattedDateStr(formatUS(usedDate));
-  //     }
-  //     setRows((prev) =>
-  //       reconcileByIndex(
-  //         prev,
-  //         res.data || [],
-  //         (row, idx) => getParentRowId(row, idx),
-  //         ["Tick"]
-  //       )
-  //     );
-  //     // setRows(res.data || []);
-  //   } catch (error) {
-  //     console.error("[fetchdata] error:", error);
-  //     toast.error(error.message || "Something went wrong");
-  //   }
-  // }, [selectedDate, setFormattedDateStr]);
   const fetchdata = useCallback(async () => {
     try {
       const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
@@ -207,10 +160,6 @@ export default function AiPowerData({
         minWidth: 100,
         cellStyle: { ...cellBase },
         resizable: false,
-        // valueFormatter: (params) => {
-        //   if (!params.value) return "";
-        //   return String(params.value).split("-")[0].trim();
-        // },
         headerStyle: headerBase,
       },
     ],
@@ -232,8 +181,6 @@ export default function AiPowerData({
 
   const getRowId = useCallback((params) => {
     const r = params.data || {};
-    // Use a stable unique key for your data.
-    // If your API has an Id, return it here instead.
     return r.__id ?? `${r.Tick ?? "?"}-${r.Time ?? "?"}-${r.Target ?? "?"}`;
   }, []);
 

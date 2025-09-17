@@ -188,28 +188,8 @@
   margin-left: 0;
 }
 
-/* Center all header text in the third (SellTradesCell) grid */
-.third-grid .hdr-center .ag-header-cell-label {
-  justify-content: center;
-  z-index: 1;
-  /* center the flex container */
-  align-items: center;
-  overflow-x: auto;
-}
-
-.third-grid .hdr-center .ag-header-cell-text {
-  text-align: center;
-  /* center the text itself */
-  width: 100%;
-}
-.third-grid {
-  width: 100% !important;
-  overflow-x: auto;
-}
-/* Center all header text in the main grid */
 .main-grid .hdr-center .ag-header-cell-label {
   justify-content: center;
-  /* centers label + sort icons */
   align-items: center;
 }
 
@@ -558,21 +538,20 @@
 }
 
 .main-grid ::-webkit-scrollbar {
-  width: 60px;
+  width: 7px;
 }
 
 .main-grid ::-webkit-scrollbar-track {
-  background: #121212;
+  background: #161618;
 }
 
 .main-grid ::-webkit-scrollbar-thumb {
-  background-color: rgb(95, 95, 95); /* default thumb */
+  background-color: rgb(95, 95, 95); 
   border-radius: 0px;
-  /* border: 2px solid #121212;        */
 }
 
 .main-grid ::-webkit-scrollbar-thumb:active {
-  background-color: #9ca3af; /* on drag */
+  background-color: #9ca3af; 
 }
 
 .main-grid ::-webkit-scrollbar-corner {
@@ -589,95 +568,57 @@
   scrollbar-color: #4b5563 #121212; /* thumb / track */
 }
 
-.third-grid ::-webkit-scrollbar {
-  width: 40px;
-  min-width: 20px;
-  max-width: 60px;
-}
-
-.third-grid ::-webkit-scrollbar-track {
-  background: #121212;
-}
-
-.third-grid ::-webkit-scrollbar-thumb {
-  background-color: rgb(95, 95, 95); /* default thumb */
-  border-radius: 0px;
-  /* border: 2px solid #121212;        */
-}
-
-.third-grid ::-webkit-scrollbar-thumb:active {
-  background-color: #282828; /* on drag */
-}
-
-.third-grid ::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/* Scope tighter to the vertical scrolling viewport to stabilize layout */
-.third-grid .ag-center-cols-viewport {
-  scrollbar-gutter: stable;
-}
-
-.third-grid .ag-center-cols-viewport {
-  scrollbar-width: none; /* thin / auto / none */
-  scrollbar-color: #4b5563 #121212; /* thumb / track */
-}
-
-
-/* Smooth slide/fade for newly added parent rows */
-.ag-theme-quartz .row-new-in {
-  animation: rowSlideIn 0.8s ease-out both;
-  will-change: transform, opacity;
-}
-
-@keyframes rowSlideIn {
-  from {
-    transform: translateY(-8px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-/* Smooth slide/fade for newly added rows */
-.ag-theme-quartz .row-new-in {
-  animation: rowSlideIn 0.8s ease-out both;
-  will-change: transform, opacity;
-}
-
-@keyframes rowSlideIn {
-  from {
-    transform: translateY(-8px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-/* AgGrid.css (or your stylesheet) */
-.ag-theme-quartz .row-new-in {
-  animation: rowSlideIn 5s cubic-bezier(1.22, 1, 1.36, 1) both; /* was 0.8s ease-out */
-  will-change: transform, opacity;
-}
-
-@keyframes rowSlideIn {
-  from {
-    transform: translateY(-10px); /* a tiny bit more travel helps it feel slower */
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 .main-grid .no-pad {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-/* Ensure the nested content spans the full cell width */
-.main-grid .full-bleed {
-  width: 100%;
+.third-grid-wrap .ag-center-cols-viewport,
+.third-grid-wrap .ag-body-horizontal-scroll-viewport,
+.third-grid-wrap .ag-body-vertical-scroll-viewport {
+  scrollbar-width: thin;                    /* thin strip */
+  scrollbar-color: rgb(95,95,95) #161618;      /* thumb / track */
+}
+
+
+.third-grid-wrap .ag-center-cols-viewport::-webkit-scrollbar,
+.third-grid-wrap .ag-body-viewport::-webkit-scrollbar,                
+.third-grid-wrap .ag-body-vertical-scroll-viewport::-webkit-scrollbar {
+  width: 8px;                                
+}
+
+.third-grid-wrap .ag-body-horizontal-scroll-viewport::-webkit-scrollbar {
+  height: 8px;                               
+}
+
+/* Track (black) – apply to all candidates */
+.third-grid-wrap .ag-center-cols-viewport::-webkit-scrollbar-track,
+.third-grid-wrap .ag-body-viewport::-webkit-scrollbar-track,
+.third-grid-wrap .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track,
+.third-grid-wrap .ag-body-vertical-scroll-viewport::-webkit-scrollbar-track {
+  background: #161618;
+}
+
+/* Thumb (grey), flat corners – apply to all candidates */
+.third-grid-wrap .ag-center-cols-viewport::-webkit-scrollbar-thumb,
+.third-grid-wrap .ag-body-viewport::-webkit-scrollbar-thumb,
+.third-grid-wrap .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb,
+.third-grid-wrap .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb {
+  background-color: rgb(95,95,95);
+  border-radius: 0;
+}
+
+/* Active/drag state */
+.third-grid-wrap .ag-center-cols-viewport::-webkit-scrollbar-thumb:active,
+.third-grid-wrap .ag-body-viewport::-webkit-scrollbar-thumb:active,
+.third-grid-wrap .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:active,
+.third-grid-wrap .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb:active {
+  background-color: #9ca3af;
+}
+
+/* Remove arrow buttons on Windows WebKit */
+.third-grid-wrap ::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }

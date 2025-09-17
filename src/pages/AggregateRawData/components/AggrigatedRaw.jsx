@@ -61,10 +61,8 @@ export default function Aggrigated({
   Containcolor,
   hader,
   buyOrSell,
-  optionType
-
+  optionType,
 }) {
-  
   const [responseData, setResponseData] = useState([]);
   const [summaryData, setSummaryData] = useState([]);
   const summaryDataRef = useRef([]); // always fresh for renderers
@@ -196,6 +194,12 @@ export default function Aggrigated({
       out.push({ ...r, __kind: "parent", __id: id });
       if (expandedRowId === id) {
         out.push({ __kind: "detail", __parent: r, __id: `detail-${id}` });
+        out.push({
+          __kind: "detail",
+          __parent: r,
+          __parentId: id,
+          __id: `detail-${id}`,
+        });
       }
     });
     return out;
@@ -376,14 +380,12 @@ export default function Aggrigated({
 
           return (
             <DetailCell targetHeight={targetHeight}>
-               <div className="full-bleed">
-              <NestedGrid
+               <NestedGrid
+                className="full-bleed"
                 rows={baseRows}
                 formattedDateStr={formattedDateStrRef.current}
                 buyOrSell={buyOrSell}
                 optionType={optionType}
-                //optionTradeData={optionTradeDataRef.current}
-                //setOptionTradeData={setOptionTradeData}
                 expandedId={expandedId}
                 setExpandedId={setExpandedId}
                 parentWidthMap={{}} // keep if needed
@@ -399,8 +401,7 @@ export default function Aggrigated({
                     p.api?.onRowHeightChanged();
                   }
                 }}
-              />
-              </div>
+              /> 
             </DetailCell>
           );
         };
@@ -468,7 +469,7 @@ export default function Aggrigated({
   return (
     <StyleMainDiv>
       {!animationState ? (
-        <div style={{ overflowX: "auto", width: "100%" }}>
+        <div style={{ width: "100%" }}>
           <div
             style={{
               display: "flex",
@@ -495,7 +496,7 @@ export default function Aggrigated({
             }}
           >
             <AgGridReact
-              className="ag-theme-quartz header-center main-grid main-grid "
+              className="ag-theme-quartz header-center main-grid"
               rowData={displayRows}
               columnDefs={parentColsOnly}
               suppressRowHoverHighlight={true}
@@ -524,6 +525,31 @@ export default function Aggrigated({
                   return detailHeights[id] ?? AG_GRID_HEIGHTS.DETAIL_DEFAULT_H;
                 }
                 return AG_GRID_HEIGHTS.ROW_H_L1;
+              }}
+              postSortRows={(params) => {
+                const nodes = params.nodes;
+                // Map: parentId -> detail node
+                const detailByParent = new Map();
+                for (const n of nodes) {
+                  const d = n.data;
+                  if (d?.__kind === "detail" && d.__parentId) {
+                    detailByParent.set(d.__parentId, n);
+                  }
+                }
+                // Keep only parents in their sorted order
+                const parents = nodes.filter(
+                  (n) => n.data?.__kind !== "detail"
+                );
+                const result = [];
+                for (const n of parents) {
+                  result.push(n);
+                  const parentId = n.data?.__id;
+                  const detailNode = detailByParent.get(parentId);
+                  if (detailNode) result.push(detailNode);
+                }
+                // Mutate in place (AG Grid reads this array)
+                nodes.length = 0;
+                for (const n of result) nodes.push(n);
               }}
             />
           </div>
@@ -588,7 +614,7 @@ function NestedGrid({
   parentWidthMap, // kept for parity
   onHeightChange,
   buyOrSell,
-  optionType
+  optionType,
 }) {
   console.log("NestedGrid");
   const flatRows = useMemo(() => {
@@ -629,7 +655,7 @@ function NestedGrid({
       const arr = optionTradeData?.[key];
       const len = Array.isArray(arr) ? arr.length + 1 : 5;
       // return AG_GRID_HEIGHTS.HEADER_H_L3 + AG_GRID_HEIGHTS.ROW_H_L3 * len;
-      return 150
+      return 150;
     },
     [optionTradeData, getRowKeyFor]
   );
@@ -659,23 +685,22 @@ function NestedGrid({
           if (p?.data?.__kind !== "subDetail") return 1;
           return safeGetDefsCount(p?.api);
         },
-         cellClass: (p) =>
+        cellClass: (p) =>
           p?.data?.__kind === "subDetail" ? "no-pad" : undefined,
         cellRenderer: (p) => {
           if (p?.data?.__kind !== "subDetail") return p?.value;
           const r = p?.data?.__parent;
           if (!r) return null;
           return (
-            <div onClick={(e) => e.stopPropagation()} style={{ width: "101%" }}>
-              <SellTradesCell
-                parentRow={r}
-                formattedDateStr={formattedDateStr}
-                time={new Date().getTime()}
-                buyOrSell={buyOrSell}
-                optionType={optionType}
-  
-              />
-            </div>
+            <SellTradesCell
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: "100%", height: "100%" }}
+              parentRow={r}
+              formattedDateStr={formattedDateStr}
+              time={new Date().getTime()}
+              buyOrSell={buyOrSell}
+              optionType={optionType}
+            />
           );
         },
         cellStyle: {
@@ -784,8 +809,6 @@ function NestedGrid({
       getRowHeight={getChildRowHeight}
       getRowStyle={getLevelTwoRowStyle}
       domLayout="autoHeight"
-      suppressHorizontalScroll
-      suppressVerticalScroll
       style={{ width: "100%", background: "#282828" }}
     />
   );
