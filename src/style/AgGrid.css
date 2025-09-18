@@ -301,6 +301,7 @@
 .ag-theme-quartz .ag-column-hover,
 .ag-theme-quartz .ag-header-cell.ag-column-hover {
   background: none !important;
+  background-color: transparent !important;
 }
 
 .ag-theme-quartz .ag-row-hover .ag-cell,

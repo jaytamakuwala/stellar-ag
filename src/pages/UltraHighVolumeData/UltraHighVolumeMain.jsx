@@ -8,14 +8,14 @@ import UltraHighVolume from "./components/UltraHighVolume";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
 import { COLORS } from "../../utils/constants";
-import { getUltraHighVolumeOptionData } from "../../service/stellarApi";
-
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
+
 
 export default function UltraHighVolumeMain() {
-  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm, openAlerts, setOpenAlerts } =
     useContext(UserContext);
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -72,6 +72,8 @@ export default function UltraHighVolumeMain() {
             />
           </StyleModalFilter>
         ) : null}
+                <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
+        
         <div
           style={{
             display: "flex",

@@ -10,27 +10,27 @@ import ultra from "../assets/Images/ultra.png";
 import unusual from "../assets/Images/unusual.png";
 import { signout } from "../service/stellarApi";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function RightNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
-
+const { setOpenAlerts } = useContext(UserContext);
   // helper to check active route
   const isActive = (path) => location.pathname === path;
 
   return (
     <StyleNavightion>
       <div className="IconAction">
-        <img
-          src={Favicon}
-          alt="Icon"
-          onClick={() => navigate("/")}
-        />
+        <img src={Favicon} alt="Icon" onClick={() => navigate("/")} />
         <img
           src={Dashboard}
           alt="Icon"
           className={`Dashboard ${isActive("/") ? "active" : ""}`}
-          onClick={() => navigate("/")}
+          onClick={() => {
+             navigate("/");
+          }}
         />
         <img
           src={rawoption}
@@ -41,7 +41,9 @@ export default function RightNavigation() {
         <img
           src={magic_call}
           alt="Icon"
-          className={`rawoption ${isActive("/MagicOptionMain") ? "active" : ""}`}
+          className={`rawoption ${
+            isActive("/MagicOptionMain") ? "active" : ""
+          }`}
           onClick={() => navigate("/MagicOptionMain")}
         />
         <img
@@ -53,18 +55,27 @@ export default function RightNavigation() {
         <img
           src={unusual}
           alt="Icon"
-          className={`rawoption ${isActive("/UnusualDataMain") ? "active" : ""}`}
+          className={`rawoption ${
+            isActive("/UnusualDataMain") ? "active" : ""
+          }`}
           onClick={() => navigate("/UnusualDataMain")}
         />
         <img
           src={ultra}
           alt="Icon"
-          className={`rawoption ${isActive("/UltraHighVolumeDataMain") ? "active" : ""}`}
+          className={`rawoption ${
+            isActive("/UltraHighVolumeDataMain") ? "active" : ""
+          }`}
           onClick={() => navigate("/UltraHighVolumeDataMain")}
         />
       </div>
       <div className="IconAction">
-        <img src={Account} alt="Icon" className="Account" />
+        <img
+          src={Account}
+          alt="Icon"
+          className="Account"
+          onClick={() => navigate("/myProfilemain")}
+        />
         <img
           src={Logout}
           alt="Icon"

@@ -10,7 +10,12 @@ import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 
 import { getAipowerAlerts } from "../../../service/stellarApi";
-import { getParentRowId, to12h, getRowStyle, to12hUpper } from "../../../utils/common";
+import {
+  getParentRowId,
+  to12h,
+  getRowStyle,
+  to12hUpper,
+} from "../../../utils/common";
 import {
   AG_GRID_HEIGHTS,
   cellBase,
@@ -36,7 +41,7 @@ export default function AiPowerData({
   hader,
 }) {
   const [rows, setRows] = useState([]);
-  const { selectedDate,} = useContext(UserContext);
+  const { selectedDate } = useContext(UserContext);
 
   const fetchdata = useCallback(async () => {
     try {
@@ -185,34 +190,18 @@ export default function AiPowerData({
   }, []);
 
   return (
-    <div style={{ overflowX: "auto", width: "100%", marginBottom: "0px" }}>
-      <div
-        className="grid-title"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "6px 10px",
-          margin: "0 0 6px",
-          color: "#fff",
-          fontSize: 20,
-          fontWeight: 500,
-          marginBottom: "0px",
-          marginTop: "0px",
-        }}
-      >
-        <span>{hader}</span>
-      </div>
+    <div style={{ width: "100%", marginBottom: "0px" }}>
       <div
         style={{
           position: "relative",
           width: "100%",
           padding: 5,
-          height: "100vh",
+          height: "70vh",
+          overflow: "hidden",
         }}
       >
         <AgGridReact
-          className="ag-theme-quartz header-center main-grid main-grid "
+          className="ag-theme-quartz header-center main-grid"
           rowData={filteredResponseData}
           columnDefs={parentCols}
           immutableData={true}
@@ -233,6 +222,7 @@ export default function AiPowerData({
             "ag-row-even": (p) => p.node.rowIndex % 2 === 0,
             "ag-row-odd": (p) => p.node.rowIndex % 2 !== 0,
           }}
+          domLayout="normal"
         />
       </div>
     </div>

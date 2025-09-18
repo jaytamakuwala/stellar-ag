@@ -10,7 +10,7 @@ import {
   DteColorStyle,
   formatNumberToCurrency,
 } from "../../utils/common";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
 import {
   AG_GRID_HEIGHTS,
   cellBase,
@@ -149,7 +149,7 @@ export function SellTradesCell({
     summaryDataRef.current = summaryData;
   }, [summaryData]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchdata();
   }, [fetchdata]);
 
@@ -286,8 +286,8 @@ export function SellTradesCell({
 
   return (
     <div
-    className="third-grid-wrap third-grid ag-theme-quartz"
-    style={{ width: "100%", height: 150, background: COLORS.dark4 }}
+      className="third-grid-wrap third-grid ag-theme-quartz"
+      style={{ width: "100%", height: 200 , background: COLORS.dark4 }}
     >
       <AgGridReact
         className="ag-theme-quartz third-grid "
@@ -300,7 +300,8 @@ export function SellTradesCell({
           wrapHeaderText: true,
           autoHeaderHeight: true,
         }}
-        suppressRowHoverHighlight
+        suppressRowHoverHighlight = {true}
+        suppressColumnHoverHighlight={true}
         suppressCellFocus
         getRowId={(pp) =>
           pp?.data?.id ||

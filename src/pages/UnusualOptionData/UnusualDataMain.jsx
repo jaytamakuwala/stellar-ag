@@ -11,9 +11,10 @@ import { COLORS } from "../../utils/constants";
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
 
 export default function UnusualDataMain() {
-  const {selectedDate, setSelectedDate,searchTerm, setSearchTerm} = useContext(UserContext);
+  const {selectedDate, setSelectedDate,searchTerm, setSearchTerm, openAlerts, setOpenAlerts} = useContext(UserContext);
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -69,6 +70,7 @@ export default function UnusualDataMain() {
             />
           </StyleModalFilter>
         ) : null}
+        <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
         <div
           style={{
             display: "flex",

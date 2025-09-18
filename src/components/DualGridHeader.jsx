@@ -3,24 +3,42 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { StyleOption } from "../style/containers/AnimatedTable";
 import { UserContext } from "../context/UserContext";
 import { getCurrentUSADate } from "../utils/common";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function DualGridHeader({ filterState, setFilterState, hader }) {
-  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
-    useContext(UserContext);
-  const [draftDate, setDraftDate] = useState(selectedDate);
+  const {
+    selectedDate,
+    setSelectedDate,
+    searchTerm,
+    setSearchTerm,
+    openAlerts,
+    setOpenAlerts,
+  } = useContext(UserContext);
+  const [draftDate, setDraftDate] = useState(selectedDate ?? null);
+
   useEffect(() => {
     setDraftDate(selectedDate ?? new Date());
   }, [selectedDate]);
+const openAlertsButton = () => {
+  if (openAlerts) {
+    setOpenAlerts(false);
+  } else {
+    setOpenAlerts(true);
+  }
+}
   return (
     <StyleOption>
       <h4 className="TitleAction m-0" style={{ color: "#fff" }}>
         {hader}
       </h4>
 
-      <div className="rightNavigation">
+      {location.pathname !== "/myProfilemain"? (<div className="rightNavigation">
+        {/* Date picker */}
         <div
           className="SmallScreen"
           style={{
@@ -49,17 +67,18 @@ export default function DualGridHeader({ filterState, setFilterState, hader }) {
           </LocalizationProvider>
         </div>
 
+        {/* Search */}
         <div className="SearchInputs">
           <input
             type="text"
             placeholder="Search Tick"
-            // {(e) => setDraftSearchTerm(e.target.value)}
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
           />
           <SearchIcon className="SearchIcon" />
         </div>
 
+        {/* Filter button */}
         <div className="ShowInLine">
           <button
             type="button"
@@ -75,7 +94,27 @@ export default function DualGridHeader({ filterState, setFilterState, hader }) {
             </span>
           </button>
         </div>
-      </div>
+
+        {/* Alerts button */}
+
+        <button
+          style={{
+            marginLeft: "10px",
+            backgroundColor: "#282828",
+            border: "none",
+            padding: "6px 6px",
+            borderRadius: 5,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            color: "#fff",
+          }}
+          onClick={openAlertsButton}
+          onClose={() => setOpenAlerts(false)}
+        >
+          {openAlerts ? <NotificationsActiveIcon /> : <NotificationsNoneIcon />}
+        </button>
+      </div>) : null}
     </StyleOption>
   );
 }

@@ -5,6 +5,7 @@ import {
   useCallback,
   useRef,
   useContext,
+  memo
 } from "react";
 import {
   StyleModalFilter,
@@ -48,7 +49,7 @@ import {
 } from "../../../utils/agGridHelper";
 import { UserContext } from "../../../context/UserContext";
 
-export default function Aggrigated({
+ function Aggrigated({
   selectedDate,
   searchTerm,
   handleModalEvent,
@@ -131,7 +132,7 @@ export default function Aggrigated({
           throw new Error("No data for primary date");
         }
       } catch {
-        data = await callBoth(fallbackPayload);
+        data = await callBoth(primaryPayload);
         usedDate = fallbackDate;
         setFormattedDateStr(formatUS(usedDate));
       }
@@ -225,6 +226,32 @@ export default function Aggrigated({
       }
     });
   }, []);
+
+  
+  const postSortRows = useCallback((params) => {
+    const nodes = params.nodes;
+    // Map: parentId -> detail node
+    const detailByParent = new Map();
+    for (const n of nodes) {
+      const d = n.data;
+      if (d?.__kind === "detail" && d.__parentId) {
+        detailByParent.set(d.__parentId, n);
+      }
+    }
+    // Keep only parents in their sorted order
+    const parents = nodes.filter((n) => n.data?.__kind !== "detail");
+    const result = [];
+    for (const n of parents) {
+      result.push(n);
+      const parentId = n.data?.__id;
+      const detailNode = detailByParent.get(parentId);
+      if (detailNode) result.push(detailNode);
+    }
+    // Mutate in place (AG Grid reads this array)
+    nodes.length = 0;
+    for (const n of result) nodes.push(n);
+  }, []);
+
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -380,7 +407,7 @@ export default function Aggrigated({
 
           return (
             <DetailCell targetHeight={targetHeight}>
-               <NestedGrid
+              <NestedGrid
                 className="full-bleed"
                 rows={baseRows}
                 formattedDateStr={formattedDateStrRef.current}
@@ -401,7 +428,7 @@ export default function Aggrigated({
                     p.api?.onRowHeightChanged();
                   }
                 }}
-              /> 
+              />
             </DetailCell>
           );
         };
@@ -462,7 +489,6 @@ export default function Aggrigated({
       clearTimeout(t1);
     };
   }, [animationState]);
-
   /* ===========================
      Render
      =========================== */
@@ -526,31 +552,7 @@ export default function Aggrigated({
                 }
                 return AG_GRID_HEIGHTS.ROW_H_L1;
               }}
-              postSortRows={(params) => {
-                const nodes = params.nodes;
-                // Map: parentId -> detail node
-                const detailByParent = new Map();
-                for (const n of nodes) {
-                  const d = n.data;
-                  if (d?.__kind === "detail" && d.__parentId) {
-                    detailByParent.set(d.__parentId, n);
-                  }
-                }
-                // Keep only parents in their sorted order
-                const parents = nodes.filter(
-                  (n) => n.data?.__kind !== "detail"
-                );
-                const result = [];
-                for (const n of parents) {
-                  result.push(n);
-                  const parentId = n.data?.__id;
-                  const detailNode = detailByParent.get(parentId);
-                  if (detailNode) result.push(detailNode);
-                }
-                // Mutate in place (AG Grid reads this array)
-                nodes.length = 0;
-                for (const n of result) nodes.push(n);
-              }}
+              postSortRows={postSortRows}
             />
           </div>
         </div>
@@ -600,7 +602,7 @@ export default function Aggrigated({
     </StyleMainDiv>
   );
 }
-
+export default memo(Aggrigated);
 /* ===========================
    Nested Grid (level 2)
    =========================== */
@@ -655,7 +657,7 @@ function NestedGrid({
       const arr = optionTradeData?.[key];
       const len = Array.isArray(arr) ? arr.length + 1 : 5;
       // return AG_GRID_HEIGHTS.HEADER_H_L3 + AG_GRID_HEIGHTS.ROW_H_L3 * len;
-      return 150;
+      return 200;
     },
     [optionTradeData, getRowKeyFor]
   );
@@ -694,7 +696,7 @@ function NestedGrid({
           return (
             <SellTradesCell
               onClick={(e) => e.stopPropagation()}
-              style={{ width: "100%", height: "100%" }}
+              style={{ width: "100%", height: 200 }}
               parentRow={r}
               formattedDateStr={formattedDateStr}
               time={new Date().getTime()}

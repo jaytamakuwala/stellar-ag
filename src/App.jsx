@@ -16,6 +16,7 @@ import MagicOptionMain from "./pages/MagicOptionData/magicOptionMain";
 import MagicPutBuy from "./pages/MagicOptionData/MagicPutBuy";
 import UnusualDataMain from "./pages/UnusualOptionData/UnusualDataMain";
 import UltraHighVolumeDataMain from "./pages/UltraHighVolumeData/UltraHighVolumeMain";
+import myProfilemain from "./pages/myProfile/myProfilemain";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -39,6 +40,10 @@ export default function App() {
             <Route
               path="/UltraHighVolumeDataMain"
               Component={UltraHighVolumeDataMain}
+            />
+            <Route
+              path="/myProfilemain"
+              Component={myProfilemain}
             />
           </Route>
           <Route path="*" element={<SignIn />} />

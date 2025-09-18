@@ -7,12 +7,11 @@ import RightNavigation from "../../components/RightNavigation";
 import MagicOption from "./components/MagicOption";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
-
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-// import MiddleGrid from "./components/MiddleGrid";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
 
 export default function MagicOptionMain() {
   // const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +34,7 @@ export default function MagicOptionMain() {
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
   const { selectedDate, setSelectedDate } = useContext(UserContext);
-  const { searchTerm, setSearchTerm } = useContext(UserContext);
+  const { searchTerm, setSearchTerm, openAlerts, setOpenAlerts } = useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -74,6 +73,7 @@ export default function MagicOptionMain() {
             />
           </StyleModalFilter>
         ) : null}
+        <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
 
         <div style={{ overflow: "hidden" }}>
           <MagicOption

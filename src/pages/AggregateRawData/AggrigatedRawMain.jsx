@@ -23,10 +23,9 @@ import {
 } from "../../service/stellarApi";
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-import AiPowerData from "./components/AiPowerData";
 import { UserContext } from "../../context/UserContext";
 import { COLORS } from "../../utils/constants";
-
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
 
 export default function AnimatedTable() {
   const [filterState, setFilterState] = useState(false);
@@ -58,8 +57,14 @@ export default function AnimatedTable() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
-    useContext(UserContext);
+  const {
+    selectedDate,
+    setSelectedDate,
+    searchTerm,
+    setSearchTerm,
+    openAlerts,
+    setOpenAlerts,
+  } = useContext(UserContext);
 
   let selectedSummaryData = [];
   useEffect(() => {
@@ -279,8 +284,6 @@ export default function AnimatedTable() {
       {/* Right Navigation */}
       <RightNavigation />
 
-      {/* Dual Chart Header */}
-
       {!animationState ? (
         <>
           <DualGridHeader
@@ -290,8 +293,8 @@ export default function AnimatedTable() {
             setSearchTerm={(data) => setSearchTerm(data)}
             filterState={filterState}
             setFilterState={(data) => setFilterState(data)}
-            // hader={"Aggregated Option Data"}
           />
+
           {filterState ? (
             <StyleModalFilter>
               <FilterModal
@@ -305,6 +308,11 @@ export default function AnimatedTable() {
               />
             </StyleModalFilter>
           ) : null}
+            <AlertsDialog
+              open={openAlerts}
+              onClose={() => setOpenAlerts(false)}
+            />
+         
           <div
             style={{
               display: "flex",
@@ -341,27 +349,7 @@ export default function AnimatedTable() {
                 />
               </div>
             </div>
-            <div
-              style={{
-                flex: 0.8,
-                minWidth: 0,
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                height: "100vh",
-              }}
-            >
-              <div>
-                <AiPowerData
-                  selectedDate={selectedDate}
-                  searchTerm={searchTerm}
-                  animationState={animationState}
-                  formattedDateStr={formattedDateStr}
-                  setFormattedDateStr={(data) => setFormattedDateStr(data)}
-                  hader={"Alerts"}
-                />
-              </div>
-            </div>
+
             {/* Second Grid */}
             <div
               style={{

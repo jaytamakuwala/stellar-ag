@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  
+  const [openAlerts, setOpenAlerts] = useState(false);
   return (
     <UserContext.Provider
       value={{
@@ -23,6 +23,8 @@ export const UserProvider = ({ children }) => {
         setSelectedDate,
         searchTerm,
         setSearchTerm,
+        openAlerts,
+        setOpenAlerts,
       }}
     >
       {children}

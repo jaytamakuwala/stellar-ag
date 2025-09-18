@@ -11,6 +11,7 @@ import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
 
 export default function optionMain() {
   // const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +33,7 @@ export default function optionMain() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm, openAlerts, setOpenAlerts } =
     useContext(UserContext);
 
   useEffect(() => {
@@ -57,7 +58,6 @@ export default function optionMain() {
           setSearchTerm={(data) => setSearchTerm(data)}
           filterState={filterState}
           setFilterState={(data) => setFilterState(data)}
-          // hader={"All Call Buys"}
         />
         {filterState ? (
           <StyleModalFilter>
@@ -72,6 +72,8 @@ export default function optionMain() {
             />
           </StyleModalFilter>
         ) : null}
+                <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
+        
         <div
           style={{
             display: "flex",

@@ -7,15 +7,13 @@ import RightNavigation from "../../components/RightNavigation";
 import MagicOption from "./components/MagicOption.jsx";
 import FilterModal from "../../components/FilterModal";
 import DualGridHeader from "../../components/DualGridHeader";
-
 import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-// import MiddleGrid from "./components/MiddleGrid";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
+import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
 
 export default function MagicPutBuy() {
-  // const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -34,7 +32,7 @@ export default function MagicPutBuy() {
   const isSmallScreen2 = useMediaQuery("(max-width:1000px)");
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
-  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm } =
+  const { selectedDate, setSelectedDate, searchTerm, setSearchTerm,openAlerts, setOpenAlerts  } =
     useContext(UserContext);
 
   useEffect(() => {
@@ -74,6 +72,7 @@ export default function MagicPutBuy() {
             />
           </StyleModalFilter>
         ) : null}
+        <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
 
         <div style={{ overflow: "hidden", marginLeft: "" }}>
           <MagicOption
