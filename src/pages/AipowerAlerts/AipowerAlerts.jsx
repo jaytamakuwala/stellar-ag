@@ -4,7 +4,7 @@ import { useContext, useMemo } from "react";
 import { UserContext } from "../../context/UserContext";
 import AiPowerData from "./components/AiPowerData";
 import { getFormatedDateStrForUSA } from "../../utils/common";
-import logo_GIF from "../../assets/images/logo-GIF-2.gif";
+import logo_GIF from "../../assets/Images/logo-GIF-2.gif";
 
 const TOP_BAR_HEIGHT = 64;
 

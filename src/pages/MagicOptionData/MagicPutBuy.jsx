@@ -12,7 +12,7 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
-import logo_GIF from "../../assets/images/logo-GIF-2.gif";
+import logo_GIF from "../../assets/Images/logo-GIF-2.gif";
 
 export default function MagicPutBuy() {
   const [filterState, setFilterState] = useState(false);

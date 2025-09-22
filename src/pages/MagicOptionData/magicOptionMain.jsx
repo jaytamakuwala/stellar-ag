@@ -12,7 +12,7 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
-import logo_GIF from "../../assets/images/logo-GIF-2.gif";
+import logo_GIF from "../../assets/Images/logo-GIF-2.gif";
 
 export default function MagicOptionMain() {
   // const [searchTerm, setSearchTerm] = useState("");
@@ -75,8 +75,13 @@ export default function MagicOptionMain() {
             />
           </StyleModalFilter>
         ) : null}
-        {openAlerts ? (<AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />) : null}
-          
+        {openAlerts ? (
+          <AlertsDialog
+            open={openAlerts}
+            onClose={() => setOpenAlerts(false)}
+          />
+        ) : null}
+
         <div style={{ position: "relative", overflow: "hidden" }}>
           <MagicOption
             Type={"Bull"}

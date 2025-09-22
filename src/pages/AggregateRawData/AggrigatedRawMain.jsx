@@ -26,8 +26,7 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
 import { COLORS } from "../../utils/constants";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
-import logo_GIF from "../../assets/images/logo-GIF-2.gif";
-
+import logo_GIF from "../../assets/Images/logo-GIF-2.gif";
 
 export default function AnimatedTable() {
   const [filterState, setFilterState] = useState(false);

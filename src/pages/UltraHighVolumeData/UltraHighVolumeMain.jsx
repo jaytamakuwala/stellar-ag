@@ -12,7 +12,7 @@ import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
-import logo_GIF from "../../assets/images/logo-GIF-2.gif";
+import logo_GIF from "../../assets/Images/logo-GIF-2.gif";
 
 export default function UltraHighVolumeMain() {
   const {
@@ -22,7 +22,7 @@ export default function UltraHighVolumeMain() {
     setSearchTerm,
     openAlerts,
     setOpenAlerts,
-    loading
+    loading,
   } = useContext(UserContext);
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
@@ -79,7 +79,12 @@ export default function UltraHighVolumeMain() {
             />
           </StyleModalFilter>
         ) : null}
-        {openAlerts ? (<AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />) : null}
+        {openAlerts ? (
+          <AlertsDialog
+            open={openAlerts}
+            onClose={() => setOpenAlerts(false)}
+          />
+        ) : null}
 
         <div
           style={{
