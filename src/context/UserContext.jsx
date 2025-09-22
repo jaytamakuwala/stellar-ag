@@ -4,7 +4,7 @@ import React, {
   useCallback,
   useContext,
   useRef,
-  useEffect
+  useEffect,
 } from "react";
 
 export const UserContext = createContext();
@@ -14,6 +14,7 @@ export const UserProvider = ({ children }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [openAlerts, setOpenAlerts] = useState(false);
+  const [loading, setLoading] = useState(false);
   return (
     <UserContext.Provider
       value={{
@@ -25,6 +26,8 @@ export const UserProvider = ({ children }) => {
         setSearchTerm,
         openAlerts,
         setOpenAlerts,
+        loading,
+        setLoading,
       }}
     >
       {children}

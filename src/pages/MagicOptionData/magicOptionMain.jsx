@@ -12,6 +12,7 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { COLORS } from "../../utils/constants";
 import { UserContext } from "../../context/UserContext";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
+import logo_GIF from "../../assets/images/logo-GIF-2.gif";
 
 export default function MagicOptionMain() {
   // const [searchTerm, setSearchTerm] = useState("");
@@ -34,7 +35,8 @@ export default function MagicOptionMain() {
   const [detailsofRow, setDetailsofRow] = useState();
   const [formattedDateStr, setFormattedDateStr] = useState("");
   const { selectedDate, setSelectedDate } = useContext(UserContext);
-  const { searchTerm, setSearchTerm, openAlerts, setOpenAlerts } = useContext(UserContext);
+  const { searchTerm, setSearchTerm, openAlerts, setOpenAlerts, loading } =
+    useContext(UserContext);
 
   useEffect(() => {
     console.log({ selectedDate });
@@ -73,9 +75,9 @@ export default function MagicOptionMain() {
             />
           </StyleModalFilter>
         ) : null}
-        <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
-
-        <div style={{ overflow: "hidden" }}>
+        {openAlerts ? (<AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />) : null}
+          
+        <div style={{ position: "relative", overflow: "hidden" }}>
           <MagicOption
             Type={"Bull"}
             Containcolor={COLORS.lime}
@@ -89,6 +91,21 @@ export default function MagicOptionMain() {
             formattedDateStr={formattedDateStr}
             setFormattedDateStr={(data) => setFormattedDateStr(data)}
           />
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(28,28,28,0.4)",
+                zIndex: 10,
+              }}
+            >
+              <img src={logo_GIF} alt="Loading..." width={100} height={100} />
+            </div>
+          )}
         </div>
       </>
     </StyleMainDiv>

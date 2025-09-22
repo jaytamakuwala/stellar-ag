@@ -1,0 +1,117 @@
+/* Container */
+.privacy-policy-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #282828;
+  font-family: "Barlow", sans-serif;
+  color: white;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+/* Hero Section */
+.privacy-policy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.privacy-policy-text {
+  max-width: 55%;
+  text-align: center;
+  z-index: 1;
+  margin-top: 100px;
+}
+
+.privacy-policy-title-container {
+  margin-top: 190px;
+}
+
+.privacy-policy-title {
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5.6vw, 7rem);
+  background: linear-gradient(90deg, #b24af2 8.09%, #ff605d 91.17%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 24px;
+}
+
+.privacy-policy-subtitle {
+  font-weight: 400;
+  font-size: 16px;
+  color: #959595;
+  margin-bottom: 50px;
+}
+
+/* Content */
+.privacy-policy-content {
+  width: 1170px;
+  margin: 0 auto;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  border-top: 1px solid rgba(149, 149, 149, 0.3);
+}
+
+.privacy-policy-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.privacy-policy-heading {
+  font-weight: 700;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.privacy-policy-heading-1 {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.privacy-policy-paragraph {
+  font-weight: 500;
+  font-size: 20px;
+  color: #959595;
+}
+
+.privacy-policy-white {
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .privacy-policy-text {
+    max-width: 80%;
+  }
+  .privacy-policy-content {
+    width: 90%;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .privacy-policy-text {
+    max-width: 90%;
+    margin-top: 60px;
+  }
+  .privacy-policy-title-container {
+    margin-top: 120px;
+  }
+  .privacy-policy-content {
+    gap: 30px;
+  }
+  .privacy-policy-heading {
+    font-size: 20px;
+  }
+  .privacy-policy-paragraph {
+    font-size: 16px;
+  }
+}

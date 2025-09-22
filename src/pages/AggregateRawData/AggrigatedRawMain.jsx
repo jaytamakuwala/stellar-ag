@@ -26,6 +26,8 @@ import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
 import { COLORS } from "../../utils/constants";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
+import logo_GIF from "../../assets/images/logo-GIF-2.gif";
+
 
 export default function AnimatedTable() {
   const [filterState, setFilterState] = useState(false);
@@ -64,6 +66,8 @@ export default function AnimatedTable() {
     setSearchTerm,
     openAlerts,
     setOpenAlerts,
+    loading,
+    setLoading,
   } = useContext(UserContext);
 
   let selectedSummaryData = [];
@@ -308,11 +312,13 @@ export default function AnimatedTable() {
               />
             </StyleModalFilter>
           ) : null}
+          {openAlerts ? (
             <AlertsDialog
               open={openAlerts}
               onClose={() => setOpenAlerts(false)}
             />
-         
+          ) : null}
+
           <div
             style={{
               display: "flex",
@@ -380,6 +386,21 @@ export default function AnimatedTable() {
               </div>
             </div>
           </div>
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(28,28,28,0.4)",
+                zIndex: 10,
+              }}
+            >
+              <img src={logo_GIF} alt="Loading..." width={100} height={100} />
+            </div>
+          )}
         </>
       ) : (
         <TickChart

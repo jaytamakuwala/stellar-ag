@@ -1,7 +1,11 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useContext } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
-import { toLocalISOString, getRowStyle,to12hUpper } from "../../../utils/common";
+import {
+  toLocalISOString,
+  getRowStyle,
+  to12hUpper,
+} from "../../../utils/common";
 import { getMagicOptionData } from "../../../service/stellarApi";
 import {
   AG_GRID_HEIGHTS,
@@ -11,6 +15,7 @@ import {
 } from "../../../utils/constants";
 import "../../../style/AgGrid.css";
 import { formatUS } from "../../../utils/agGridHelper";
+import { UserContext } from "../../../context/UserContext";
 
 export default function MagicOption({
   selectedDate,
@@ -20,8 +25,9 @@ export default function MagicOption({
   Containcolor,
 }) {
   const [rows, setRows] = useState([]);
-
+  const { loading, setLoading } = useContext(UserContext);
   const fetchdata = useCallback(async () => {
+    setLoading(true);
     try {
       const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
       setFormattedDateStr(formatUS(primaryDate));
@@ -42,9 +48,11 @@ export default function MagicOption({
         throw new Error(res?.error?.error || "Failed to fetch product data");
 
       setRows(res.data || []);
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
+      setLoading(false);
     }
   }, [selectedDate, setFormattedDateStr]);
 
@@ -91,7 +99,7 @@ export default function MagicOption({
         headerStyle: headerBase,
         minWidth: 50,
         flex: 0.7,
-        cellStyle: {...cellBase, color: Containcolor},
+        cellStyle: { ...cellBase, color: Containcolor },
       },
       {
         headerName: "Probability",

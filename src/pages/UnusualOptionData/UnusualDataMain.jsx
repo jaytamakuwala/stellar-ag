@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState,useContext } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 import {
   StyleMainDiv,
   StyleModalFilter,
@@ -12,9 +12,18 @@ import { useMediaQuery } from "@mui/material";
 import { getFormatedDateStrForUSA } from "../../utils/common";
 import { UserContext } from "../../context/UserContext";
 import AlertsDialog from "../AipowerAlerts/AipowerAlerts.jsx";
+import logo_GIF from "../../assets/images/logo-GIF-2.gif";
 
 export default function UnusualDataMain() {
-  const {selectedDate, setSelectedDate,searchTerm, setSearchTerm, openAlerts, setOpenAlerts} = useContext(UserContext);
+  const {
+    selectedDate,
+    setSelectedDate,
+    searchTerm,
+    setSearchTerm,
+    openAlerts,
+    setOpenAlerts,
+    loading,
+  } = useContext(UserContext);
   const [filterState, setFilterState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [filterModalState, setFilterModalState] = useState({
@@ -70,7 +79,12 @@ export default function UnusualDataMain() {
             />
           </StyleModalFilter>
         ) : null}
-        <AlertsDialog open={openAlerts} onClose={() => setOpenAlerts(false)} />
+        {openAlerts ? (
+          <AlertsDialog
+            open={openAlerts}
+            onClose={() => setOpenAlerts(false)}
+          />
+        ) : null}
         <div
           style={{
             display: "flex",
@@ -91,7 +105,7 @@ export default function UnusualDataMain() {
               <UnusualData
                 Type={"Bull"}
                 Containcolor={COLORS.lime}
-                hader = {"Unusual Call Options"}
+                hader={"Unusual Call Options"}
                 selectedDate={selectedDate}
                 searchTerm={searchTerm}
                 handleModalEvent={(idx, symbol) => {
@@ -132,9 +146,23 @@ export default function UnusualDataMain() {
               />
             </div>
           </div>
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(28,28,28,0.4)",
+                zIndex: 10,
+              }}
+            >
+              <img src={logo_GIF} alt="Loading..." width={100} height={100} />
+            </div>
+          )}
         </div>
       </>
-
     </StyleMainDiv>
   );
 }

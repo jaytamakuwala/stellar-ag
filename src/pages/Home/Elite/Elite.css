@@ -1,0 +1,130 @@
+.elite-section {
+  display: flex;
+  justify-content: center;
+  padding: 100px 20px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.elite-card {
+  position: relative;
+  width: 100%;
+  max-width: 1410px;
+  background: linear-gradient(90deg, #2838cf 8.09%, #b24af2 91.17%);
+  border-radius: 10px;
+
+  padding: 40px 119px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.elite-content {
+  max-width: 1172px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+.elite-message {
+  font-family: "Barlow", sans-serif;
+  font-weight: 300;
+  font-size: 38px;
+  line-height: 48px;
+  color: #fff;
+}
+
+.elite-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.elite-avatar {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.elite-name {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  color: #ffffff;
+}
+
+.elite-sub-message {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: normal;
+  color: #ffffff;
+  max-width: 84%;
+}
+
+.quote-icon {
+  position: absolute;
+  top: -51px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 102px;
+  height: 102px;
+  background: #282828;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quote-icon-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 5px;
+}
+
+.quote-shape {
+  width: 24px;
+  height: 16px;
+  background: #fff;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'><path d='M9 11h-4l4-7h-5l-4 7v7h9v-7zm15 0h-4l4-7h-5l-4 7v7h9v-7z'/></svg>")
+    no-repeat center;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'><path d='M9 11h-4l4-7h-5l-4 7v7h9v-7zm15 0h-4l4-7h-5l-4 7v7h9v-7z'/></svg>")
+    no-repeat center;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .elite-card {
+    padding: 60px 40px;
+  }
+  .elite-message {
+    font-size: 28px;
+    line-height: 38px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .elite-card {
+    padding: 40px 20px;
+  }
+  .elite-message {
+    font-size: 22px;
+    line-height: 32px;
+  }
+  .quote-icon {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.quote-icon-table {
+  width: 84px;
+}

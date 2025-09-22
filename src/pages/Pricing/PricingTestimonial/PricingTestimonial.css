@@ -1,0 +1,128 @@
+.pricing-testimonial {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 93px 131px;
+  gap: 10px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  background: linear-gradient(
+    180deg,
+    #1d1d1d 15.38%,
+    #2e2236 68.27%,
+    #3b234a 100%
+  );
+  border-radius: 20px;
+
+  position: relative;
+  font-family: "Barlow", sans-serif;
+}
+
+.pricing-testimonial-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: 1148px;
+  height: auto;
+  z-index: 0;
+}
+
+.pricing-testimonial-text {
+  width: 100%;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 50px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.pricing-testimonial-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 30px;
+  gap: 10px;
+  width: 196px;
+  height: 54px;
+  background: #f1c40f;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+
+  font-family: "Barlow", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  color: #282828;
+  transition: transform 0.2s ease;
+}
+
+.pricing-testimonial-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Floating Circle */
+.pricing-testimonial-circle {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  gap: 10px;
+
+  position: absolute;
+  width: 102px;
+  height: 102px;
+  left: 50%;
+  top: -50px;
+  transform: translateX(-50%);
+
+  background: #282828;
+  border-radius: 100px;
+  z-index: 1;
+}
+
+.pricing-testimonial-circle-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 5px;
+  width: 42px;
+  height: 42px;
+}
+
+/* 📱 Responsive */
+@media (max-width: 1024px) {
+  .pricing-testimonial {
+    width: 100%;
+    padding: 60px 40px;
+    height: auto;
+  }
+  .pricing-testimonial-content {
+    width: 100%;
+    gap: 30px;
+  }
+  .pricing-testimonial-text {
+    font-size: 28px;
+    line-height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pricing-testimonial {
+    padding: 40px 20px;
+  }
+  .pricing-testimonial-text {
+    font-size: 22px;
+    line-height: 32px;
+  }
+  .pricing-testimonial-button {
+    width: 160px;
+    height: 48px;
+    font-size: 14px;
+  }
+}

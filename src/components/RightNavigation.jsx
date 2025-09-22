@@ -23,13 +23,13 @@ const { setOpenAlerts } = useContext(UserContext);
   return (
     <StyleNavightion>
       <div className="IconAction">
-        <img src={Favicon} alt="Icon" onClick={() => navigate("/")} />
+        <img src={Favicon} alt="Icon" onClick={() => navigate("/dashboard")} />
         <img
           src={Dashboard}
           alt="Icon"
-          className={`Dashboard ${isActive("/") ? "active" : ""}`}
+          className={`Dashboard ${isActive("/dashboard") ? "active" : ""}`}
           onClick={() => {
-             navigate("/");
+             navigate("/dashboard");
           }}
         />
         <img

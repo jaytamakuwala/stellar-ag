@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useContext } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 import { toLocalISOString } from "../../../utils/common";
@@ -18,6 +18,7 @@ import {
   cellBase,
 } from "../../../utils/constants";
 import "../../../style/AgGrid.css";
+import { UserContext } from "../../../context/UserContext";
 
 export default function UltraHighVolume({
   selectedDate,
@@ -29,9 +30,10 @@ export default function UltraHighVolume({
   hader,
 }) {
   const [rows, setRows] = useState([]);
-
+  const { loading, setLoading } = useContext(UserContext);
   const fetchdata = useCallback(async () => {
     try {
+      setLoading(true);
       const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
       const dayStr = getFormatedDateStrForUSA(primaryDate);
       setFormattedDateStr(dayStr);
@@ -45,9 +47,11 @@ export default function UltraHighVolume({
         throw new Error(res?.error?.error || "Failed to fetch product data");
 
       setRows(res.data || []);
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
+      setLoading(false);
     }
   }, [selectedDate, setFormattedDateStr]);
 
@@ -58,7 +62,9 @@ export default function UltraHighVolume({
   const filteredResponseData = useMemo(() => {
     const q = (searchTerm || "").trim().toLowerCase();
     if (!q) return rows;
-    return rows.filter((row) => (row?.Tick ?? row.OptionSymbol ?? "").toLowerCase().includes(q));
+    return rows.filter((row) =>
+      (row?.Tick ?? row.OptionSymbol ?? "").toLowerCase().includes(q)
+    );
   }, [rows, searchTerm]);
 
   const tradeCols = useMemo(
@@ -92,7 +98,7 @@ export default function UltraHighVolume({
         cellStyle: { ...cellBase, color: Containcolor },
         headerClass: ["cm-header"],
       },
-         {
+      {
         headerName: "Spot",
         field: "Spot",
         headerStyle: headerBase,
@@ -127,9 +133,9 @@ export default function UltraHighVolume({
         cellStyle: (p) => {
           const raw = String(p.value ?? "").replace(/[$,x]/gi, "");
           const v = Number(raw);
-          if (v > 25 ) return { ...cellBase, color: COLORS.cyan } 
-          if (v == 20 ) return { ...cellBase, color: COLORS.yellow } 
-          return { ...cellBase, };
+          if (v > 25) return { ...cellBase, color: COLORS.cyan };
+          if (v == 20) return { ...cellBase, color: COLORS.yellow };
+          return { ...cellBase };
         },
         minWidth: 70,
         flex: 1,
@@ -184,13 +190,12 @@ export default function UltraHighVolume({
         flex: 1,
         headerClass: ["cm-header"],
       },
-   
     ],
     []
   );
 
   return (
-    <div style={{ overflowX: "auto", width: "100%", marginBottom: "20px" }}>
+    <div style={{ overflowX: "auto",width: "100%", marginBottom: "20px" }}>
       <div
         style={{
           display: "flex",
@@ -238,6 +243,7 @@ export default function UltraHighVolume({
           rowHeight={AG_GRID_HEIGHTS.ROW_H_L1}
           headerHeight={AG_GRID_HEIGHTS.HEADER_H_L1}
           getRowStyle={getRowStyle}
+          
         />
       </div>
     </div>

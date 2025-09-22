@@ -5,7 +5,8 @@ import {
   useCallback,
   useRef,
   useContext,
-  memo
+  memo,
+  useLayoutEffect,
 } from "react";
 import {
   StyleModalFilter,
@@ -49,7 +50,7 @@ import {
 } from "../../../utils/agGridHelper";
 import { UserContext } from "../../../context/UserContext";
 
- function Aggrigated({
+function Aggrigated({
   selectedDate,
   searchTerm,
   handleModalEvent,
@@ -76,12 +77,14 @@ import { UserContext } from "../../../context/UserContext";
   const [subExpandedByParent, setSubExpandedByParent] = useState({});
   const [detailHeights, setDetailHeights] = useState({});
   const [expandedRowId, setExpandedRowId] = useState(null);
+  const {  setLoading } = useContext(UserContext);
 
   const formattedDateStrRef = useRef(formattedDateStr);
   //const optionTradeDataRef = useRef(optionTradeData);
   const subExpandedByParentRef = useRef(subExpandedByParent);
   const detailHeightsRef = useRef(detailHeights);
   const selectedSummaryDataRef = useRef(selectedSummaryData || []);
+  const isFirstLoadRef = useRef(true);
 
   // keep refs in sync
   useEffect(() => {
@@ -100,87 +103,92 @@ import { UserContext } from "../../../context/UserContext";
     selectedSummaryDataRef.current = selectedSummaryData || [];
   }, [selectedSummaryData]);
 
-  const fetchdata = useCallback(async () => {
-    try {
-      // If user picked a date, respect it; else use session logic
-      const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
-      const fallbackDate = new Date(primaryDate);
-
-      const primaryPayload = buildPayloadUS(primaryDate, Type);
-      const fallbackPayload = buildPayloadUS(fallbackDate, Type);
-
-      // reflect date used in UI (US string)
-      setFormattedDateStr(formatUS(primaryDate));
-
-      const callBoth = async (payload) => {
-        const [main, sub] = await Promise.all([
-          getSummaryDataMain(payload),
-          getSummaryData(payload),
-        ]);
-        if (!main?.ok)
-          throw new Error(main?.error?.error || "Main fetch failed");
-        if (!sub?.ok)
-          throw new Error(sub?.error?.error || "Summary fetch failed");
-        return { main: main.data || [], sub: sub.data || [] };
-      };
-
-      let usedDate = primaryDate;
-      let data;
+  const fetchdata = useCallback(
+    async ({ showGIF = false } = {}) => {
       try {
-        data = await callBoth(primaryPayload);
-        if (!data.main.length && !data.sub.length) {
-          throw new Error("No data for primary date");
-        }
-      } catch {
-        data = await callBoth(primaryPayload);
-        usedDate = fallbackDate;
-        setFormattedDateStr(formatUS(usedDate));
-      }
+        if (showGIF) setLoading(true);
 
-      const incoming = data.main || [];
-      const inComingSummary = data.sub || [];
-      setResponseData((prev) =>
-        reconcileByIndex(
-          prev,
-          incoming,
-          (row, idx) => getParentRowId(row, idx),
-          ["Tick"]
-        )
-      );
-      setSummaryData(inComingSummary);
-      console.log("setSummaryData");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Something went wrong");
-    }
-  }, [selectedDate, setFormattedDateStr]);
+        const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
+        const fallbackDate = new Date(primaryDate);
+
+        const primaryPayload = buildPayloadUS(primaryDate, Type);
+        const fallbackPayload = buildPayloadUS(fallbackDate, Type);
+
+        setFormattedDateStr(formatUS(primaryDate));
+
+        const callBoth = async (payload) => {
+          const [main, sub] = await Promise.all([
+            getSummaryDataMain(payload),
+            getSummaryData(payload),
+          ]);
+          if (!main?.ok)
+            throw new Error(main?.error?.error || "Main fetch failed");
+          if (!sub?.ok)
+            throw new Error(sub?.error?.error || "Summary fetch failed");
+          return { main: main.data || [], sub: sub.data || [] };
+        };
+
+        let usedDate = primaryDate;
+        let data;
+        try {
+          data = await callBoth(primaryPayload);
+          if (!data.main.length && !data.sub.length) {
+            throw new Error("No data for primary date");
+          }
+        } catch {
+          // BUGFIX: you were calling primary again; use fallback
+          data = await callBoth(fallbackPayload);
+          usedDate = fallbackDate;
+          setFormattedDateStr(formatUS(usedDate));
+        }
+
+        const incoming = data.main || [];
+        const inComingSummary = data.sub || [];
+
+        setResponseData((prev) =>
+          reconcileByIndex(
+            prev,
+            incoming,
+            (row, idx) => getParentRowId(row, idx),
+            ["Tick"]
+          )
+        );
+        setSummaryData(inComingSummary);
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message || "Something went wrong");
+      } finally {
+        if (showGIF) setLoading(false);
+        isFirstLoadRef.current = false;
+      }
+    },
+    [selectedDate, setFormattedDateStr]
+  );
 
   useEffect(() => {
     let intervalId;
-    const run = () => fetchdata();
+
+    const runInitial = () => fetchdata({ showGIF: true });
+    const runSilent = () => fetchdata({ showGIF: false });
 
     if (selectedDate) {
-      // explicit date: single fetch
-      run();
+      runInitial();
     } else {
       const wd = nyWeekday(new Date());
       const nowMin = nyMinutesNow();
-      const OPEN = 9 * 60 + 30; // 09:30
-      const CLOSE = 16 * 60 + 45; // 16:45 window end aligned with your payload
+      const OPEN = 9 * 60 + 30;
+      const CLOSE = 16 * 60 + 45;
 
-      if (wd < 1 || wd > 5) {
-        // weekend: once (uses prev trading day)
-        run();
-      } else if (nowMin < OPEN || nowMin > CLOSE) {
-        // off-hours: once (prev trading day before open, same day after close)
-        run();
+      if (wd < 1 || wd > 5 || nowMin < OPEN || nowMin > CLOSE) {
+        runInitial();
       } else {
-        run();
-        intervalId = setInterval(run, 5000);
+        runInitial();
+        intervalId = setInterval(runSilent, 5000);
       }
     }
+
     return () => intervalId && clearInterval(intervalId);
-  }, [selectedDate, fetchdata]);
+  }, [selectedDate]);
 
   const filteredResponseData = useMemo(() => {
     const q = (searchTerm || "").toLowerCase();
@@ -227,7 +235,6 @@ import { UserContext } from "../../../context/UserContext";
     });
   }, []);
 
-  
   const postSortRows = useCallback((params) => {
     const nodes = params.nodes;
     // Map: parentId -> detail node
@@ -251,7 +258,6 @@ import { UserContext } from "../../../context/UserContext";
     nodes.length = 0;
     for (const n of result) nodes.push(n);
   }, []);
-
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -415,7 +421,7 @@ import { UserContext } from "../../../context/UserContext";
                 optionType={optionType}
                 expandedId={expandedId}
                 setExpandedId={setExpandedId}
-                parentWidthMap={{}} // keep if needed
+                parentWidthMap={{}}
                 onHeightChange={(h) => {
                   const prevH = detailHeightsRef.current[parentDetailId];
                   if (prevH === h) return;

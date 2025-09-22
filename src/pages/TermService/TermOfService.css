@@ -1,0 +1,139 @@
+.terms-container {
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Barlow", sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+.terms-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 140px;
+}
+
+.terms-hero-text {
+  margin: 0 auto;
+}
+
+.terms-title {
+  font-weight: 800;
+  font-size: clamp(3rem, 6vw, 6rem);
+  background: linear-gradient(90deg, #b24af2 8%, #ff605d 92%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+.terms-subtitle {
+  font-weight: 400;
+  font-size: 16px;
+  color: #b0b0b0;
+  margin-bottom: 60px;
+}
+
+.terms-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  border-top: 1px solid rgba(149, 149, 149, 0.2);
+}
+
+.terms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.terms-heading {
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 44px;
+  color: #ffffff;
+}
+
+.terms-subheading {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 28px;
+  color: #ffffff;
+}
+
+.terms-paragraph {
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 28px;
+  color: #c2c2c2;
+}
+
+.terms-link {
+  color: #ff605d;
+  text-decoration: underline;
+}
+
+.terms-link:hover {
+  color: #b24af2;
+}
+
+.terms-list {
+  margin: 10px 0 20px 25px;
+  padding-left: 20px;
+  list-style-type: disc;
+  color: #c2c2c2;
+}
+
+.terms-list li {
+  margin-bottom: 8px;
+  font-size: 17px;
+}
+
+.terms-note {
+  background: rgba(178, 74, 242, 0.1);
+  border-left: 4px solid #b24af2;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+  color: #ffffff;
+  font-size: 17px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .terms-hero-text {
+    max-width: 80%;
+  }
+  .terms-content {
+    padding: 40px 20px;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .terms-hero-text {
+    max-width: 90%;
+    padding-top: 100px;
+  }
+  .terms-title {
+    font-size: 2.5rem;
+  }
+  .terms-heading {
+    font-size: 28px;
+  }
+  .terms-subheading {
+    font-size: 20px;
+  }
+  .terms-paragraph,
+  .terms-list li {
+    font-size: 16px;
+  }
+  .terms-content {
+    gap: 30px;
+  }
+}

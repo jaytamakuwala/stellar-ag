@@ -1,0 +1,122 @@
+/* Container */
+.refund-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #282828;
+  font-family: "Barlow", sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+/* Hero */
+.refund-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.refund-hero-text {
+  max-width: 55%;
+  margin-top: 150px;
+}
+
+.refund-title {
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5.6vw, 7rem);
+  background: linear-gradient(90deg, #b24af2 8.09%, #ff605d 91.17%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 24px;
+}
+
+.refund-subtitle {
+  font-weight: 400;
+  font-size: 16px;
+  color: #959595;
+  margin-bottom: 50px;
+}
+
+.refund-subtitle-yellow {
+  margin-bottom: 80px;
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  color: #f1c40f;
+}
+
+/* Content */
+.refund-content {
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.refund-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid rgba(149, 149, 149, 0.3);
+  padding-top: 30px;
+}
+
+.refund-heading {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 30px;
+  color: #ffffff;
+}
+
+.refund-paragraph {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: #ffffff;
+}
+
+.refund-paragraph.gray {
+  color: #959595;
+}
+
+/* Highlight Box (last section) */
+.refund-box {
+  background: rgba(149, 149, 149, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .refund-hero-text {
+    max-width: 80%;
+  }
+  .refund-content {
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .refund-hero-text {
+    max-width: 90%;
+    margin-top: 100px;
+  }
+  .refund-title {
+    font-size: 2.5rem;
+  }
+  .refund-content {
+    gap: 30px;
+  }
+  .refund-heading {
+    font-size: 20px;
+  }
+  .refund-paragraph {
+    font-size: 16px;
+  }
+}

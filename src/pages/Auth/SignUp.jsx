@@ -1,14 +1,23 @@
 import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import AppTheme from "../../utils/AppTheme.jsx";
+import AppTheme from "../AppTheme";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
-import logoImg from "../../assets/Images/logoImg.png";
-import signinback from "../../assets/Images/signinback.svg";
-import bottomImage from "../../assets/Images/bottomImage.png";
-import LockIcon from "../../assets/Images/lock.png";
+import LockIcon from "@mui/icons-material/Lock";
+
+// Assets (relative to pages/Auth)
 import VisibilityIcon from "../../assets/Images/visibility.png";
 import InvisibilityIcon from "../../assets/Images/invisibility.png";
-import { resetPassword } from "../../service/stellarApi";
+import File from "../../assets/Images/logoImg.png";
+import signinback from "../../assets/Images/signinback.svg";
+import bottomImage from "../../assets/Images/bottomImage.png";
+
+// React Router
+import { Link, useNavigate } from "react-router-dom";
+
+// Services
+import { signUp } from "../../service/stellarApi";
+
+// Styles
 import {
   PageLayoutContainer,
   FromGroup,
@@ -16,26 +25,30 @@ import {
   StyleDiv,
   StyleImage,
 } from "../../style/containers";
+
+// Utils
 import { validateFormData } from "../../utils/common";
+
+// MUI
 import { Typography } from "@mui/material";
+
+// Toast
 import toast from "react-hot-toast";
-import Header from "../../components/Header";
 
-export default function ResetPassword(props) {
+// Components
+import Header from "../Header";
+
+export default function SignUp(props) {
   const [formDetails, setFormDetails] = React.useState({
+    firstName: "",
+    lastName: "",
     email: "",
-    otp: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [visibility, setVisibility] = React.useState({
-    otp: false,
-    newPassword: false,
-    confirmPassword: false,
+    hashPassword: "",
   });
   const [formErrors, setFormErrors] = React.useState(formDetails);
+  const [passwordVisible, setPasswordVisible] = React.useState(false);
 
+  const navigate = useNavigate();
   const handleChange = (event) => {
     const { name, value } = event.target;
     const data = { ...formDetails, [name]: value };
@@ -56,23 +69,23 @@ export default function ResetPassword(props) {
     }
     const data = new FormData(event.currentTarget);
     const formDataObj = Object.fromEntries(data.entries());
-    await resetPassword(formDataObj)
+    await signUp(formDataObj)
       .then((res) => {
-        console.log({ res });
         if (res.ok) {
           toast.success(res.data);
+          navigate("/emailVerified");
           return;
-        } else toast.error(res.error);
+        }
+        toast.error(res.error);
       })
       .catch((error) => {
-        console.log(error);
-        toast.error(error?.message || "Something went wrong");
+        console.log({ error });
+        toast.error(res.error);
       });
   };
 
   return (
-    <AppTheme {...props}>
-      {" "}
+    <div style={{ height: "100vh" }}>
       <CssBaseline enableColorScheme />
       <PageLayoutContainer
         className="PageLayoutContainer"
@@ -92,16 +105,17 @@ export default function ResetPassword(props) {
             noValidate
           >
             <StyleImage>
-              <img src={bottomImage} alt="TopImg" className="TopImg" /> 
-              <img src={signinback} alt="My File" className="signinback"/>
+              <img src={bottomImage} alt="TopImg" className="TopImg" />
+              <img src={signinback} alt="My File" className="signinback" />
+              <div className="gradientOverlay"></div>
               <div className="AfterDiv">
-                  <StyleDiv className="StyleDiv">
+                <StyleDiv className="StyleDiv">
                   <div>
-                    <img src={logoImg} alt="My File" />
+                    <img src={File} alt="My File" />
                   </div>
                 </StyleDiv>
                 <StyleBox className="StyleBox">
-                  <p className="SignInText">Reset Password</p>
+                  <p className="SignInText">Sign Up</p>
                   <FromGroup>
                     <span
                       style={{
@@ -110,15 +124,78 @@ export default function ResetPassword(props) {
                         flexDirection: "column",
                       }}
                     >
-                      <label htmlFor="email">Email</label>
+                      <label htmlFor="firstName">First Name</label>
                       <PermIdentityIcon className="UserIcon" />
                       <input
-                        type="email"
+                        name="firstName"
+                        id="firstName"
+                        placeholder="Enter First Name"
+                        autoComplete="firstName"
+                        className="Inputs"
+                        onChange={handleChange}
+                      />
+                      {formErrors.firstName && (
+                        <Typography
+                          variant="caption"
+                          color="error"
+                          style={{ marginTop: "4px" }}
+                        >
+                          {formErrors.firstName}
+                        </Typography>
+                      )}
+                    </span>
+                    <span
+                      style={{
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <label htmlFor="lastName" className="mt-3">
+                        Last Name
+                      </label>
+                      <PermIdentityIcon
+                        className="UserIcon"
+                        style={{ top: "62px" }}
+                      />
+                      <input
+                        name="lastName"
+                        id="lastName"
+                        placeholder="Enter Last Name"
+                        autoComplete="lastName"
+                        className="Inputs"
+                        onChange={handleChange}
+                      />
+                      {formErrors.lastName && (
+                        <Typography
+                          variant="caption"
+                          color="error"
+                          style={{ marginTop: "4px" }}
+                        >
+                          {formErrors.lastName}
+                        </Typography>
+                      )}
+                    </span>
+                    <span
+                      style={{
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <label htmlFor="email" className="mt-3">
+                        Email
+                      </label>
+                      <PermIdentityIcon
+                        className="UserIcon"
+                        style={{ top: "62px" }}
+                      />
+                      <input
+                        name="email"
                         id="email"
                         placeholder="Enter Email"
                         autoComplete="email"
                         className="Inputs"
-                        name="email"
                         onChange={handleChange}
                       />
                       {formErrors.email && (
@@ -138,76 +215,22 @@ export default function ResetPassword(props) {
                         flexDirection: "column",
                       }}
                     >
-                      <label htmlFor="otp" className="mt-3">
-                        OTP
+                      <label htmlFor="hashPassword" className="mt-3">
+                        Password
                       </label>
-                      <img
-                        src={LockIcon}
-                        alt="Lock Icon"
-                        style={{ top: "62px", width: "19px" }}
-                        className="UserIcon"
-                      />
+                      <LockIcon className="UserIcon" style={{ top: "62px" }} />
                       <input
-                        type={visibility.otp ? "text" : "password"}
-                        id="otp"
-                        name="otp"
-                        placeholder="Enter OTP"
-                        autoComplete="password"
-                        className="Inputs"
-                        onChange={handleChange}
-                      />
-                      <img
-                        src={visibility.otp ? InvisibilityIcon : VisibilityIcon}
-                        alt="Lock Icon"
-                        style={{
-                          top: "62px",
-                          right: "16px",
-                          left: "auto",
-                          width: "19px",
-                        }}
-                        className="UserIcon"
-                        onClick={() =>
-                          setVisibility({ ...visibility, otp: !visibility.otp })
-                        }
-                      />
-                      {formErrors.otp && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          style={{ marginTop: "4px" }}
-                        >
-                          {formErrors.otp}
-                        </Typography>
-                      )}
-                    </span>
-                    <span
-                      style={{
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <label htmlFor="newPassword" className="mt-3">
-                        New Password
-                      </label>
-                      <img
-                        src={LockIcon}
-                        alt="Lock Icon"
-                        style={{ top: "62px", width: "19px" }}
-                        className="UserIcon"
-                      />
-                      <input
-                        type={visibility.newPassword ? "text" : "password"}
-                        id="newPassword"
-                        name="newPassword"
-                        placeholder="Enter new password"
-                        autoComplete="password"
+                        name="hashPassword"
+                        type={passwordVisible ? "text" : "Password"}
+                        id="hashPassword"
+                        placeholder="Enter Password"
+                        autoComplete="Password"
                         className="Inputs"
                         onChange={handleChange}
                       />
                       <img
                         src={
-                          visibility.newPassword ? InvisibilityIcon : VisibilityIcon
+                          passwordVisible ? InvisibilityIcon : VisibilityIcon
                         }
                         alt="Lock Icon"
                         style={{
@@ -216,90 +239,40 @@ export default function ResetPassword(props) {
                           left: "auto",
                           width: "19px",
                         }}
+                        onClick={() => setPasswordVisible(!passwordVisible)}
                         className="UserIcon"
-                        onClick={() =>
-                          setVisibility({
-                            ...visibility,
-                            newPassword: !visibility.newPassword,
-                          })
-                        }
                       />
-                      {formErrors.newPassword && (
+                      {formErrors.hashPassword && (
                         <Typography
                           variant="caption"
                           color="error"
                           style={{ marginTop: "4px" }}
                         >
-                          {formErrors.newPassword}
-                        </Typography>
-                      )}
-                    </span>
-                    <span
-                      style={{
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <label htmlFor="confirmPassword" className="mt-3">
-                        Confirm Password
-                      </label>
-                      <img
-                        src={LockIcon}
-                        alt="Lock Icon"
-                        style={{ top: "62px", width: "19px" }}
-                        className="UserIcon"
-                      />
-                      <input
-                        type={visibility.confirmPassword ? "text" : "password"}
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        placeholder="Enter confirm password"
-                        autoComplete="password"
-                        className="Inputs"
-                        onChange={handleChange}
-                      />
-                      <img
-                        src={
-                          visibility.confirmPassword
-                            ? InvisibilityIcon
-                            : VisibilityIcon
-                        }
-                        alt="Lock Icon"
-                        style={{
-                          top: "62px",
-                          right: "16px",
-                          left: "auto",
-                          width: "19px",
-                        }}
-                        className="UserIcon"
-                        onClick={() =>
-                          setVisibility({
-                            ...visibility,
-                            confirmPassword: !visibility.confirmPassword,
-                          })
-                        }
-                      />
-                      {formErrors.confirmPassword && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          style={{ marginTop: "4px" }}
-                        >
-                          {formErrors.confirmPassword}
+                          {formErrors.hashPassword}
                         </Typography>
                       )}
                     </span>
                   </FromGroup>
                   <button type="submit" className="btn btn-primary mt-5">
-                    <span style={{ position: "relative", }}>Continue</span>
+                    Sign Up
                   </button>
+                  <div className="d-flex align-middle justify-content-center mt-5">
+                    <p className="LableOfRemember m-0 mr-2">
+                      Already a Member?
+                    </p>
+                    <Link
+                      to="/signin"
+                      className="NewSignUp btn btn-Normal text-warning p-0"
+                    >
+                      Sign In
+                    </Link>
+                  </div>
                 </StyleBox>
               </div>
             </StyleImage>
           </form>
         </styleDivMain>
       </PageLayoutContainer>
-    </AppTheme>
+    </div>
   );
 }

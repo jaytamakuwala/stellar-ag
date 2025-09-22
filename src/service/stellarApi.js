@@ -86,6 +86,7 @@ export const getChartBubbleExpiryData = async (payload) => {
 };
 
 export const signout = async () => {
+  debugger;
   const signOutPostFix = import.meta.env.VITE_SIGN_OUT_POST_FIX;
   const url = `${STELLAR_BASE_URL}${signOutPostFix}`;
   return await postRequest(url);

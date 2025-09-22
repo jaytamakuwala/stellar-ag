@@ -1,0 +1,276 @@
+.highlights {
+  margin-top: 150px;
+  margin-bottom: 10px;
+}
+
+.highlights-section {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  /* background: #282828; */
+  margin-top: 140px;
+  margin-bottom: 400px;
+}
+
+.highlights-container {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  width: 1410px;
+  height: 164px;
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 20px;
+  width: 450px;
+  height: 142px;
+  background: #282828;
+  border: none;
+}
+
+.card.taller {
+  height: 164px;
+}
+
+.card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 77px;
+  height: 79px;
+  border-radius: 20px;
+
+  border: 4px solid transparent; /* set thickness */
+  border: 2px solid;
+  border-image: linear-gradient(90deg, #b24af2 8.09%, #ff605d 91.17%) 1;
+}
+
+.card-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.card-text {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+
+  color: #ffffff;
+}
+
+.card-subText {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.highlights-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  gap: 30px;
+
+  height: 164px;
+
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  top: auto;
+  width: 100%;
+}
+
+/* Individual Highlight Frames */
+.highlight-frame {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 20px;
+
+  width: 450px;
+  height: 142px;
+
+  flex: none;
+  flex-grow: 0;
+}
+
+.frame-14 {
+  order: 0;
+}
+.frame-15 {
+  order: 1;
+}
+.frame-16 {
+  order: 2;
+  height: 164px; /* Slightly taller for the third card */
+}
+
+/* Icon Frame */
+.icon-frame {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  gap: 10px;
+
+  width: 77px;
+  height: 79px;
+  border-radius: 20px;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+
+  border: 1px solid transparent; /* set thickness */
+  border-radius: 20px;
+  border-image: linear-gradient(
+      90deg,
+      rgba(40, 40, 40, 0.3) 0%,
+      rgba(178, 74, 242, 0.3) 29.33%,
+      rgba(255, 96, 93, 0.3) 67.79%,
+      rgba(40, 40, 40, 0.3) 89.11%
+    )
+    100;
+}
+
+.icon-container {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+/* Content Frame */
+.content-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+
+  width: 313px;
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+/* Title */
+.title {
+  width: 313px;
+  height: 48px;
+
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 48px;
+  display: flex;
+  align-items: center;
+
+  color: #ffffff;
+
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* Description */
+.description {
+  width: 313px;
+
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+
+  color: #ffffff;
+
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.frame-16 .content-frame {
+  height: 124px;
+}
+
+.frame-16 .description {
+  height: 66px;
+}
+
+/* App Container */
+.app {
+  padding: 40px;
+  min-height: 100vh;
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1500px) {
+  .highlights-container {
+    width: 95%;
+    max-width: 1410px;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .highlight-frame {
+    width: 400px;
+  }
+
+  .content-frame,
+  .title,
+  .description {
+    width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .highlights-container {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .highlight-frame {
+    width: 100%;
+    height: auto;
+  }
+
+  .content-frame,
+  .title,
+  .description {
+    width: 95%;
+  }
+
+  .title {
+    font-size: 36px;
+    line-height: 36px;
+    height: auto;
+  }
+}

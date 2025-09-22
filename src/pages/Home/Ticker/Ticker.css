@@ -1,0 +1,251 @@
+.swap-ticker {
+  position: relative;
+  /* overflow: hidden; */
+}
+
+.swap-ticker .row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border-radius: 8px; */
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+/* Initial positions */
+.swap-ticker .row:nth-child(1) {
+  top: 0;
+}
+.swap-ticker .row:nth-child(2) {
+  top: 70px;
+}
+.swap-ticker .row:nth-child(3) {
+  top: 140px;
+}
+.swap-ticker .row:nth-child(4) {
+  top: 210px;
+}
+
+/* Pair animations */
+.swap-ticker .row:nth-child(1),
+.swap-ticker .row:nth-child(3) {
+  animation-name: swap-down;
+}
+.swap-ticker .row:nth-child(2),
+.swap-ticker .row:nth-child(4) {
+  animation-name: swap-up;
+}
+
+/* Animations */
+@keyframes swap-up {
+  0%,
+  40% {
+    transform: translateY(0);
+  }
+  50%,
+  90% {
+    transform: translateY(-70px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes swap-down {
+  0%,
+  40% {
+    transform: translateY(0);
+  }
+  50%,
+  90% {
+    transform: translateY(70px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.card-wrap {
+  height: 490px;
+}
+
+.feature-section {
+  position: relative;
+  width: 690px;
+  height: 484px;
+  gap: 15px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  isolation: isolate;
+}
+
+.feature-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #959595;
+  opacity: 0.1;
+  border-radius: 20px;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 72px;
+  z-index: 1;
+}
+
+.feature-text h2 {
+  font-family: "Barlow", sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 40px;
+  color: #fff;
+}
+
+.feature-text p {
+  font-family: "Barlow", sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 30px;
+  color: #fff;
+}
+
+.feature-img2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 539px;
+}
+
+.feature-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+}
+
+.feature-rect {
+  height: 100%;
+  width: 60px; /* start small */
+  /* border-radius: 8px; */
+  transition: width 0.3s ease;
+}
+
+.feature-rect.red {
+  background: #ff605d;
+}
+
+.feature-rect.green {
+  background: #00ff59;
+}
+
+.feature-label {
+  font-family: "Barlow", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #282828;
+  position: absolute;
+  padding: 10px;
+}
+
+/* Default widths */
+.feature-row:nth-child(1) .feature-rect {
+  width: 100px; /* small */
+  background: #ff605d;
+  animation: small-to-large 6s infinite ease-in-out;
+}
+
+.feature-row:nth-child(2) .feature-rect {
+  width: 200px; /* medium */
+  background: #00ff59;
+  animation: medium-cycle 8s infinite ease-in-out;
+  animation-delay: 1s;
+}
+
+.feature-row:nth-child(3) .feature-rect {
+  width: 500px; /* large */
+  background: #00ff59;
+  animation: large-to-medium 8s infinite ease-in-out;
+}
+
+.feature-row:nth-child(4) .feature-rect {
+  width: 200px; /* medium */
+  background: #00ff59;
+  animation: medium-cycle 8s infinite ease-in-out;
+  animation-delay: 2s;
+}
+
+/* Keyframes */
+
+/* Small → Medium → Large */
+@keyframes small-to-large {
+  0% {
+    width: 100px;
+    background: #ff605d;
+  }
+  33% {
+    width: 200px;
+    background: #00ff59;
+  }
+  66% {
+    width: 320px;
+    background: #00ff59;
+  }
+  100% {
+    width: 100px;
+    background: #ff605d;
+  }
+}
+
+/* Medium → Large → Small */
+@keyframes medium-cycle {
+  0% {
+    width: 200px;
+    background: #00ff59;
+  }
+  33% {
+    width: 320px;
+    background: #00ff59;
+  }
+  66% {
+    width: 100px;
+    background: #ff605d;
+  }
+  100% {
+    width: 200px;
+    background: #00ff59;
+  }
+}
+
+/* Large → Small (red) → Medium (green) */
+@keyframes large-to-medium {
+  0% {
+    width: 320px;
+    background: #00ff59;
+  }
+  33% {
+    width: 100px;
+    background: #ff605d;
+  }
+  66% {
+    width: 200px;
+    background: #00ff59;
+  }
+  100% {
+    width: 320px;
+    background: #00ff59;
+  }
+}

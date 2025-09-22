@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useContext } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 import { getUnusualOptionData } from "../../../service/stellarApi";
@@ -18,7 +18,7 @@ import {
   cellBase,
 } from "../../../utils/constants";
 import "../../../style/AgGrid.css";
-
+import { UserContext } from "../../../context/UserContext"; 
 export default function UnusualData({
   selectedDate,
   searchTerm,
@@ -28,9 +28,10 @@ export default function UnusualData({
   hader,
 }) {
   const [rows, setRows] = useState([]);
-
+const {loading, setLoading} = useContext(UserContext)
   const fetchdata = useCallback(async () => {
     try {
+      setLoading(true)
       const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
       const dayStr = getFormatedDateStrForUSA(primaryDate);
       setFormattedDateStr(dayStr);
@@ -46,9 +47,11 @@ export default function UnusualData({
         throw new Error(res?.error?.error || "Failed to fetch product data");
 
       setRows(res.data || []);
+      setLoading(false)
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
+      setLoading(false)
     }
   }, [selectedDate, setFormattedDateStr]);
 

@@ -1,0 +1,153 @@
+.heatmap-card {
+  width: 690px;
+  height: 484px;
+  background: rgba(149, 149, 149, 0.1);
+  border-radius: 20px;
+  padding: 30px 30px 30px 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: white;
+  font-family: "Barlow", sans-serif;
+  position: relative;
+}
+
+.heatmap-header h2 {
+  font-weight: 700;
+  font-size: 36px;
+  color: #ffffff;
+}
+
+.heatmap-header p {
+  font-weight: 500;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.heatmap-chart {
+  flex: 1;
+  position: relative;
+  overflow: visible;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6); /* bottom border */
+  border-right: 1px solid rgba(255, 255, 255, 0.6); /* right border */
+}
+
+/* Grid lines */
+.grid-lines .grid-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.grid-line.horizontal {
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.grid-line.vertical {
+  top: 0;
+  height: 100%;
+  width: 1px;
+}
+
+.amount-label {
+  display: flex;
+  transform: rotate(270deg);
+  position: absolute;
+  left: -84px;
+  top: 149px;
+  font-size: 12px;
+}
+
+/* Y labels */
+.y-labels {
+  position: absolute;
+  left: -55px;
+  top: 17px;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 12px;
+  color: white;
+  text-align: right;
+}
+
+.zone-card {
+  padding-left: 100px;
+}
+
+/* Bubbles */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: transform 0.5s ease;
+}
+
+.bubble.green {
+  background: rgba(0, 255, 89, 0.6);
+  border: 1px solid #00ff59;
+}
+
+/* Sizes */
+.bubble.xsmall {
+  width: 10px;
+  height: 10px;
+}
+.bubble.small {
+  width: 20px;
+  height: 20px;
+}
+.bubble.medium {
+  width: 40px;
+  height: 40px;
+}
+.bubble.big {
+  width: 80px;
+  height: 80px;
+}
+
+/* Active animation */
+.bubble.animate {
+  animation: growShrink 3s infinite ease-in-out;
+}
+
+@keyframes growShrink {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.6);
+  }
+}
+
+.feature-wrapper {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap; /* allow children to wrap on small screens */
+  padding: 40px 154px;
+}
+
+.feature-wrapper {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap; /* allow children to wrap on small screens */
+  padding: 40px 154px;
+}
+
+@media (max-width: 1024px) {
+  .feature-wrapper > * {
+    padding: 40px 10px;
+  }
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 768px) {
+  .feature-wrapper > * {
+    flex: 1 1 100%;
+  }
+}

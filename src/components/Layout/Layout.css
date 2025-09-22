@@ -1,0 +1,30 @@
+.nav-links {
+  display: flex;
+  gap: 24px;
+  font-family: "Barlow", sans-serif;
+}
+
+.nav-links a {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #f1c40f;
+}
+
+.nav-links a.active-link {
+  color: #f1c40f;
+}
+
+.logo {
+  height: 67px;
+  width: 189px;
+}

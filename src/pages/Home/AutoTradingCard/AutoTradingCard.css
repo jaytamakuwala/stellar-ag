@@ -1,0 +1,134 @@
+.auto-card {
+  position: relative;
+  background: rgba(149, 149, 149, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: "Barlow", sans-serif;
+  color: white;
+}
+
+.header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.title {
+  margin: 0;
+  font-size: 36px;
+  line-height: 40px;
+  font-weight: 700;
+  color: #fff;
+}
+.subtitle {
+  margin: 0;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.95;
+}
+
+.chart-area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+}
+.chart-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(149, 149, 149, 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to right, rgba(149, 149, 149, 0.3) 1px, transparent 1px);
+  background-size: 70px 60px;
+  z-index: 0;
+}
+
+.candles-track {
+  position: absolute;
+  left: 30px;
+  top: 0;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  will-change: transform;
+}
+
+.candle-wrap {
+  position: absolute;
+  width: 20px;
+  height: 100%;
+}
+.wick {
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+.body {
+  position: absolute;
+  left: 50%;
+  width: 12px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* Colors */
+.green {
+  background: #00ff59;
+}
+.red {
+  background: #ff4266;
+}
+
+/* Markers */
+.marker {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #fff;
+  opacity: 0;
+  animation: marker-in 0.5s ease forwards;
+  z-index: 2;
+}
+.marker.buy {
+  background: #00ff59;
+}
+.marker.sell {
+  background: #ff4266;
+}
+
+@keyframes marker-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.mi-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.mi-wave path {
+  stroke: #ffffff;
+  stroke-width: 3px;
+  fill: none;
+}

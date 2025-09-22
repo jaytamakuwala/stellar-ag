@@ -1,7 +1,9 @@
 import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import AppTheme from "../../utils/AppTheme.jsx";
+import AppTheme from "../AppTheme";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+
+// Assets
 import logoImg from "../../assets/Images/logoImg.png";
 import signinback from "../../assets/Images/signinback.svg";
 import bottomImage from "../../assets/Images/bottomImage.png";
@@ -9,8 +11,14 @@ import LockIcon from "../../assets/Images/lock.png";
 import VisibilityIcon from "../../assets/Images/visibility.png";
 import InvisibilityIcon from "../../assets/Images/invisibility.png";
 import CheckIcon from "../../assets/Images/CheckIcon.png";
+
+// Services
 import { emailVerified, verifyEmail } from "../../service/stellarApi";
-import { Link } from "react-router-dom";
+
+// React Router
+import { Link, useNavigate } from "react-router-dom";
+
+// Styles
 import {
   PageLayoutContainer,
   FromGroup,
@@ -19,11 +27,18 @@ import {
   StyleImage,
   StyleModal,
 } from "../../style/containers";
+
+// MUI
 import { Typography } from "@mui/material";
+
+// Utils
 import { validateFormData } from "../../utils/common";
-import { useNavigate } from "react-router-dom";
+
+// Toast
 import toast from "react-hot-toast";
-import Header from "../../components/Header";
+
+// Components
+import Header from "../Header";
 
 export default function EmailVerified(props) {
   const [signUpSuccess, setSignUpSuccess] = React.useState(false);
@@ -62,7 +77,7 @@ export default function EmailVerified(props) {
           setSignUpSuccess(true);
           // navigate("/signin");
           return;
-        } else  {
+        } else {
           setSignUpSuccess(false);
           toast.error(res.error);
         }
@@ -89,8 +104,6 @@ export default function EmailVerified(props) {
   };
   return (
     <>
-    <AppTheme {...props}>
-      {" "}
       <CssBaseline enableColorScheme />
       <PageLayoutContainer
         className="PageLayoutContainer"
@@ -110,8 +123,8 @@ export default function EmailVerified(props) {
             noValidate
           >
             <StyleImage>
-              <img src={bottomImage} alt="TopImg" className="TopImg" /> 
-              <img src={signinback} alt="My File" className="signinback"/>
+              <img src={bottomImage} alt="TopImg" className="TopImg" />
+              <img src={signinback} alt="My File" className="signinback" />
               <div className="AfterDiv">
                 <StyleDiv className="StyleDiv">
                   <div>
@@ -214,8 +227,8 @@ export default function EmailVerified(props) {
           </form>
         </styleDivMain>
       </PageLayoutContainer>
-    </AppTheme>
-    {signUpSuccess ? (
+
+      {signUpSuccess ? (
         <StyleModal>
           <div className="InnerStyleModal">
             <img src={CheckIcon} alt="CheckIcon" />

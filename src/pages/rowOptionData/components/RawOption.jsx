@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useContext } from "react";
 import { AgGridReact } from "ag-grid-react";
 import toast from "react-hot-toast";
 import {
@@ -24,6 +24,7 @@ import {
 import { StyleMainDiv } from "../../../style/containers/AnimatedTable";
 import "../../../style/AgGrid.css";
 import { formatUS } from "../../../utils/agGridHelper";
+import { UserContext } from "../../../context/UserContext";
 
 export default function RawOption({
   selectedDate,
@@ -36,9 +37,10 @@ export default function RawOption({
   Containcolor,
 }) {
   const [rows, setRows] = useState([]);
-
+const {loading, setLoading} = useContext(UserContext)
   const fetchdata = useCallback(async () => {
     try {
+      setLoading(true)
       const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
       setFormattedDateStr(formatUS(primaryDate));
 
@@ -74,9 +76,11 @@ export default function RawOption({
         throw new Error(res?.error?.error || "Failed to fetch product data");
 
       setRows(res.data || []);
+      setLoading(false)
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
+      setLoading(false)
     }
   }, [selectedDate, setFormattedDateStr]);
 

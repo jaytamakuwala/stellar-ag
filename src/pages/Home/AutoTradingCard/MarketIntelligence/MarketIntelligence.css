@@ -1,0 +1,115 @@
+.mi-card {
+  position: relative;
+  width: 690px;
+  height: 604px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  gap: 10px;
+  isolation: isolate;
+  font-family: "Barlow", sans-serif;
+}
+
+.mi-bg {
+  position: absolute;
+  width: 100%;
+  height: 604px;
+  top: 0;
+  left: 0;
+  background: #959595;
+  opacity: 0.1;
+  border-radius: 20px;
+  z-index: 0;
+}
+
+.mi-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 630px;
+  height: 122px;
+  z-index: 1;
+}
+
+.mi-title {
+  font-size: 36px;
+  line-height: 40px;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.mi-subtitle {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  margin: 0;
+  color: #fff;
+}
+
+.mi-chart {
+  position: absolute;
+  width: 100%;
+  height: 412px;
+  top: 192px;
+  left: 0;
+  border-radius: 0 0 20px 20px;
+  z-index: 2;
+}
+
+.mi-grid {
+  position: absolute;
+  inset: 0;
+}
+
+.hline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #959595;
+  opacity: 0.3;
+}
+
+.vline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #959595;
+  opacity: 0.3;
+}
+
+.hline.green {
+  border-color: #00ff59;
+  opacity: 1;
+}
+
+.hline.violet {
+  border-color: #b24af2;
+  opacity: 1;
+}
+
+.hline.white {
+  border-color: #959595;
+  opacity: 1;
+}
+
+.mi-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.mi-wave path {
+  stroke: #ffffff;
+  stroke-width: 3px;
+  fill: none;
+}
+
+.mi-label {
+  position: absolute;
+  left: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 10px;
+}

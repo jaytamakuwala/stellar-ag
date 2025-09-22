@@ -41,71 +41,82 @@ export default function AiPowerData({
   hader,
 }) {
   const [rows, setRows] = useState([]);
-  const { selectedDate } = useContext(UserContext);
+  const { selectedDate, loading, setLoading } = useContext(UserContext);
+  const isFirstLoadRef = useRef(true);
 
-  const fetchdata = useCallback(async () => {
-    try {
-      const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
+  const fetchdata = useCallback(
+    async ({ showGIF = false } = {}) => {
+      try {
+        if (showGIF) setLoading(true);
+        const primaryDate = selectedDate ? new Date(selectedDate) : new Date();
 
-      const buildPayload = (selectedDate) => ({
-        alertDate: formatUS(selectedDate),
-        algo: "V1",
-      });
-      setFormattedDateStr(formatUS(primaryDate));
+        const buildPayload = (selectedDate) => ({
+          alertDate: formatUS(selectedDate),
+          algo: "V1",
+        });
+        setFormattedDateStr(formatUS(primaryDate));
 
-      const tryCall = async (buildPayload) => {
-        const res = await getAipowerAlerts(buildPayload);
-        if (!res?.ok) {
-          throw new Error(res?.error?.error || "Failed to fetch AiPower Data");
+        const tryCall = async (buildPayload) => {
+          const res = await getAipowerAlerts(buildPayload);
+          if (!res?.ok) {
+            throw new Error(
+              res?.error?.error || "Failed to fetch AiPower Data"
+            );
+          }
+          return res;
+        };
+
+        let usedDate = primaryDate;
+        let res = await tryCall(buildPayload(primaryDate));
+
+        if (!Array.isArray(res.data) || res.data.length === 0) {
+          // const fallbackDate = prevTradingDate(primaryDate);
+          // res = await tryCall(buildPayload(fallbackDate));
+          // usedDate = fallbackDate;
+          setFormattedDateStr(formatUS(usedDate));
         }
-        return res;
-      };
 
-      let usedDate = primaryDate;
-      let res = await tryCall(buildPayload(primaryDate));
-
-      if (!Array.isArray(res.data) || res.data.length === 0) {
-        // const fallbackDate = prevTradingDate(primaryDate);
-        // res = await tryCall(buildPayload(fallbackDate));
-        // usedDate = fallbackDate;
-        setFormattedDateStr(formatUS(usedDate));
+        setRows((prev) =>
+          reconcileByIndex(
+            prev,
+            res.data || [],
+            (row, idx) => getParentRowId(row, idx),
+            ["Tick"]
+          )
+        );
+      } catch (error) {
+        console.error("[fetchdata] error:", error);
+        toast.error(error.message || "Something went wrong");
+      } finally {
+        if (showGIF) setLoading(false);
+        isFirstLoadRef.current = false;
       }
-
-      setRows((prev) =>
-        reconcileByIndex(
-          prev,
-          res.data || [],
-          (row, idx) => getParentRowId(row, idx),
-          ["Tick"]
-        )
-      );
-    } catch (error) {
-      console.error("[fetchdata] error:", error);
-      toast.error(error.message || "Something went wrong");
-    }
-  }, [selectedDate, setFormattedDateStr]);
+    },
+    [selectedDate, setFormattedDateStr]
+  );
 
   useEffect(() => {
     let intervalId;
-    const run = () => fetchdata();
 
+    const runInitial = () => fetchdata({ showGIF: true });
+    const runSilent = () => fetchdata({ showGIF: false });
     if (selectedDate) {
-      run();
+      runInitial();
     } else {
       const wd = nyWeekday(new Date());
       const nowMin = nyMinutesNow();
       const OPEN = 9 * 60 + 30;
 
       if (wd < 1 || wd > 5 || nowMin < OPEN) {
-        run();
+        runInitial();
       } else {
-        run();
-        intervalId = setInterval(run, 5000);
+        runInitial();
+        intervalId = setInterval(runSilent, 5000);
       }
     }
 
     return () => intervalId && clearInterval(intervalId);
-  }, [selectedDate, fetchdata]);
+  }, [selectedDate]);
 
   const parentCols = useMemo(
     () => [
