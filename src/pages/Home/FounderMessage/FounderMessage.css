@@ -1,13 +1,19 @@
 .founder-section {
   display: flex;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 60px 114px;
+}
+
+@media (max-width: 1024px) {
+  .founder-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 .founder-card {
   position: relative;
   width: 100%;
-  max-width: 1410px;
   background: linear-gradient(
     180deg,
     #1d1d1d 15.38%,

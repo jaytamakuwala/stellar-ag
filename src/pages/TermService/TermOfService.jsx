@@ -17,18 +17,17 @@ const TermsOfService = () => {
         {/* Registration */}
         <div className="terms-section">
           <h2 className="terms-heading">Registration</h2>
-
           <h3 className="terms-subheading">1. Agreement to Terms</h3>
           <p className="terms-paragraph">
             By registering for an account or otherwise using the website located
             at{" "}
             <a
-              href="https://stellartrade.com"
+              href="https://stellartrade.ai"
               target="_blank"
               rel="noopener noreferrer"
               className="terms-link"
             >
-              https://stellartrade.com
+              https://stellartrade.ai
             </a>{" "}
             (the “Site”), you (“You” or “User”) agree to be bound by these Terms
             of Service (the “Terms” or “Agreement”), which form a legally
@@ -40,7 +39,6 @@ const TermsOfService = () => {
             If you do not agree to these Terms, do not register for or use the
             Site.
           </p>
-
           <h3 className="terms-subheading">2. Scope of the Agreement</h3>
           <p className="terms-paragraph">
             These Terms govern your registration with and use of the Site and
@@ -52,7 +50,6 @@ const TermsOfService = () => {
             reference, and your use of those features constitutes your
             acceptance of them.
           </p>
-
           <h3 className="terms-subheading">3. Registration Requirements</h3>
           <p className="terms-paragraph">
             To register and use our Services, you must:
@@ -69,13 +66,13 @@ const TermsOfService = () => {
             <li>
               Promptly update any information to keep it accurate and complete.
             </li>
-            <li>
-              You are responsible for all activity that occurs under your
-              account. You agree not to share your login credentials with others
-              or allow unauthorized use of your account.
-            </li>
           </ul>
-
+          <p className="terms-paragraph">
+            {" "}
+            You are responsible for all activity that occurs under your account.
+            You agree not to share your login credentials with others or allow
+            unauthorized use of your account.{" "}
+          </p>
           <h3 className="terms-subheading">4. Acceptance of Changes</h3>
           <p className="terms-paragraph">
             We may revise or update these Terms at any time. Changes will be
@@ -90,7 +87,6 @@ const TermsOfService = () => {
             agree to the updated Terms, you must discontinue use of the Site and
             cancel your account.
           </p>
-
           <h3 className="terms-subheading">5. Termination of Registration</h3>
           <p className="terms-paragraph">
             If you choose to no longer accept these Terms or any future
@@ -110,21 +106,22 @@ const TermsOfService = () => {
             at our discretion if you violate these Terms or engage in any
             prohibited or unauthorized activity.
           </p>
-
           <h3 className="terms-subheading">6. Access to Terms</h3>
           <p className="terms-paragraph">
             The current version of these Terms of Service will always be
             available at:{" "}
             <a
-              href="https://stellartrade.com/terms-of-service/"
+              href="https://stellartrade.ai/terms-of-service/"
               target="_blank"
               rel="noopener noreferrer"
               className="terms-link"
             >
-              https://stellartrade.com/terms-of-service/
+              https://stellartrade.ai/terms-of-service/
             </a>
           </p>
         </div>
+
+        <div className="divider" />
 
         {/* Payment and Account */}
         <div className="terms-section">
@@ -147,20 +144,27 @@ const TermsOfService = () => {
               All billing is processed via the payment method you provide at
               checkout.
             </li>
-            <li>
-              You confirm that all billing information provided is accurate and
-              complete.
-            </li>
           </ul>
+          <p className="terms-paragraph">
+            You confirm that all billing information provided is accurate and
+            complete.
+          </p>
 
           <h3 className="terms-subheading">2. Subscription and Renewal</h3>
-          <p className="terms-paragraph">
-            All subscriptions renew automatically unless canceled before the end
-            of the current billing cycle. You may manage or cancel your
-            subscription anytime through your Account Settings. Cancellations
-            apply to future billing cycles; no refunds will be issued for the
-            current or past billing periods.
-          </p>
+          <ul className="terms-list">
+            <li>
+              All subscriptions renew automatically unless canceled before the
+              end of the current billing cycle.
+            </li>
+            <li>
+              You may manage or cancel your subscription anytime through your
+              Account Settings.
+            </li>
+            <li>
+              Cancellations apply to future billing cycles; no refunds will be
+              issued for the current or past billing periods.
+            </li>
+          </ul>
           <p className="terms-paragraph">
             We reserve the right to adjust pricing or fees at our sole
             discretion. You will be notified at least 30 days in advance of any
@@ -169,20 +173,36 @@ const TermsOfService = () => {
 
           <h3 className="terms-subheading">3. Free Trial Policy</h3>
           <p className="terms-paragraph">
-            If offered, a free trial provides temporary access to premium
-            features without charge. At the end of the trial, your selected
-            subscription plan will be billed automatically unless you cancel
-            before the trial ends. Only one (1) free trial is allowed per user.
-            Attempts to obtain additional free trials through multiple accounts
-            will result in account restriction or termination.
+            <ul className="terms-list">
+              <li>
+                If offered, a free trial provides temporary access to premium
+                features without charge.
+              </li>
+              <li>
+                At the end of the trial, your selected subscription plan will be
+                billed automatically unless you cancel before the trial ends.
+              </li>
+              <li>
+                Only one (1) free trial is allowed per user. Attempts to obtain
+                additional free trials through multiple accounts will result in
+                account restriction or termination.
+              </li>
+            </ul>
           </p>
 
           <h3 className="terms-subheading">4. No Refunds</h3>
           <p className="terms-paragraph">
-            Due to the nature of our Products—non-tangible, irrevocable digital
-            goods—all sales are final and no refunds will be issued under any
-            circumstances. By completing a purchase or using the Site, you
-            acknowledge and agree to this strict no-refund policy.
+            <ul className="terms-list">
+              <li>
+                Due to the nature of our Products—non-tangible, irrevocable
+                digital goods—all sales are final and no refunds will be issued
+                under any circumstances.
+              </li>
+              <li>
+                By completing a purchase or using the Site, you acknowledge and
+                agree to this strict no-refund policy.
+              </li>
+            </ul>
           </p>
 
           <h3 className="terms-subheading">5. Account Usage</h3>
@@ -207,27 +227,43 @@ const TermsOfService = () => {
           </ul>
 
           <h3 className="terms-subheading">6. Data Use and Restrictions</h3>
+          <p className="terms-paragraph">You may not:</p>
+
+          <ul className="terms-list">
+            <li>
+              use automated tools (e.g., bots, scrapers, or extraction software)
+              to access or extract data from the Site.
+            </li>
+            <li>
+              Redistribute or resell any information, content, or data from the
+              Site via third-party platforms such as Discord, Slack, or Twitter.
+            </li>
+            <li>
+              Use the Site in violation of any applicable laws or regulations.
+            </li>
+          </ul>
           <p className="terms-paragraph">
-            You may not use automated tools (e.g., bots, scrapers, or extraction
-            software) to access or extract data from the Site. Redistribute or
-            resell any information, content, or data from the Site via
-            third-party platforms such as Discord, Slack, or Twitter. Use the
-            Site in violation of any applicable laws or regulations. Violations
-            of this section may result in immediate account termination without
-            notice or refund. Legal action will be pursued when deemed
-            appropriate.
+            Violations of this section may result in immediate account
+            termination without notice or refund. Legal action will be pursued
+            when deemed appropriate.
           </p>
 
           <h3 className="terms-subheading">
             7. Warranties and Indemnification
           </h3>
           <p className="terms-paragraph">
-            You represent and warrant that your use of the Site and Products is
-            solely for lawful, intended, and permitted purposes; and will comply
-            with these Terms and all applicable laws. You agree to indemnify and
-            hold harmless Stellar Trade from any claims, losses, damages,
-            liabilities, or expenses arising out of:
+            You represent and warrant that your use of the Site and Products:
           </p>
+
+          <ul className="terms-list">
+            <li>Is solely for lawful, intended, and permitted purposes;</li>
+            <li>Will comply with these Terms and all applicable laws.</li>
+          </ul>
+          <p className="terms-paragraph">
+            You agree to indemnify and hold harmless Stellar Trade from any
+            claims, losses, damages, liabilities, or expenses arising out of:
+          </p>
+
           <ul className="terms-list">
             <li>Your use of the Site or Products;</li>
             <li>Your violation of these Terms;</li>
@@ -240,11 +276,13 @@ const TermsOfService = () => {
           <div className="terms-note">
             If you have questions about billing or account issues, please
             contact our support team at:{" "}
-            <a href="mailto:support@stellartrade.com" className="terms-link">
-              support@stellartrade.com
+            <a href="mailto:support@stellartrade.ai" className="terms-link">
+              support@stellartrade.ai
             </a>
           </div>
         </div>
+
+        <div className="divider" />
 
         {/* Proprietary Rights */}
         <div className="terms-section">
@@ -255,19 +293,35 @@ const TermsOfService = () => {
           <p className="terms-paragraph">
             All content, features, tools, data, information, and technology
             available on or through the Stellar Trade platform, including the
-            website{" "}
+            website
             <a
-              href="https://stellartrade.com"
+              href="https://stellartrade.ai"
               target="_blank"
               rel="noopener noreferrer"
               className="terms-link"
             >
-              https://StellarTradeflow.com
+              https://StellarTradeflow.ai
             </a>{" "}
-            (the “Site”), are the exclusive property of Stellar Trade, Inc. and
-            its content providers or licensors. This includes text, graphics,
-            logos, icons, images, charts, signals, options flow data, analytics,
-            software code, user interfaces, design elements, and trademarks.
+            (the “Site”),are the exclusive property of Stellar Trade, Inc. (also
+            referred to as “Stellar Trade,” “We,” “Us,” or “Our”) and its
+            content providers or licensors. This includes, but is not limited
+            to:
+          </p>
+          <ul className="terms-list">
+            <li>Text, graphics, logos, icons, and images</li>
+            <li>Charts, signals, options flow data, and analytics</li>
+            <li>
+              Software code, user interfaces, design elements, and compilation
+              thereof
+            </li>
+            <li>
+              All trademarks, copyrights, trade secrets, and other proprietary
+              rights
+            </li>
+          </ul>
+          <p className="terms-paragraph">
+            These assets are protected by United States and international
+            copyright, trademark, and other intellectual property laws.
           </p>
 
           <h3 className="terms-subheading">2. Limited License</h3>
@@ -275,16 +329,36 @@ const TermsOfService = () => {
             When you hold an active subscription, you are granted a limited,
             non-exclusive, non-transferable, non-sublicensable license to access
             and use the Site and Products solely for your personal or internal
-            company use. All rights not expressly granted are reserved.
+            company use.
+            <br />
+            <br />
+            This license does not grant any ownership or intellectual property
+            rights in the Site, Products, or any related content. All rights not
+            expressly granted to you are reserved by Stellar Trade and its
+            licensors.
           </p>
 
           <h3 className="terms-subheading">3. Prohibited Uses</h3>
-          <p className="terms-paragraph">
-            You may not copy, reproduce, modify, republish, upload, distribute,
-            display, or transmit any portion of the Site or Products, reverse
-            engineer, decompile, disassemble, sell, lease, sublicense, or use
-            the Site for commercial gain.
-          </p>
+          <p className="terms-paragraph">You may not:</p>
+          <ul className="terms-list">
+            <li>
+              Copy, reproduce, modify, republish, upload, distribute, display,
+              or transmit any portion of the Site or Products, except as
+              expressly allowed under these Terms.
+            </li>
+            <li>
+              Reverse engineer, decompile, disassemble, translate, or create
+              derivative works based on the Site or Products.
+            </li>
+            <li>
+              Sell, lease, sublicense, or otherwise distribute the Products to
+              any third party.
+            </li>
+            <li>
+              Use the Site or Products for commercial gain, including resale or
+              redistribution of any data or content from the platform.
+            </li>
+          </ul>
 
           <h3 className="terms-subheading">
             4. No Investment Advice or Warranty
@@ -292,7 +366,14 @@ const TermsOfService = () => {
           <p className="terms-paragraph">
             All content and data provided on the Site are for informational
             purposes only and do not constitute investment advice, financial
-            recommendations, or trading instructions of any kind.
+            recommendations, or trading instructions of any kind. Neither
+            Stellar Trade nor any third-party content provider guarantees the
+            accuracy, completeness, or timeliness of the information provided.{" "}
+            <br />
+            <br />
+            Accessing, viewing, or using the Site does not create a fiduciary,
+            advisory, or broker-client relationship between you and Stellar
+            Trade.
           </p>
 
           <h3 className="terms-subheading">5. Violation of Rights</h3>
@@ -307,11 +388,12 @@ const TermsOfService = () => {
           <div className="terms-note">
             If you believe your intellectual property rights have been violated,
             please contact:{" "}
-            <a href="mailto:support@stellartrade.com" className="terms-link">
-              support@stellartrade.com
+            <a href="mailto:support@stellartrade.ai" className="terms-link">
+              support@stellartrade.ai
             </a>
           </div>
         </div>
+        <div className="divider" />
 
         {/* Privacy */}
         <div className="terms-section">
@@ -319,6 +401,7 @@ const TermsOfService = () => {
           <p className="terms-paragraph">
             We respect your privacy. We do not sell or share your personal
             information, including your email, without your explicit consent.
+            <br />
             Your information may be accessed only by Stellar Trade, our trusted
             partners, and legal advisors as needed to provide services or comply
             with the law.
@@ -326,22 +409,24 @@ const TermsOfService = () => {
           <p className="terms-paragraph">
             For more details, please see our full Privacy Policy:{" "}
             <a
-              href="https://stellartrade.com/privacy-policy/"
+              href="https://stellartrade.ai/privacy-policy/"
               target="_blank"
               rel="noopener noreferrer"
               className="terms-link"
             >
-              https://stellartrade.com/privacy-policy/
+              https://stellartrade.ai/privacy-policy/
             </a>
           </p>
 
           <div className="terms-note">
             Contact:{" "}
-            <a href="mailto:support@stellartrade.com" className="terms-link">
-              support@stellartrade.com
+            <a href="mailto:support@stellartrade.ai" className="terms-link">
+              support@stellartrade.ai
             </a>
           </div>
         </div>
+
+        <div className="divider" />
 
         {/* No Representations or Warranties */}
         <div className="terms-section">
@@ -352,8 +437,12 @@ const TermsOfService = () => {
             Stellar Trade makes reasonable efforts to maintain the Site and
             Products and minimize errors or interruptions. However, the Site may
             occasionally be unavailable due to maintenance or factors beyond our
-            control. All content and services on the Site are provided “as is”
-            and without warranties of any kind.
+            control. We do not guarantee uninterrupted or error-free operation.
+            <br />
+            <br />
+            All content and services on the Site are provided “as is” and
+            without warranties of any kind, whether express or implied. This
+            includes, but is not limited to, warranties of:
           </p>
           <ul className="terms-list">
             <li>Accuracy or completeness</li>
@@ -364,6 +453,10 @@ const TermsOfService = () => {
             You use the Site and Products at your own risk, and Stellar Trade is
             not responsible for any actions you take based on the information
             provided.
+          </p>
+          <p className="terms-paragraph">
+            To the fullest extent allowed by law, Stellar Trade and its
+            affiliates, officers, employees, or agents will not be liable for:
           </p>
           <ul className="terms-list">
             <li>
@@ -380,10 +473,15 @@ const TermsOfService = () => {
             Total liability, if any, will be limited to the amount you paid to
             Stellar Trade in the past 12 months, and in no case will exceed
             $1,000. If you have not paid any fees, your only remedy is
-            injunctive relief. Some jurisdictions may not allow certain
-            limitations, so these exclusions may not fully apply to you.
+            injunctive relief.
+            <br />
+            <br />
+            Some jurisdictions may not allow certain limitations, so these
+            exclusions may not fully apply to you.
           </p>
         </div>
+
+        <div className="divider" />
 
         {/* Disclaimer */}
         <div className="terms-section">
@@ -391,9 +489,15 @@ const TermsOfService = () => {
           <p className="terms-paragraph">
             Trading stocks and options involves significant risk and is not
             suitable for all investors. Past performance is not a guarantee of
-            future results. Stellar Trade is not a registered investment advisor
-            and does not provide investment advice or manage assets. All content
-            is for educational purposes only.
+            future results.
+            <br />
+            <br />
+            Stellar Trade is not a registered investment advisor and does not
+            provide investment advice or manage assets. All content, tools, and
+            materials provided on the Site are for educational and informational
+            purposes only. Any ideas, opinions, research, or tutorials reflect
+            the personal views of Stellar Trade and should not be interpreted as
+            financial advice.{" "}
           </p>
           <p className="terms-paragraph">You are solely responsible for:</p>
           <ul className="terms-list">
@@ -413,18 +517,20 @@ const TermsOfService = () => {
           </p>
         </div>
 
+        <div className="divider" />
+
         {/* Miscellaneous */}
         <div className="terms-section">
           <h2 className="terms-heading">Miscellaneous</h2>
 
-          <h3 className="terms-subheading">Severability</h3>
+          <h3 className="terms-subheading">1. Severability</h3>
           <p className="terms-paragraph">
             If any part of these Terms is found to be invalid or unenforceable,
             that part will be limited or removed as necessary so that the rest
             of the Terms remain valid and enforceable.
           </p>
 
-          <h3 className="terms-subheading">Assignment</h3>
+          <h3 className="terms-subheading">2. Assignment</h3>
           <p className="terms-paragraph">
             You may not assign, transfer, or sublicense your rights under these
             Terms without prior written consent from Stellar Trade. We may
@@ -432,42 +538,47 @@ const TermsOfService = () => {
             consent.
           </p>
 
-          <h3 className="terms-subheading">Entire Agreement</h3>
+          <h3 className="terms-subheading">3. Entire Agreement</h3>
           <p className="terms-paragraph">
             These Terms represent the complete agreement between you and Stellar
             Trade and override all prior agreements, communications, or
-            understandings.
+            understandings—whether written or oral—regarding your use of the
+            Site and Services.
           </p>
 
-          <h3 className="terms-subheading">No Agency Relationship</h3>
+          <h3 className="terms-subheading">4. No Agency Relationship</h3>
           <p className="terms-paragraph">
             Nothing in these Terms creates any partnership, joint venture,
             agency, or employment relationship. You may not bind Stellar Trade
             in any way.
           </p>
 
-          <h3 className="terms-subheading">Legal Fees</h3>
+          <h3 className="terms-subheading">5. Legal Fees</h3>
           <p className="terms-paragraph">
             In any legal action arising out of these Terms, the prevailing party
             is entitled to recover legal costs and attorneys’ fees.
           </p>
 
-          <h3 className="terms-subheading">Notices</h3>
+          <h3 className="terms-subheading">6. Notices</h3>
           <p className="terms-paragraph">
             All notices must be in writing and will be considered delivered
-            when: Personally delivered, Sent by email (with confirmed receipt),
-            Sent by overnight courier, Sent via certified or registered mail
-            with return receipt.
+            when:
           </p>
+          <ul className="terms-list">
+            <li>Personally delivered</li>
+            <li>Sent by email (with confirmed receipt)</li>
+            <li>Sent by overnight courier</li>
+            <li>Sent via certified or registered mail with return receipt</li>
+          </ul>
 
-          <h3 className="terms-subheading">Governing Law</h3>
+          <h3 className="terms-subheading">7. Governing Law</h3>
           <p className="terms-paragraph">
             These Terms are governed by the laws of the State of California,
             without regard to its conflict of law rules.
           </p>
 
           <h3 className="terms-subheading">
-            Right to Refuse or Terminate Service
+            8. Right to Refuse or Terminate Service
           </h3>
           <p className="terms-paragraph">
             We reserve the right to refuse service or terminate your access at

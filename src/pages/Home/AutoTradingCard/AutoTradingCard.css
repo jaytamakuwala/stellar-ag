@@ -7,6 +7,8 @@
   box-sizing: border-box;
   font-family: "Barlow", sans-serif;
   color: white;
+  min-width: 614px;
+  flex: 1;
 }
 
 .header-inner {
@@ -16,7 +18,7 @@
 }
 .title {
   margin: 0;
-  font-size: 36px;
+  font-size: 48px;
   line-height: 40px;
   font-weight: 700;
   color: #fff;

@@ -69,27 +69,21 @@ const Footer = () => {
               </NavLink>
             </ul>
           </div>
+        </div>
 
-          {/* Follow */}
-          <div className="footer-column">
-            <h4 className="footer-title">Follow</h4>
-            <div className="footer-socials">
-              <a href="#">
-                <FaFacebook />
-              </a>
-              <a href="#">
-                <FaTwitter />
-              </a>
-              <a href="#">
-                <FaYoutube />
-              </a>
-              <a href="#">
-                <FaInstagram />
-              </a>
-              <a href="#">
-                <FaTiktok />
-              </a>
-            </div>
+        {/* Follow */}
+        <div className="footer-column">
+          <h4 className="footer-title">Follow</h4>
+          <div className="footer-socials">
+            <a href="#">
+              <FaTwitter />
+            </a>
+            <a href="#">
+              <FaYoutube />
+            </a>
+            <a href="#">
+              <FaInstagram />
+            </a>
           </div>
         </div>
       </div>

@@ -1,0 +1,22 @@
+/* Make the injected YouTube iframe responsive and clipped */
+.video-wrap.feature-video .yt-iframe {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* keep a nice ratio */
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden; /* clip iframe corners */
+}
+
+/* Ensure iframe fills the container */
+.video-wrap.feature-video .yt-iframe iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-wrap.feature-video {
+  width: -webkit-fill-available;
+}

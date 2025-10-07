@@ -1,6 +1,6 @@
 import "./Elite.css";
 import flash from "@/assets/Images/flash.png";
-import table from "@/assets/Images/table.png";
+import FeatureVideo from "../FeatureVideo/FeatureVideo";
 
 const Elite = () => {
   return (
@@ -24,12 +24,7 @@ const Elite = () => {
           {/* </div> */}
         </div>
       </div>
-      <img
-        style={{ borderRadius: "20pxs", width: "84%" }}
-        src={table}
-        className="quote-icon-table"
-        alt="table"
-      />
+      <FeatureVideo />
     </section>
   );
 };

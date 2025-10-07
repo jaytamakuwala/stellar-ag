@@ -8,6 +8,15 @@
   overflow-x: hidden;
 }
 
+.hero-video {
+  width: inherit;
+  height: inherit; /* or set height and use object-fit if needed */
+  /* display: block; */
+  /* border-radius: 12px; optional */
+  /* background: #000; */
+  /* object-fit: cover; if you set a fixed height/aspect-ratio */
+}
+
 /* Header */
 .header {
   position: fixed;
@@ -16,11 +25,18 @@
   right: 0;
   z-index: 100;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
+  padding: 16px 114px;
   backdrop-filter: blur(10px);
   background-color: rgba(40, 40, 40, 0.5);
+}
+
+@media (max-width: 1024px) {
+  .header {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 .nav-links {
@@ -63,7 +79,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 50px;
+  padding: 60px 14px;
   position: relative;
 }
 
@@ -71,7 +87,7 @@
   max-width: 45%;
   text-align: left;
   margin-top: 30%;
-  margin-left: 7%;
+  margin-left: 6%;
 }
 
 @media (max-width: 1024px) {
@@ -167,6 +183,8 @@
 .stock-image-3 {
   left: calc(50% - 1312.16px / 2 + 689.67px);
   top: 231.38px;
+  /* width: unset; */
+  /* border-top: none; */
 }
 
 .content-placeholder {
@@ -280,13 +298,13 @@
 }
 
 .card-title {
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 700;
 }
 
 .card-desc {
-  font-size: 18px;
-  line-height: 26px;
+  font-size: 18px !important;
+  font-weight: 600 !important;
 }
 
 .card-rows {
@@ -325,14 +343,18 @@
   margin-right: auto;
 }
 
+.row-left {
+  margin-right: auto;
+}
+
 .row-value,
 .row-value2 {
-  margin-left: 20px;
+  margin-right: auto;
   color: #00ff59;
 }
 
 /* Tablet */
-@media (max-width: 1024px) {
+@media (max-width: 1170px) {
   .hero-title {
     font-size: 48px;
     line-height: 56px;
@@ -344,13 +366,23 @@
   .text-block {
     align-items: center;
   }
+  .header {
+    justify-content: space-between;
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+  .hero-text {
+    max-width: 95%;
+  }
+  .card-desc {
+    width: 102%;
+  }
+
   .hero-title {
-    font-size: 36px;
+    font-size: 40px;
     line-height: 42px;
-    margin-top: -150px;
+    margin-top: 40px;
   }
   .headline {
     font-size: 32px;
@@ -360,6 +392,30 @@
   }
   .features-row {
     flex-direction: column;
+  }
+  .hero {
+    padding: 40px 20px;
+    flex-direction: column;
+  }
+
+  .hero-visual {
+    position: relative;
+    left: 0;
+    width: -webkit-fill-available;
+    height: fit-content;
+    margin-top: 40px;
+  }
+  .stock-image-3 {
+    left: 0;
+  }
+  .stock-image-1 {
+    display: none;
+  }
+  .stock-image-2 {
+    display: none;
+  }
+  .ellipse {
+    display: none;
   }
 }
 

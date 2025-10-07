@@ -27,48 +27,95 @@ const RefundPolicy = () => {
         <div className="refund-section">
           <h3 className="refund-heading">No Refunds</h3>
           <p className="refund-paragraph gray">
-            All purchases made through our platform are final and
-            non-refundable. Our services consist of non-tangible, irrevocable
-            digital goods, and once a transaction is completed, no refunds will
-            be issued under any circumstances.
+            All purchases made through our platform are{" "}
+            <span style={{ color: "white" }}>final and non-refundable</span>.
+            Our services consist of non-tangible, irrevocable digital goods, and
+            once a transaction is completed, no refunds will be issued under any
+            circumstances.
           </p>
         </div>
 
         <div className="refund-section">
           <h3 className="refund-heading">Subscriptions and Renewals</h3>
           <p className="refund-paragraph gray">
-            Subscriptions automatically renew at the end of each billing cycle.
-            You may cancel your subscription at any time through your account
-            settings. Cancellations must be made at least 24 hours before the
-            renewal date to avoid being charged.
+            <ul>
+              <li>
+                Subscriptions automatically renew at the end of each billing
+                cycle.
+              </li>
+              <li>
+                You may cancel your subscription at any time through your
+                account settings.
+              </li>
+              <li>
+                Cancellations must be made{" "}
+                <span style={{ color: "white" }}>
+                  at least 24 hours before the renewal date{" "}
+                </span>
+                to avoid being charged.
+              </li>
+              <li>
+                No refunds will be provided for{" "}
+                <span style={{ color: "white" }}>partial billing periods</span>
+                or <span style={{ color: "white" }}>unused time </span>within a
+                subscription cycle.
+              </li>
+            </ul>
           </p>
         </div>
 
         <div className="refund-section">
           <h3 className="refund-heading">Free Trial</h3>
           <p className="refund-paragraph gray">
-            If a free trial is offered, you will be charged automatically at the
-            end of the trial period unless you cancel beforehand. It is your
-            responsibility to cancel before the trial ends if you do not wish to
-            continue.
+            <ul>
+              <li>
+                If a free trial is offered, you will be charged automatically at
+                the end of the trial period unless you cancel beforehand.
+              </li>
+              <li>
+                It is your responsibility to cancel before the trial ends if you
+                do not wish to continue.
+              </li>
+              <li>
+                No refunds will be issued once the trial transitions into a paid
+                subscription.
+              </li>
+            </ul>
           </p>
         </div>
 
         <div className="refund-section">
           <h3 className="refund-heading">Trial Abuse</h3>
           <p className="refund-paragraph gray">
-            Each user is entitled to one (1) free trial. Attempting to obtain
-            multiple free trials by creating multiple accounts is strictly
-            prohibited and may result in account termination without refund.
+            <ul>
+              <li>
+                Each user is entitled to{" "}
+                <span style={{ color: "white" }}>one (1) free trial</span>.
+              </li>
+              <li>
+                Attempting to obtain multiple free trials by creating multiple
+                accounts is strictly prohibited and may result in account
+                termination without refund.
+              </li>
+            </ul>
           </p>
         </div>
 
         <div className="refund-section">
           <h3 className="refund-heading">Violations of Terms of Service</h3>
           <p className="refund-paragraph gray">
-            If your account is found to be in violation of our Terms of Service
-            — including scraping, reproducing, redistributing, or reselling
-            content — you will be banned and no refunds will be provided.
+            <ul>
+              <li>
+                If your account is found to be in violation of our Terms of
+                Service—including, but not limited to, scraping, reproducing,
+                redistributing, or reselling content—you will be banned, and no
+                refunds will be provided, regardless of subscription status.
+              </li>
+              <li>
+                Legal action may be pursued if unauthorized redistribution or
+                reselling of our content is discovered.
+              </li>
+            </ul>
           </p>
         </div>
 

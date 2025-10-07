@@ -1,6 +1,5 @@
 .swap-ticker {
   position: relative;
-  /* overflow: hidden; */
 }
 
 .swap-ticker .row {
@@ -11,10 +10,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* border-radius: 8px; */
   animation-duration: 4s;
   animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
+  animation-timing-function: ease-out;
 }
 
 /* Initial positions */
@@ -41,49 +39,41 @@
   animation-name: swap-up;
 }
 
-/* Animations */
+/* One-way movement */
 @keyframes swap-up {
   0%,
   40% {
     transform: translateY(0);
   }
-  50%,
-  90% {
+  60%,
+  100% {
     transform: translateY(-70px);
   }
-  100% {
-    transform: translateY(0);
-  }
 }
-
 @keyframes swap-down {
   0%,
   40% {
     transform: translateY(0);
   }
-  50%,
-  90% {
-    transform: translateY(70px);
-  }
+  60%,
   100% {
-    transform: translateY(0);
+    transform: translateY(70px);
   }
 }
 
+/* ===== Feature bars ===== */
 .card-wrap {
   height: 490px;
 }
 
 .feature-section {
   position: relative;
-  width: 690px;
   height: 484px;
-  gap: 15px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   isolation: isolate;
+  align-items: flex-start;
 }
 
 .feature-bg {
@@ -104,6 +94,7 @@
   align-items: center;
   gap: 72px;
   z-index: 1;
+  padding-left: 10px;
 }
 
 .feature-text h2 {
@@ -126,29 +117,36 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 539px;
+  width: 539px; /* fixed width to avoid % collapse */
+  flex: 0 0 auto; /* prevent flex from shrinking it */
 }
 
 .feature-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   height: 60px;
+  width: 100%;
+  overflow: hidden; /* keep bar inside */
+  box-sizing: border-box;
 }
 
+/* The bar fill: use scaleX so it never overflows the row */
 .feature-rect {
   height: 100%;
-  width: 60px; /* start small */
-  /* border-radius: 8px; */
-  transition: width 0.3s ease;
+  width: 100%; /* track width */
+  background-color: #ff605d; /* small = red */
+  transform-origin: left center;
+  transform: scaleX(0.2); /* default small */
+  will-change: transform, background-color;
+  animation-fill-mode: both; /* show first frame on load */
 }
 
+/* Optional classes retained (color controlled by animation) */
 .feature-rect.red {
-  background: #ff605d;
 }
-
 .feature-rect.green {
-  background: #00ff59;
 }
 
 .feature-label {
@@ -159,93 +157,72 @@
   color: #282828;
   position: absolute;
   padding: 10px;
+  pointer-events: none;
 }
 
-/* Default widths */
+/* Keyframes: grow one-way, hold, then restart to small (red) */
+@keyframes bar1 {
+  0%,
+  40% {
+    transform: scaleX(0.18);
+    background-color: #ff605d;
+  } /* small red */
+  60%,
+  100% {
+    transform: scaleX(0.7);
+    background-color: #00ff59;
+  } /* max green */
+}
+@keyframes bar2 {
+  0%,
+  40% {
+    transform: scaleX(0.28);
+    background-color: #ff605d;
+  } /* small red */
+  60%,
+  100% {
+    transform: scaleX(0.65);
+    background-color: #00ff59;
+  } /* mid green */
+}
+@keyframes bar3 {
+  0%,
+  40% {
+    transform: scaleX(0.12);
+    background-color: #ff605d;
+  } /* small red */
+  60%,
+  100% {
+    transform: scaleX(0.4);
+    background-color: #00ff59;
+  } /* less-than-mid green */
+}
+@keyframes bar4 {
+  0%,
+  40% {
+    transform: scaleX(0.22);
+    background-color: #ff605d;
+  } /* small red */
+  60%,
+  100% {
+    transform: scaleX(0.65);
+    background-color: #00ff59;
+  } /* mid green */
+}
+
+/* Apply animations per row with slight staggering */
 .feature-row:nth-child(1) .feature-rect {
-  width: 100px; /* small */
-  background: #ff605d;
-  animation: small-to-large 6s infinite ease-in-out;
+  animation: bar1 6s infinite ease-out both;
 }
-
 .feature-row:nth-child(2) .feature-rect {
-  width: 200px; /* medium */
-  background: #00ff59;
-  animation: medium-cycle 8s infinite ease-in-out;
-  animation-delay: 1s;
+  animation: bar2 7.5s infinite ease-out both;
+  animation-delay: 0.3s;
 }
-
 .feature-row:nth-child(3) .feature-rect {
-  width: 500px; /* large */
-  background: #00ff59;
-  animation: large-to-medium 8s infinite ease-in-out;
+  animation: bar3 7s infinite ease-out both;
+  animation-delay: 0.6s;
 }
-
 .feature-row:nth-child(4) .feature-rect {
-  width: 200px; /* medium */
-  background: #00ff59;
-  animation: medium-cycle 8s infinite ease-in-out;
-  animation-delay: 2s;
-}
-
-/* Keyframes */
-
-/* Small → Medium → Large */
-@keyframes small-to-large {
-  0% {
-    width: 100px;
-    background: #ff605d;
-  }
-  33% {
-    width: 200px;
-    background: #00ff59;
-  }
-  66% {
-    width: 320px;
-    background: #00ff59;
-  }
-  100% {
-    width: 100px;
-    background: #ff605d;
-  }
-}
-
-/* Medium → Large → Small */
-@keyframes medium-cycle {
-  0% {
-    width: 200px;
-    background: #00ff59;
-  }
-  33% {
-    width: 320px;
-    background: #00ff59;
-  }
-  66% {
-    width: 100px;
-    background: #ff605d;
-  }
-  100% {
-    width: 200px;
-    background: #00ff59;
-  }
-}
-
-/* Large → Small (red) → Medium (green) */
-@keyframes large-to-medium {
-  0% {
-    width: 320px;
-    background: #00ff59;
-  }
-  33% {
-    width: 100px;
-    background: #ff605d;
-  }
-  66% {
-    width: 200px;
-    background: #00ff59;
-  }
-  100% {
-    width: 320px;
-    background: #00ff59;
-  }
+  animation: bar4 8s infinite ease-out both;
+  animation-delay: 0.9s;
 }

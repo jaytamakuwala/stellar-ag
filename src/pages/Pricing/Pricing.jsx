@@ -9,6 +9,7 @@ import cross from "@/assets/Images/cross.png";
 import PricingTestimonial from "./PricingTestimonial/PricingTestimonial";
 import FaqSection from "./FaqSection/FaqSection";
 import Footer from "../Home/Footer/Footer";
+import React from "react";
 
 /* Custom Switch */
 const IOSSwitch = styled((props) => (
@@ -42,15 +43,19 @@ const IOSSwitch = styled((props) => (
   },
 }));
 
+// No changes to PlanHeader component
 const PlanHeader = ({
   titleClass,
   title,
   subtitle,
   discount,
-  price,
+  monthlyPrice,
+  yearlyPrice,
   buttonText,
   buttonClass,
   highlight,
+  isYearly,
+  onToggle,
 }) => (
   <div className="plan-header-wrapper">
     <h2 className={titleClass}>{title} Plan</h2>
@@ -59,11 +64,15 @@ const PlanHeader = ({
     <div className="divider" />
     <div className="plan-details">
       <span className="plan-discount">{discount}</span>
-      <span className="plan-price">{price}</span>
+      <span className="plan-price">
+        {isYearly ? yearlyPrice : monthlyPrice}
+      </span>
       <FormGroup>
         <FormControlLabel
-          control={<IOSSwitch sx={{ m: 1 }} />}
-          label="Monthly"
+          control={
+            <IOSSwitch sx={{ m: 1 }} checked={isYearly} onChange={onToggle} />
+          }
+          label={isYearly ? "Yearly" : "Monthly"}
         />
       </FormGroup>
       <span className="plan-due">No Payment Due Now</span>
@@ -72,7 +81,102 @@ const PlanHeader = ({
   </div>
 );
 
+const FEATURES = [
+  "Real Time Options Flow",
+  "Real Time Buy and Sell Alerts",
+  "Live Auto Trade",
+  "Real Time Order Flow",
+  "Advanced Filters",
+  "Unusual Volume Data",
+  "Flow Overview Insights",
+  "On-Demand Historical Data",
+  "Stellar Trade AI",
+  "Custom Watchlist Builder",
+  "Dark Pool Orders",
+  "Dark Pool Levels",
+  "AI Power Alerts",
+  "Free Trial Period",
+];
+
+const availability = {
+  standard: (i) => [0, 3, 4, 5, 6, 7, 8, 13].includes(i),
+  pro: (i) => i < 10 && i !== 2,
+  elite: (i) => i !== 13,
+};
+
+// Reverted discount text to original format as requested
+const PLAN_META = {
+  standard: {
+    titleClass: "plan-title-standard",
+    title: "Standard",
+    subtitle: "For traders new to order flow or just looking for options data.",
+    discount: "Save 15% For Annual.",
+    monthlyPrice: "$199 /mo",
+    yearlyPrice: "$2030 /yr",
+    buttonText: "Buy Standard Plan",
+    buttonClass: "pricing-btn-green",
+  },
+  pro: {
+    titleClass: "plan-title-pro",
+    title: "Pro",
+    subtitle: "For traders new to order flow or just looking for options data.",
+    discount: "Save 20% For Annual.",
+    monthlyPrice: "$299 /mo",
+    yearlyPrice: "$2870 /yr",
+    buttonText: "Start Free 7 Day Trial",
+    buttonClass: "pricing-btn-gradient",
+    highlight: "Most Popular",
+  },
+  elite: {
+    titleClass: "plan-title-elite",
+    title: "Elite",
+    subtitle: "For full time traders experienced with order flow.",
+    discount: "Save 25% For Annual.",
+    monthlyPrice: "$499 /mo",
+    yearlyPrice: "$4491 /yr",
+    buttonText: "Buy Elite Plan",
+    buttonClass: "pricing-btn-yellow",
+  },
+};
+
+const PlanFeatureList = ({ planKey }) => (
+  <ul className="plan-feature-list">
+    {FEATURES.map((feature, i) => {
+      const hasIt = availability[planKey](i);
+      return (
+        <li key={feature} className="plan-feature-row">
+          <span className="plan-feature-text">{feature}</span>
+          <img
+            className={`plan-feature-icon ${
+              hasIt ? "available" : "unavailable"
+            }`}
+            src={hasIt ? check : cross}
+            alt={hasIt ? "Included" : "Not included"}
+          />
+        </li>
+      );
+    })}
+  </ul>
+);
+
 const Pricing = () => {
+  const [activePlan, setActivePlan] = React.useState("standard");
+
+  // --- CHANGE 1: Use an object to track each plan's state individually ---
+  const [yearlyPlans, setYearlyPlans] = React.useState({
+    standard: false,
+    pro: false,
+    elite: false,
+  });
+
+  // --- CHANGE 2: The handler now accepts a 'planKey' to update the correct plan ---
+  const handlePlanSwitch = (planKey) => {
+    setYearlyPlans((prev) => ({
+      ...prev, // Copy the existing states
+      [planKey]: !prev[planKey], // Toggle the state for the specific plan
+    }));
+  };
+
   return (
     <div className="pricing-container">
       {/* Hero Section */}
@@ -88,102 +192,97 @@ const Pricing = () => {
 
       {/* Grid Table Section */}
       <section className="pricing-grid-section">
-        <div className="pricing-grid">
-          {/* Row 1: Empty corner + Plan Headers */}
-          <div className="features-cell empty"></div>
-          <div className="plan-column">
-            <PlanHeader
-              titleClass="plan-title-standard"
-              title="Standard"
-              subtitle="For traders new to order flow or just looking for options data."
-              discount="Save 15% For Annual."
-              price="$199 /mo"
-              buttonText="Buy Standard Plan"
-              buttonClass="pricing-btn-green"
-            />
+        <div className="desktop-only">
+          <div className="pricing-grid">
+            <div className="features-cell empty"></div>
+
+            {/* --- CHANGE 3: Pass the correct state and handler to each PlanHeader --- */}
+            <div className="plan-column">
+              <PlanHeader
+                {...PLAN_META.standard}
+                isYearly={yearlyPlans.standard}
+                onToggle={() => handlePlanSwitch("standard")}
+              />
+            </div>
+
+            <div className="plan-column">
+              <PlanHeader
+                {...PLAN_META.pro}
+                isYearly={yearlyPlans.pro}
+                onToggle={() => handlePlanSwitch("pro")}
+              />
+            </div>
+
+            <div className="plan-column">
+              <PlanHeader
+                {...PLAN_META.elite}
+                isYearly={yearlyPlans.elite}
+                onToggle={() => handlePlanSwitch("elite")}
+              />
+            </div>
+
+            {FEATURES.map((feature, i) => (
+              <React.Fragment key={`row-${i}`}>
+                <div className="features-cell">{feature}</div>
+                <div className="feature-icon">
+                  <img src={availability.standard(i) ? check : cross} alt="" />
+                </div>
+                <div className="feature-icon">
+                  <img src={availability.pro(i) ? check : cross} alt="" />
+                </div>
+                <div className="feature-icon">
+                  <img src={availability.elite(i) ? check : cross} alt="" />
+                </div>
+              </React.Fragment>
+            ))}
           </div>
-          <div className="plan-column">
-            <PlanHeader
-              titleClass="plan-title-pro"
-              title="Pro"
-              subtitle="For traders new to order flow or just looking for options data."
-              discount="Save 20% For Annual."
-              price="$299 /mo"
-              buttonText="Start Free 7 Day Trial"
-              buttonClass="pricing-btn-gradient"
-              highlight="Most Popular"
-            />
-          </div>
-          <div className="plan-column">
-            <PlanHeader
-              titleClass="plan-title-elite"
-              title="Elite"
-              subtitle="For full time traders experienced with order flow."
-              discount="Save 25% For Annual."
-              price="$499 /mo"
-              buttonText="Buy Elite Plan"
-              buttonClass="pricing-btn-yellow"
-            />
+        </div>
+
+        {/* Mobile/Tablet tabbed view */}
+        <div
+          className="tabbed-plans mobile-only"
+          role="region"
+          aria-label="Pricing plans"
+        >
+          <div className="plan-tabs" role="tablist" aria-label="Select plan">
+            {["standard", "pro", "elite"].map((key) => (
+              <button
+                key={key}
+                role="tab"
+                type="button"
+                className={`plan-tab ${activePlan === key ? "active" : ""}`}
+                aria-selected={activePlan === key}
+                onClick={() => setActivePlan(key)}
+              >
+                {key === "standard" && "Standard Plan"}
+                {key === "pro" && "Pro Plan"}
+                {key === "elite" && "Elite Plan"}
+              </button>
+            ))}
           </div>
 
-          {/* Rows 2+: Features + Icons */}
-          {[
-            "Real Time Options Flow",
-            "Real Time Buy and Sell Alerts",
-            "Live Auto Trade",
-            "Real Time Order Flow",
-            "Advanced Filters",
-            "Unusual Volume Data",
-            "Flow Overview Insights",
-            "On-Demand Historical Data",
-            "Stellar Trade AI",
-            "Custom Watchlist Builder",
-            "Dark Pool Orders",
-            "Dark Pool Levels",
-            "AI Power Alerts",
-            "Free Trial Period",
-          ].map((feature, i) => (
-            <>
-              <div key={`f-${i}`} className="features-cell">
-                {feature}
-              </div>
-              <div className="feature-icon">
-                {i === 0 ||
-                i === 3 ||
-                i === 4 ||
-                i === 5 ||
-                i === 6 ||
-                i === 7 ||
-                i === 8 ||
-                i === 13 ? (
-                  <img src={check} alt="check" />
-                ) : (
-                  <img src={cross} alt="cross" />
-                )}
-              </div>
-              <div className="feature-icon">
-                {i !== 2 && i < 10 ? (
-                  <img src={check} alt="check" />
-                ) : (
-                  <img src={cross} alt="cross" />
-                )}
-              </div>
-              <div className="feature-icon">
-                {i === 13 ? (
-                  <img src={cross} alt="cross" />
-                ) : (
-                  <img src={check} alt="check" />
-                )}
-              </div>
-            </>
-          ))}
+          <div
+            className="plan-panel"
+            role="tabpanel"
+            aria-labelledby={`${activePlan}-tab`}
+          >
+            <div className="plan-column">
+              {/* --- CHANGE 4: The mobile view now also uses the correct state and handler --- */}
+              <PlanHeader
+                {...PLAN_META[activePlan]}
+                isYearly={yearlyPlans[activePlan]}
+                onToggle={() => handlePlanSwitch(activePlan)}
+              />
+            </div>
+            <PlanFeatureList planKey={activePlan} />
+          </div>
         </div>
       </section>
 
+      {/* Keep the rest as-is */}
       <section className="pricing-grid-section">
         <PricingTestimonial />
       </section>
-
       <section className="pricing-grid-section">
         <FaqSection />
       </section>

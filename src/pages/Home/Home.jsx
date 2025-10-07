@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import stocklist from "@/assets/Images/stocklist.png";
 import buySellImg from "@/assets/Images/buysell.png";
+import func from "@/assets/videos/mov.mp4";
 
 import "./Home.css";
 import FounderMessage from "./FounderMessage/FounderMessage";
@@ -11,6 +12,7 @@ import OrderTracking from "./OrderTracking/OrderTracking";
 import HeatMap from "./HeatMap/HeatMap";
 import Ticker from "./Ticker/Ticker";
 import Elite from "./Elite/Elite";
+import HoverToActivate from "../Features/Demo4";
 
 const Home = () => {
   return (
@@ -56,14 +58,27 @@ const Home = () => {
             }}
           ></div>
 
-          <div
+          {/* <div
             className="stock-image stock-image-3"
             style={{
-              background: `linear-gradient(180deg, rgba(40,40,40,0) 0%, #282828 100%), url(${stocklist})`,
+              // background: `linear-gradient(180deg, rgba(40,40,40,0) 0%, #282828 100%), url(${stocklist})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-          ></div>
+          > */}
+          <HoverToActivate />
+          {/* <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="hero-video"
+            >
+              <source src={func} type="video/mp4" />
+            </video> */}
+          {/* <DashboardDemo2 /> */}
+          {/* </div> */}
         </div>
       </section>
 

@@ -22,6 +22,12 @@
   margin-top: 100px;
 }
 
+@media (max-width: 768px) {
+  .pricing-text {
+    max-width: 95%;
+  }
+}
+
 .pricing-title-container {
   margin-top: 190px;
 }
@@ -114,7 +120,7 @@
 /* Titles */
 .plan-title-standard {
   font-weight: 700;
-  font-size: 32px;
+  font-size: 36px;
   line-height: 36px;
   text-align: center;
   color: #2838cf;
@@ -161,7 +167,7 @@
   display: flex;
 
   margin: 20px 0px;
-  border: 1px solid #959595;
+  border: 0.5px solid #959595;
 }
 
 /* Discount */
@@ -180,7 +186,7 @@
 /* Price */
 .plan-price {
   font-family: "Be Vietnam", sans-serif;
-  font-weight: 600;
+  font-weight: 580;
   font-size: 48px;
   line-height: 48px;
   text-align: center;
@@ -215,7 +221,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #282828;
+  color: white;
   top: 140px;
   /* right: 150px; */
   margin-right: 50%;
@@ -698,7 +704,7 @@
   /* border-top: 1px solid rgba(255, 255, 255, 0.1); */
   /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
   gap: 0; /* no gaps so lines align */
-  column-gap: 20px;
+  column-gap: 30px;
 }
 
 /* Features column */
@@ -727,7 +733,7 @@
 }
 
 .plan-header-wrapper {
-  padding: 20px;
+  padding: 20px 0px;
   /* border-bottom: 2px solid rgba(255, 255, 255, 0.2); */
   width: 100%;
   text-align: center;
@@ -786,7 +792,7 @@
   /* border-right: 1px solid rgba(255, 255, 255, 0.1); */
 }
 .plan-header-wrapper {
-  padding: 20px;
+  padding: 20px 0px;
   /* border-bottom: 2px solid rgba(255, 255, 255, 0.2); */
   text-align: center;
 }
@@ -826,4 +832,119 @@
 
 .pricing-grid-section {
   padding: 40px 100px;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid-section {
+    padding: 10px;
+  }
+  .plan-column {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+  .pricing-testimonial-text {
+    margin-top: 24px;
+  }
+  .plan-suggested {
+    top: 127px;
+  }
+}
+.desktop-only .mobile-only {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+}
+/* Tabbed plans (mobile/tablet only) */
+.tabbed-plans {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.plan-tabs {
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  background: #222;
+  margin-bottom: 16px;
+  margin: auto;
+  width: fit-content;
+  display: flex;
+}
+
+.plan-tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #bdbdbd;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 22px;
+  cursor: pointer;
+  outline: none;
+}
+
+.plan-tab.active {
+  background: #333;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.plan-panel {
+  margin-top: 8px;
+}
+
+/* Single-plan feature list (mobile/tablet only) */
+.plan-feature-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-feature-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-feature-text {
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.plan-feature-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .plan-feature-text {
+    font-size: 16px;
+  }
+  .plan-feature-row {
+    padding: 14px 4px;
+  }
+}
+
+/* Extra safety: on desktop force desktop-only visible */
+@media (min-width: 993px) {
+  .desktop-only {
+    display: block !important;
+  }
+  .mobile-only {
+    display: none !important;
+  }
 }

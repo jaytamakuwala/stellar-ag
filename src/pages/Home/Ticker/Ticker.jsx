@@ -18,29 +18,41 @@ export default function Ticker() {
               <div className="row row-gradient-a">
                 <span className="row-left">95</span>
                 <span className="row-name">AAPL</span>
-                <span className="row-value">$15,000,000</span>
-                <span className="row-value2">$17,000,000</span>
+                <span className="row-value">$150k</span>
+                <span className="row-value2">$170k</span>
+                <span className="row-value3">
+                  <img src="analysis.svg" />
+                </span>
                 <div className="row-chart" />
               </div>
               <div className="row row-gradient-b">
                 <span className="row-left">96</span>
                 <span className="row-name">ADBE</span>
-                <span className="row-value">$12,000,000</span>
-                <span className="row-value2">$14,000,000</span>
+                <span className="row-value">$1.2M</span>
+                <span className="row-value2">$1.4M</span>
+                <span className="row-value3">
+                  <img src="analysis.svg" />
+                </span>
                 <div className="row-chart" />
               </div>
               <div className="row row-gradient-a">
                 <span className="row-left">97</span>
                 <span className="row-name">TSLA</span>
-                <span className="row-value">$18,500,000</span>
-                <span className="row-value2">$20,000,000</span>
+                <span className="row-value">$180k</span>
+                <span className="row-value2">$201k</span>
+                <span className="row-value3">
+                  <img src="analysis.svg" />
+                </span>
                 <div className="row-chart" />
               </div>
               <div className="row row-gradient-b">
                 <span className="row-left">98</span>
                 <span className="row-name">MSFT</span>
-                <span className="row-value">$22,000,000</span>
-                <span className="row-value2">$24,000,000</span>
+                <span className="row-value">$2.2M</span>
+                <span className="row-value2">$2.4M</span>
+                <span className="row-value3">
+                  <img src="analysis.svg" />
+                </span>
                 <div className="row-chart" />
               </div>
             </div>
@@ -63,13 +75,13 @@ export default function Ticker() {
             <div className="feature-img2">
               {/* Row 1 */}
               <div className="feature-row">
-                <div className="feature-rect red"></div>
+                <div className="feature-rect green"></div>
                 <span className="feature-label">TSLA</span>
               </div>
 
               {/* Row 2 */}
               <div className="feature-row">
-                <div className="feature-rect green"></div>
+                <div className="feature-rect red"></div>
                 <span className="feature-label">AMD</span>
               </div>
 
@@ -81,7 +93,7 @@ export default function Ticker() {
 
               {/* Row 4 */}
               <div className="feature-row">
-                <div className="feature-rect red"></div>
+                <div className="feature-rect green"></div>
                 <span className="feature-label">ADBE</span>
               </div>
             </div>

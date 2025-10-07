@@ -40,7 +40,7 @@ const HeatMap = () => {
       <div className="heatmap-card zone-card">
         <div className="heatmap-header">
           <h2>Institutional Zone Analysis</h2>
-          <p>
+          <p className="card-desc">
             Identify critical price levels that can act as potential support or
             resistance zones.
           </p>
@@ -109,10 +109,10 @@ const HeatMap = () => {
       </div>
 
       {/* Right Panel */}
-      <div className="heatmap-card">
+      <div className="heatmap-card financial-card">
         <div className="heatmap-header">
           <h2>Options order flow analysis</h2>
-          <p>
+          <p className="card-desc">
             Gain insight into the market’s most significant shifts in both
             bullish and bearish directions.
           </p>

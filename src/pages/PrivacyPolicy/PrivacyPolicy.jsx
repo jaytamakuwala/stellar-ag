@@ -46,10 +46,18 @@ const PrivacyPolicy = () => {
             </ul>
             <br />
             <br />
-            <strong>b. Non-Personal Information</strong> — Automatically
-            collected data, including: Browser type and version, Operating
-            system, Device identifiers, Usage data (pages visited, access times,
-            referral URLs), Trading preferences and platform usage behavior.
+            <strong className="privacy-policy-white">
+              b. Non-Personal Information
+            </strong>
+            <br />
+            Automatically collected data, including:
+            <ul>
+              <li>Browser type and version</li>
+              <li>Operating system</li>
+              <li>Device identifiers</li>
+              <li>Usage data (pages visited, access times, referral URLs)</li>
+              <li>Trading preferences and platform usage behavior</li>
+            </ul>
           </p>
         </div>
 
@@ -184,7 +192,7 @@ const PrivacyPolicy = () => {
             If you have any questions or concerns about this Privacy Policy or
             our practices, please contact us at:
             <br />
-            Email: contactus@stellartrade.com
+            Email: contactus@stellartrade.ai
           </p>
         </div>
       </div>

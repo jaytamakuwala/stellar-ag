@@ -1,8 +1,8 @@
 import { useTheme, useMediaQuery } from "@mui/material";
 
-export const useResponsive = () => {
+export const useResponsive = ({ mobileMaxPx = 767 } = {}) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(`(max-width:${mobileMaxPx}px)`);
   const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 

@@ -29,7 +29,10 @@ export default function MarketIntelligence() {
       {/* Header */}
       <div className="mi-header">
         <h2 className="mi-title">Deep Market Intelligence</h2>
-        <p className="mi-subtitle">
+        <p
+          className="card-desc"
+          style={{ width: "-webkit-fill-available !important" }}
+        >
           Rigorously analyzed, real-time data that uncovers hidden patterns and
           high-probability opportunities.
         </p>

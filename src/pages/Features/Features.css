@@ -108,9 +108,8 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 30px;
+  padding: 30px 114px;
   width: 100%;
-  max-width: 1410px;
   margin: 0 auto;
   position: relative;
 }
@@ -149,6 +148,10 @@
     flex-wrap: wrap;
     height: auto;
   }
+  .feature-frame-highlights {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 
   .feature-frame-card {
     width: 50%;
@@ -157,7 +160,7 @@
   }
 
   .feature-frame-card:nth-child(even) {
-    border-right: none;
+    /* border-right: none; */
   }
 }
 
@@ -167,5 +170,85 @@
     width: 100%;
     border-right: none;
     border-bottom: 1px solid rgba(149, 149, 149, 0.3);
+  }
+}
+
+@media (max-width: 756px) {
+  .feature {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  .feature-container {
+    margin-top: 110px;
+  }
+  .feature-title-container {
+    width: 100%;
+    max-width: 95%;
+    margin-bottom: 20px;
+  }
+  .feature-header-title {
+    /* margin-top: 140px; */
+  }
+  .feature-title {
+    width: 100%;
+    max-width: 100%;
+  }
+  .feature-img {
+    top: -54px;
+  }
+  .order-tracking-name,
+  .heatmap-header h2 {
+    font-size: 34px;
+  }
+  .order-tracking-sub-message {
+    font-size: 24px;
+  }
+
+  .row {
+    margin: 0px 10px;
+  }
+
+  .heatmap-card {
+    padding: 10px;
+    width: 95%;
+    /* flex: 1; */
+  }
+
+  .feature-section {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .elite-name {
+    font-size: 34px;
+  }
+
+  .feature-text {
+    max-width: 95%;
+    margin-top: 0;
+  }
+
+  .financial-panel {
+    width: 100%;
+  }
+  .financial-card {
+    height: fit-content;
+  }
+
+  .highlights {
+    /* margin-top: 20px; */
+  }
+
+  .mi-card {
+    width: 100% !important;
+  }
+
+  .mi-title {
+    font-size: 28px !important;
+  }
+
+  .mi-subtitle {
+    font-size: 18px !important;
+    font-weight: 600 !important;
   }
 }

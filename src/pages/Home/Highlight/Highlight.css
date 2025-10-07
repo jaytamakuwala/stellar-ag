@@ -1,5 +1,5 @@
 .highlights {
-  margin-top: 150px;
+  margin-top: 100px;
   margin-bottom: 10px;
 }
 
@@ -75,14 +75,14 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0px;
   gap: 30px;
 
   height: 164px;
 
   border-radius: 20px;
-  padding: 40px;
+  padding: 40px 114px;
   position: relative;
   top: auto;
   width: 100%;
@@ -93,7 +93,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 20px;
+  padding: 20px 0px;
   gap: 20px;
 
   width: 450px;
@@ -171,11 +171,7 @@
   flex-grow: 0;
 }
 
-/* Title */
 .title {
-  width: 313px;
-  height: 48px;
-
   font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   font-style: normal;
@@ -201,7 +197,7 @@
     sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 22px;
 
   color: #ffffff;
@@ -237,10 +233,11 @@
     max-width: 1410px;
     flex-wrap: wrap;
     height: auto;
+    justify-content: space-around;
   }
 
   .highlight-frame {
-    width: 400px;
+    width: 382px;
   }
 
   .content-frame,
@@ -260,6 +257,7 @@
   .highlight-frame {
     width: 100%;
     height: auto;
+    padding: 0px;
   }
 
   .content-frame,
@@ -268,9 +266,16 @@
     width: 95%;
   }
 
+  .content-frame {
+    width: 85%;
+  }
+
   .title {
-    font-size: 36px;
-    line-height: 36px;
+    font-size: 36px !important;
     height: auto;
+  }
+
+  .description {
+    font-size: 18px !important;
   }
 }

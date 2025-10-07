@@ -62,7 +62,7 @@
 }
 
 .privacy-policy-heading {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 24px;
   color: #ffffff;
 }
@@ -107,11 +107,16 @@
   }
   .privacy-policy-content {
     gap: 30px;
+    padding: 10px 0px;
+    font-size: 18px;
   }
   .privacy-policy-heading {
     font-size: 20px;
   }
   .privacy-policy-paragraph {
     font-size: 16px;
+  }
+  .privacy-policy-heading-1 {
+    font-size: 20px;
   }
 }

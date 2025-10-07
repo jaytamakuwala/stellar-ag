@@ -1,5 +1,5 @@
 .heatmap-card {
-  width: 690px;
+  /* width: 690px; */
   height: 484px;
   background: rgba(149, 149, 149, 0.1);
   border-radius: 20px;
@@ -10,6 +10,8 @@
   color: white;
   font-family: "Barlow", sans-serif;
   position: relative;
+  flex: 1;
+  min-width: 500px;
 }
 
 .heatmap-header h2 {
@@ -125,23 +127,23 @@
 
 .feature-wrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   gap: 20px;
-  flex-wrap: wrap; /* allow children to wrap on small screens */
-  padding: 40px 154px;
+  flex-wrap: wrap;
+  padding: 40px 114px;
+  padding-top: 0;
 }
 
-.feature-wrapper {
-  display: flex;
-  justify-content: space-around;
-  gap: 20px;
-  flex-wrap: wrap; /* allow children to wrap on small screens */
-  padding: 40px 154px;
+@media (max-width: 1634px) {
+  .feature-wrapper {
+    justify-content: space-around;
+  }
 }
 
 @media (max-width: 1024px) {
-  .feature-wrapper > * {
-    padding: 40px 10px;
+  .feature-wrapper {
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }
 
@@ -149,5 +151,21 @@
 @media (max-width: 768px) {
   .feature-wrapper > * {
     flex: 1 1 100%;
+    padding: 40px 30px;
+    padding-top: 0px;
+  }
+
+  .heatmap-card {
+    min-width: unset;
+  }
+
+  .feature-wrapper {
+    padding-top: 0px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .feature-wrapper {
+    padding: 40px 10px;
   }
 }
