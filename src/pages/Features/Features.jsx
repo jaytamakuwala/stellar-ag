@@ -3,36 +3,39 @@ import "./Features.css";
 import Highlight from "../Home/Highlight/Highlight";
 import AutoTradingCard from "../Home/AutoTradingCard/AutoTradingCard";
 
-import {
-  FaBell,
-  FaChartLine,
-  FaLock,
-  FaFilter,
-  FaDatabase,
-} from "react-icons/fa";
-import { MdInsights } from "react-icons/md";
-import { TbDeviceAnalytics } from "react-icons/tb";
+import historicData from "@/assets/Images/historicData.png";
+import filter from "@/assets/Images/filter.png";
+import volumeData from "@/assets/Images/volumeData.png";
+import chart from "@/assets/Images/chart.png";
+import candle from "@/assets/Images/candle.png";
+import Vector from "@/assets/Images/Vector.png";
+
 import Footer from "../Home/Footer/Footer";
 
 const features = [
-  { icon: <FaBell size={72} color="#fff" />, title: "AI power alerts" },
   {
-    icon: <FaChartLine size={72} color="#fff" />,
+    icon: <img src={Vector} alt="AI power alerts" />,
+    title: "AI power alerts",
+  },
+  {
+    icon: <img src={candle} alt="Real time option flow" />,
     title: "Real time option flow",
   },
   {
-    icon: <MdInsights size={72} color="#fff" />,
+    icon: <img src={chart} alt="Real time stock order flow" />,
     title: "Real time stock order flow",
   },
-  { icon: <FaLock size={72} color="#fff" />, title: "High volume data" },
-  { icon: <FaFilter size={72} color="#fff" />, title: "Advanced filtering" },
   {
-    icon: <FaDatabase size={72} color="#fff" />,
-    title: "On demand historical data",
+    icon: <img src={volumeData} alt="High volume data" />,
+    title: "High volume data",
   },
   {
-    icon: <TbDeviceAnalytics size={72} color="#fff" />,
-    title: "Smart analytics",
+    icon: <img src={filter} alt="Advanced filtering" />,
+    title: "Advanced filtering",
+  },
+  {
+    icon: <img src={historicData} alt="Historic Data" />,
+    title: "On demand historical data",
   },
 ];
 
@@ -43,7 +46,9 @@ const Features = () => {
         <img src={buySellImg} className="feature-img" alt="Logo" />
 
         <div className="feature-text feature-title-container">
-          <h1 className="feature-title">The Edge Every Trader Needs</h1>
+          <h1 className="feature-title feature-header-title">
+            The Edge Every Trader Needs
+          </h1>
           <p className="feature-subtitle">
             Our MAGIC engine (M.A.G.I.C. = Machine-driven Analytics for Gains,
             Insights & Calls) powers real-time analysis of stock and option
@@ -53,14 +58,14 @@ const Features = () => {
         </div>
       </section>
 
-      <section className="feature" style={{ marginTop: "100px" }}>
+      <section className="feature">
         <div className="feature-text">
           <h1 className="feature-title">Reasons our MAGIC Engine Is unique</h1>
         </div>
       </section>
       <Highlight />
 
-      <section className="feature" style={{ marginTop: "100px" }}>
+      <section className="feature">
         <div className="feature-text">
           <h1 className="feature-title">Super Quick</h1>
         </div>
